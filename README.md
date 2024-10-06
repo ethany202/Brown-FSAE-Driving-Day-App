@@ -1,4 +1,4 @@
-# FSAE-Driving-App
+# FSAE-Driving-Day-App
 This repository contains the code for Brown FSAE's test driving app.
 
 [Trello Board](https://trello.com/invite/b/6700464232720f5b5401a922/ATTIe089b41ca2cef2ef44ba6eb1601b295eAD176CB8/brown-fsae-testing-app)
@@ -32,3 +32,4 @@ This repository contains the code for Brown FSAE's test driving app.
    - After the PR is merged, move the Trello card into the **Done** column.
 
 ---
+
