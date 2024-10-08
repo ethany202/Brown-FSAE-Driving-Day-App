@@ -90,5 +90,6 @@ Be **detailed and thorough** when providing updates, as this helps the entire te
 ---
 
 ### Additional Notes:
+- Each team member should always have **ONE** issue in Doing.
 - Once an issue is completed, **move it into QA and ping the assignee** on Slack.
 - Only leads will have the responsibility of merging branches into the `main` branch after a thorough review.
