@@ -34,6 +34,41 @@ This repository contains the code for Brown FSAE's test driving app.
 
 ---
 
+### Using the Template Card
+
+1. **Create Cards from the Template**:
+   - When working on new issues or tasks, always start by using the **Template Card**.
+   - Ensure that all fields are filled out **thoroughly** with the required information such as the issue number, task description, and any relevant links.
+
+2. **Verify Issue Number and Title**:
+   - Double-check that the **issue number** in the Trello card and GitHub branch are correct.
+   - Make sure the **title** of the Trello card and the GitHub PR is clear, descriptive, and follows the correct naming conventions.
+
+3. **Task Summary**:
+   - The **Task Summary** section in the card should include a brief but comprehensive description of the issue or task.
+   - Include links to the GitHub issue and PR in the designated sections.
+
+4. **Checklist**:
+   - Follow the checklist in the card template to ensure no steps are missed, from the start of the task to submitting the PR and moving the card through QA.
+
+---
+
+### Trello Board Setup and Prioritization
+
+1. **Priority System**:
+   - The Trello board is organized so that **cards higher up** in each column represent tasks with **higher priority**.
+   - When moving tasks between columns (from **To Do** to **Doing**, and then to **QA**), always ensure that the most important tasks are at the **top** of the column.
+
+2. **Tracking Progress**:
+   - Move cards between columns as you work through them: **To Do** → **Doing** → **QA** → **Done**.
+   - Use the **priority system** to help manage workload effectively, focusing on the most critical tasks first.
+
+3. **Communication**:
+   - Ensure clear communication when an issue is ready for review by pinging the relevant team members on Slack.
+   - Regularly update the card with any blockers or additional information to keep the team informed.
+
+---
+
 ### Meeting Format: Risks, Blockers, Accomplishments, and Future Plans
 
 During team meetings, we will follow this structure for updates:
