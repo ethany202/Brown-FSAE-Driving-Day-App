@@ -10,7 +10,7 @@ This repository contains the code for Brown FSAE's test driving app.
 ### When working on an issue, follow these steps:
 
 1. **Fork a branch** from `main`:
-   - Name your branch following this format: `issue-number`-`short-description` (e.g., `54-updated-API-tokens`).
+   - Name your branch following this format: `label/team/issue-title` (e.g., `frontend/feature/1-Create-React-Project `).
   
 2. **Move the Trello card**:
    - Move the card associated with the issue into the **Doing** column on the [Trello board](https://trello.com/invite/b/6700464232720f5b5401a922/ATTIe089b41ca2cef2ef44ba6eb1601b295eAD176CB8/brown-fsae-testing-app).
