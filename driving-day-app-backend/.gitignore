@@ -62,3 +62,6 @@ ehthumbs.db
 
 # Jupyter Notebook
 .ipynb_checkpoints
+
+.env
+fsae_backend/fsae_backend_app/firebase/serviceAccountKey.json
