@@ -7,7 +7,7 @@ const api = axios.create({
 
 export const postUserRegistration = async (userData) => {
     try {
-        const response = await api.post('/user-registration/', userData);
+        const response = await api.post('/user-registration/', userData, { headers: { 'Content-Type': 'application/json' } });
         console.log("Testing User Registration (POST Request)")
         return response.data;
     } catch (error) {

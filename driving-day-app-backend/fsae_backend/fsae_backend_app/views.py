@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from .firebase.firestore import add_user
 
 @api_view(['POST'])
 def user_registration(request):
@@ -22,6 +23,7 @@ def user_registration(request):
     """
     if request.method == 'POST':
         print("Successfully connected!")
-        return JsonResponse({"message": "User registration successful!"}, status=201)
+        add_user({"name": "Placeholder", "email": "placeholder@example.com"})
+        return JsonResponse({"message": "User registration successful!"}, status=200)
     else:
         return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
