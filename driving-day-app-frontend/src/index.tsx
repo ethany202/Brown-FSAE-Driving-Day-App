@@ -2,14 +2,19 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import Main from './pages/Main';
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <Router> {/* Wrap your components with Router */}
+      {/* <App /> Uncomment if App component is to be used */}
+      <Main /> {/* Main component will be the entry point */}
+    </Router>
   </React.StrictMode>
 );
 
