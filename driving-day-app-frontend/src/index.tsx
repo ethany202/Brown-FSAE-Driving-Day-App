@@ -1,19 +1,25 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import Main from './pages/Main';
-import reportWebVitals from './reportWebVitals';
-import { BrowserRouter as Router } from 'react-router-dom';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import Main from "./pages/Main";
+import reportWebVitals from "./reportWebVitals";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import RunsSummaryPage from "./pages/run-summary";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <Router> {/* Wrap your components with Router */}
+    <Router>
+      {" "}
+      {/* Wrap your components with Router */}
       {/* <App /> Uncomment if App component is to be used */}
       <Main /> {/* Main component will be the entry point */}
+      <Routes>
+        <Route path="/run-summary" element={<RunsSummaryPage />} />
+      </Routes>
     </Router>
   </React.StrictMode>
 );
