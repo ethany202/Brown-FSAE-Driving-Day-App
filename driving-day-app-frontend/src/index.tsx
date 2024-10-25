@@ -3,7 +3,9 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import Main from './pages/Main';
+import Summary from './pages/SummaryBellaTest';
 import reportWebVitals from './reportWebVitals';
+import RunPage from './pages/RunPage';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(
@@ -14,6 +16,8 @@ root.render(
     <Router> {/* Wrap your components with Router */}
       {/* <App /> Uncomment if App component is to be used */}
       <Main /> {/* Main component will be the entry point */}
+      <Summary />
+      <RunPage />
     </Router>
   </React.StrictMode>
 );
