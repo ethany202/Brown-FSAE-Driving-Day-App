@@ -7,7 +7,7 @@ const api = axios.create({
     timeout: 10000,
 });
 
-export const postUserRegistration = async (userData: { paylod: string; }) => {
+export const postUserRegistration = async (userData: { payload: string; }) => {
     try {
         const response = await api.post('/user-registration/', userData, { headers: { 'Content-Type': 'application/json' } });
         console.log("Testing User Registration (POST Request)")
