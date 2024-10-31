@@ -25,6 +25,8 @@ grpcio-status==1.67.0
 httplib2==0.22.0
 idna==3.10
 msgpack==1.1.0
+numpy==2.1.2
+pandas==2.2.3
 proto-plus==1.24.0
 protobuf==5.28.2
 pyasn1==0.6.1
@@ -33,9 +35,13 @@ pycodestyle==2.12.1
 pycparser==2.22
 PyJWT==2.9.0
 pyparsing==3.2.0
+python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
+pytz==2024.2
 requests==2.32.3
 rsa==4.9
+six==1.16.0
 sqlparse==0.5.1
+tzdata==2024.2
 uritemplate==4.1.1
 urllib3==2.2.3
