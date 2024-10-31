@@ -65,3 +65,5 @@ ehthumbs.db
 
 .env
 fsae_backend/fsae_backend_app/firebase/serviceAccountKey.json
+**/csv/
+**/ld/

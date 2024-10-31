@@ -1,14 +1,17 @@
-import sys
-import glob
-from .data_containers import ldData
+import os
+from data_containers import ldData  
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("Usage: ldparser.py /some/path/")
-        exit(1)
+    directory_path = 'data/ld'  # Input folder containing .ld files
+    output_folder = 'data/csv'  # Output folder for CSV files
 
-    for f in glob.glob(f'{sys.argv[1]}/*.ld'):
-        l = ldData.fromfile(f)
+    for filename in os.listdir(directory_path):
+        file_path = os.path.join(directory_path, filename)
+        
+        l = ldData.fromfile(file_path)
         df = l.to_dataframe()
-        df.to_csv('sample.csv', index=False)
-        print("Data saved to sample.csv")
+        
+        csv_filename = os.path.join(output_folder, os.path.splitext(filename)[0] + '.csv')
+        
+        df.to_csv(csv_filename, index=False)
+        print(f"Data saved to {csv_filename}")
