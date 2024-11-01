@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import Main from './pages/Main';
 import reportWebVitals from './reportWebVitals';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
@@ -14,7 +15,7 @@ const router = createBrowserRouter([
     path: "/",
 
     // TODO: Replace all elements with the desired webpage element
-    element: <App />,
+    element: <Main />,
     children: [
       {
         path: "/home",
