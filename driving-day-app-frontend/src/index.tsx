@@ -7,7 +7,7 @@ import Summary from "./pages/SummaryBellaTest";
 import reportWebVitals from "./reportWebVitals";
 import RunPage from "./pages/RunPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import RunsSummaryPage from "./pages/run-summary";
+import RunsSummaryPage from "./pages/RunSummary";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

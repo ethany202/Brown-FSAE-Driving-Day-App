@@ -1,5 +1,5 @@
 import React from "react";
-import RunBubble from "../components/run-components/runBubble";
+import RunBubble from "../components/run-components/RunBubble";
 import Navbar from "../components/navbar-components/Navbar";
 
 interface Metric {
