@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import Main from "./pages/Main";
-import Summary from "./pages/SummaryBellaTest";
+// import Summary from "./pages/SummaryBellaTest";
 import reportWebVitals from "./reportWebVitals";
 import RunPage from "./pages/RunPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -21,6 +21,7 @@ root.render(
       <Main /> {/* Main component will be the entry point */}
       <Routes>
         <Route path="/run-summary" element={<RunsSummaryPage />} />
+        <Route path="/run-detail" element={<RunPage />} />
       </Routes>
     </Router>
   </React.StrictMode>

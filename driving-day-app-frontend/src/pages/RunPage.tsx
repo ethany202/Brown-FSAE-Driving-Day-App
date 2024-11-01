@@ -1,13 +1,14 @@
 import React from 'react'
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 
 const RunPage = () => {
-    const { runId } = useParams();
-  
+    const location = useLocation();
+    const runNumber = location.state?.runNumber;
+    
     return (
       <div className="flex items-center justify-center h-screen text-2xl text-gray-600">
-        {`Welcome to ${runId}`}
+        {`Welcome to ${runNumber ? `Run ${runNumber}` : "Run Page"}`}
       </div>
     );
   };

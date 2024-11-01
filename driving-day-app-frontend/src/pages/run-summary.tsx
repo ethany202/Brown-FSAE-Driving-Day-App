@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import RunBubble from "../components/run-components/runBubble";
 import Navbar from "../components/navbar-components/Navbar";
+import { Link } from "react-router-dom";
 
 interface Metric {
   label: string;
@@ -44,9 +46,10 @@ const RunsSummaryPage: React.FC = () => {
     },
   ];
 
+  const navigate = useNavigate();
   const handleRunClick = (runNumber: number) => {
     console.log(`Clicked run ${runNumber}`);
-    // Add click logic later
+    navigate('/run-detail', { state: { runNumber } });
   };
 
   return (
