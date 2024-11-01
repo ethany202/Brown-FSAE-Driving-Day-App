@@ -16,7 +16,7 @@ interface Run {
   metrics: Metric[];
 }
 
-const RunsSummaryPage: React.FC = () => {
+const RunSummary: React.FC = () => {
   const runs: Run[] = [
     {
       runNumber: 1,
@@ -91,4 +91,4 @@ const RunsSummaryPage: React.FC = () => {
   );
 };
 
-export default RunsSummaryPage;
+export default RunSummary;

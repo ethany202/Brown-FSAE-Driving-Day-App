@@ -5,9 +5,9 @@ import App from "./App";
 import Main from "./pages/Main";
 // import Summary from "./pages/SummaryBellaTest";
 import reportWebVitals from "./reportWebVitals";
-import RunPage from "./pages/RunPage";
+import RunDetail from "./pages/RunDetail";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import RunsSummaryPage from "./pages/run-summary";
+import RunSummary from "./pages/RunSummary";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -20,8 +20,8 @@ root.render(
       {/* <App /> Uncomment if App component is to be used */}
       <Main /> {/* Main component will be the entry point */}
       <Routes>
-        <Route path="/run-summary" element={<RunsSummaryPage />} />
-        <Route path="/run-detail" element={<RunPage />} />
+        <Route path="/run-summary" element={<RunSummary />} />
+        <Route path="/run-detail" element={<RunDetail />} />
       </Routes>
     </Router>
   </React.StrictMode>

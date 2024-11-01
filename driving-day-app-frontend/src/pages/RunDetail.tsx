@@ -2,7 +2,7 @@ import React from 'react'
 import { useLocation } from 'react-router-dom';
 
 
-const RunPage = () => {
+const RunDetail = () => {
     const location = useLocation();
     const runNumber = location.state?.runNumber;
     
@@ -13,4 +13,4 @@ const RunPage = () => {
     );
   };
   
-  export default RunPage;
+  export default RunDetail;
