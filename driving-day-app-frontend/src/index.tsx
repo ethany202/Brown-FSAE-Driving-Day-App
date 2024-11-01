@@ -21,6 +21,7 @@ root.render(
       <Main /> {/* Main component will be the entry point */}
       <Routes>
         <Route path="/run-summary" element={<RunsSummaryPage />} />
+        <Route path="/runs/:runNumber" element={<RunPage />} />
       </Routes>
     </Router>
   </React.StrictMode>
