@@ -1,5 +1,6 @@
 import React from 'react';
 import Navbar from '../components/navbar-components/Navbar';
+import { postUserRegistration, postDriverProfile } from '../apis/api'
 
 const Main = () => {
   return (

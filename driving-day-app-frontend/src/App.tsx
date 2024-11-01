@@ -1,10 +1,8 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { postUserRegistration } from './api/api'
 
 function App() {
-  postUserRegistration({ "payload": "test" })
   return (
     <div className="App">
       <header className="App-header">
