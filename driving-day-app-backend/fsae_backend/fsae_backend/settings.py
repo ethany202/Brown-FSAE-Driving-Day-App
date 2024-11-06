@@ -71,8 +71,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'fsae_backend.wsgi.application'
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Your frontend URL
+]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
+WSGI_APPLICATION = 'fsae_backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
