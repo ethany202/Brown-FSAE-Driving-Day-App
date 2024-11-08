@@ -5,6 +5,8 @@ import App from './App';
 import Main from './pages/Main';
 import reportWebVitals from './reportWebVitals';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import RunsSummaryPage from './pages/RunSummary';
+import RunPage from './pages/RunPage';
 
 /**
  * Creates an object that handles routing for all webpages:
@@ -25,12 +27,20 @@ const router = createBrowserRouter([
         path: "/run-summary",
         element: <App />
       },
+      {
+        path: "/run-summary",
+        element: <RunsSummaryPage />
+      },
+      {
+        path: "/runs/:runNumber",
+        element: <RunPage />
+      }
     ]
   }
 ])
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 root.render(
   <RouterProvider router={router} />
