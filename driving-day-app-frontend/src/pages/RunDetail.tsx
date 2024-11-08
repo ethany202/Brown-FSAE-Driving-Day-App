@@ -2,7 +2,7 @@ import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../components/navbar-components/Navbar';
 import RunBubble from '../components/run-components/runBubble';
-
+import RunCoolantTemperatureChart from '../components/run-components/RunCoolantTemperatureChart';
 
 interface Metric {
   label: string;
@@ -15,6 +15,25 @@ interface Run {
   date: string;
   metrics: Metric[];
 }
+
+interface TemperatureDataPoint {
+  time: number;          // Time in seconds
+  temperature: number;    // Coolant temperature in °C
+}
+
+const coolantTemperatureData: TemperatureDataPoint[] = [
+  { time: 0, temperature: 60 },
+  { time: 1, temperature: 62 },
+  { time: 2, temperature: 64 },
+  { time: 3, temperature: 65 },
+  { time: 4, temperature: 67 },
+  { time: 5, temperature: 70 },
+  { time: 6, temperature: 73 },
+  { time: 7, temperature: 75 },
+  { time: 8, temperature: 78 },
+  { time: 9, temperature: 80 },
+  { time: 10, temperature: 82 },
+];
 
 const runs: Run[] = [
   {
@@ -52,6 +71,8 @@ const RunDetail: React.FC = () => {
     const runNumber = location.state?.runNumber;
 
     const run = runs.find(r => r.runNumber === runNumber)
+    const timeData = coolantTemperatureData.map((dataPoint) => dataPoint.time);
+    const temperatureData = coolantTemperatureData.map((dataPoint) => dataPoint.temperature);
     return (
       <div className="flex min-h-screen bg-gray-50">
 
@@ -74,6 +95,9 @@ const RunDetail: React.FC = () => {
             <p className="text-lg text-gray-600">Run details not found.</p>
           )}
 
+          <RunCoolantTemperatureChart timeData={timeData} temperatureData={temperatureData} />
+
+
           <button
             onClick={() => navigate(-1)}
             className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
@@ -87,11 +111,6 @@ const RunDetail: React.FC = () => {
       </div>
     );
     
-    return (
-      <div className="flex items-center justify-center h-screen text-2xl text-gray-600">
-        {`Welcome to ${runNumber ? `Run ${runNumber}` : "Run Page"}`}
-      </div>
-    );
   };
   
   export default RunDetail;
