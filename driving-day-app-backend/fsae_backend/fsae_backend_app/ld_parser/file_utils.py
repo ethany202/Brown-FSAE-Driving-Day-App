@@ -35,7 +35,7 @@ def read_channels(f_, meta_ptr):
     """    
     chans = []
     while meta_ptr:
-        from data_containers import ldChan  # Import inside function to avoid circular import issues
+        from .data_containers import ldChan  # Import inside function to avoid circular import issues
         chan_ = ldChan.fromfile(f_, meta_ptr)  # Parse a single channel
         chans.append(chan_)
         meta_ptr = chan_.next_meta_ptr  # Move to the next channel's metadata
@@ -58,7 +58,7 @@ def read_ldfile(f_):
         ImportError: If the `ldHead` class cannot be imported from the `data_containers` module.
         FileNotFoundError: If the specified file path is invalid.
     """    
-    from data_containers import ldHead  # Import inside function to avoid circular import issues
+    from .data_containers import ldHead  # Import inside function to avoid circular import issues
     head_ = ldHead.fromfile(open(f_, 'rb'))  # Parse the header
     chans = read_channels(f_, head_.meta_ptr)  # Read the channels using the header metadata pointer
     return head_, chans

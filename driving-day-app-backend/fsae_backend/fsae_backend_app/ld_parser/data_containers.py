@@ -1,9 +1,8 @@
 import datetime
 import struct
-
 import numpy as np
 import pandas as pd
-from file_utils import decode_string, read_channels, read_ldfile
+from .file_utils import decode_string, read_channels, read_ldfile
 
 
 class ldData(object):
