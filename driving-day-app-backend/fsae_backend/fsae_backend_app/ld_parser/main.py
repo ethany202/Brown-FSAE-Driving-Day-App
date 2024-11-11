@@ -17,6 +17,8 @@ def process_and_upload_ld_files():
     os.makedirs(data_path, exist_ok=True)
 
     for filename in os.listdir(data_path):
+        if not filename.endswith('.ld'):
+            continue
         file_path = os.path.join(data_path, filename)
         
         # Parsing LD into CSV
