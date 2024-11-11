@@ -1,12 +1,12 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import Main from './pages/Main';
 import reportWebVitals from './reportWebVitals';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import RunsSummaryPage from './pages/RunSummary';
-import RunPage from './pages/RunPage';
+import RunsSummary from './pages/run-summary/RunSummary';
+import RunDetail from './pages/run-page/RunDetail';
+import Layout from './pages/layout/Layout';
+import DriversPage from './pages/drivers-page/DriversPage';
 
 /**
  * Creates an object that handles routing for all webpages:
@@ -17,23 +17,27 @@ const router = createBrowserRouter([
     path: "/",
 
     // TODO: Replace all elements with the desired webpage element
-    element: <Main />,
+    element: <Layout />,
     children: [
       {
         path: "/home",
         element: <App />
       },
       {
-        path: "/run-summary",
-        element: <App />
-      },
-      {
-        path: "/run-summary",
-        element: <RunsSummaryPage />
+        path: "/run-data",
+        element: <RunsSummary />
       },
       {
         path: "/runs/:runNumber",
-        element: <RunPage />
+        element: <RunDetail />
+      },
+      {
+        path: "/drivers",
+        element: <DriversPage />
+      },
+      {
+        path: "/my-account",
+        element: <App />
       }
     ]
   }
@@ -46,7 +50,4 @@ root.render(
   <RouterProvider router={router} />
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

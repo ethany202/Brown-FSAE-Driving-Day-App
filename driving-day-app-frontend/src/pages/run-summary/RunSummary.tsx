@@ -1,6 +1,6 @@
 import React from "react";
-import RunBubble from "../components/run-components/RunBubble";
-import Navbar from "../components/navbar-components/Navbar";
+import RunBubble from "../../components/run-components/RunBubble";
+import Navbar from "../../components/navbar-components/Navbar";
 import { useNavigate } from "react-router-dom";
 
 interface Metric {
@@ -51,12 +51,13 @@ const RunsSummaryPage: React.FC = () => {
     navigate(`/runs/${runNumber}`);
   };
 
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Navbar />
       <div className="flex-1 ml-64">
         <div className="p-6 max-w-7xl mx-auto">
-          <h1 className="mb-6 text-2xl font-semibold">Summary</h1>
+          <h1 className="mb-6 text-2xl font-semibold">Summary of Runs</h1>
 
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <select className="px-4 py-2 border border-gray-200 rounded-md bg-white min-w-[200px] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
