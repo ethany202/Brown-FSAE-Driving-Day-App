@@ -6,6 +6,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import RunsSummary from './pages/run-summary/RunSummary';
 import RunDetail from './pages/run-page/RunDetail';
 import Layout from './pages/layout/Layout';
+import DriversPage from './pages/drivers-page/DriversPage';
 
 /**
  * Creates an object that handles routing for all webpages:
@@ -32,7 +33,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/drivers",
-        element: <App />
+        element: <DriversPage />
       },
       {
         path: "/my-account",
@@ -49,7 +50,4 @@ root.render(
   <RouterProvider router={router} />
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
