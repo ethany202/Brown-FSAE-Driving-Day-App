@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilies;
+
+@layer components {
+    .navbar-wrapper {
+        padding-bottom: 0.65rem;
+    }
+
+    .navbar-logo {
+        /* height: 15px; */
+        padding: 1rem;
+    }
+
+    .navbar-buttons {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .navbar-link {
+        display: block;
+        padding: 0.65rem 1rem;
+        margin: 0.5rem 0;
+    }
+
+    .navbar-link:hover {
+        background-color: #9D2062;
+        background-color: 0.2s;
+    }
+
+    .logout {
+        color: red;
+        padding: 0.65rem;
+    }
+
+    .logout:hover {
+        color: white;
+    }
+}
