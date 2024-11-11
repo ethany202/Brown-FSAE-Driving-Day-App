@@ -18,17 +18,7 @@ def process_and_upload_ld_files():
 
     for filename in os.listdir(data_path):
         file_path = os.path.join(data_path, filename)
-
-        # Checking if file has already been stored in the database
-        main_collection = 'ecu-data'
-        main_document = os.path.splitext(filename)[0]
-        main_doc_ref = db.collection(main_collection).document(main_document)
-        doc_snapshot = main_doc_ref.get()
-        print("Document exists:", doc_snapshot.exists)
-
-        if doc_snapshot.exists:
-            print(f"Document '{main_document}' already exists in Firestore. Skipping upload.")
-            return
+        
         # Parsing LD into CSV
         l = ldData.fromfile(file_path)
         df = l.to_dataframe()
@@ -40,6 +30,15 @@ def process_and_upload_ld_files():
         # Uploading CSV to Firebase
         upload_csv_to_firestore(csv_filename)
         print(f"Data from {csv_filename} uploaded to Firestore")
+
+    # Deleting all files in the folder after processing
+    for filename in os.listdir(data_path):
+        file_path = os.path.join(data_path, filename)
+        try:
+            os.remove(file_path)
+            print(f"Deleted {file_path}")
+        except Exception as e:
+            print(f"Failed to delete {file_path}: {e}")
 
 if __name__ == '__main__':
     process_and_upload_ld_files()
