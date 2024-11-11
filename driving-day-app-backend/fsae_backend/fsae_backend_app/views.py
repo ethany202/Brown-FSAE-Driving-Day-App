@@ -54,6 +54,6 @@ def upload_ld(request):
     if request.method == 'GET':
         process_and_upload_ld_files()
         print("Successfully connected!")
-        return JsonResponse({"message": "User registration successful!"}, status=200)
+        return JsonResponse({"message": "Successfully uploaded LD data to database!"}, status=200)
     else:
         return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
