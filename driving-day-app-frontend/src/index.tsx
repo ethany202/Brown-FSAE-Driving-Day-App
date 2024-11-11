@@ -1,12 +1,11 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import Main from './pages/Main';
 import reportWebVitals from './reportWebVitals';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import RunsSummaryPage from './pages/RunSummary';
-import RunPage from './pages/RunPage';
+import RunsSummary from './pages/run-summary/RunSummary';
+import RunPage from './pages/run-page/RunPage';
+import Layout from './pages/layout/Layout';
 
 /**
  * Creates an object that handles routing for all webpages:
@@ -17,23 +16,27 @@ const router = createBrowserRouter([
     path: "/",
 
     // TODO: Replace all elements with the desired webpage element
-    element: <Main />,
+    element: <Layout />,
     children: [
       {
         path: "/home",
         element: <App />
       },
       {
-        path: "/run-summary",
-        element: <App />
-      },
-      {
-        path: "/run-summary",
-        element: <RunsSummaryPage />
+        path: "/run-data",
+        element: <RunsSummary />
       },
       {
         path: "/runs/:runNumber",
         element: <RunPage />
+      },
+      {
+        path: "/drivers",
+        element: <App />
+      },
+      {
+        path: "/my-account",
+        element: <App />
       }
     ]
   }

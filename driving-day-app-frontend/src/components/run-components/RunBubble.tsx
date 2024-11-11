@@ -1,4 +1,5 @@
 import React from "react";
+import './RunBubble.css';
 
 interface Metric {
   label: string;
@@ -13,22 +14,24 @@ interface RunBubbleProps {
   onClick?: () => void;
 }
 
-const RunBubble: React.FC<RunBubbleProps> = ({
+export default function RunBubble({
   runNumber,
   driver,
   date,
   metrics = [],
   onClick,
-}) => {
+}: RunBubbleProps) {
   return (
     <div
-      className="bg-white rounded-lg border border-gray-200 p-4 cursor-pointer transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+      className="font-face bg-white rounded-lg border border-gray-200 p-4 cursor-pointer transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
       onClick={onClick}
       role="button"
       tabIndex={0}
     >
       <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100">
-        <span className="text-lg font-medium">Run {runNumber}</span>
+        <span className="text-lg font-medium">
+          <p>Run {runNumber}</p>
+        </span>
         <div className="text-sm text-gray-600">
           <span className="mr-2">Driver: {driver}</span>
           <span>Date: {date}</span>
@@ -48,5 +51,3 @@ const RunBubble: React.FC<RunBubbleProps> = ({
     </div>
   );
 };
-
-export default RunBubble;
