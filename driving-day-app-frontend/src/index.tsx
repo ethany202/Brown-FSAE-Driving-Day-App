@@ -4,7 +4,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import RunsSummary from './pages/run-summary/RunSummary';
-import RunPage from './pages/run-page/RunPage';
+import RunDetail from './pages/run-page/RunDetail';
 import Layout from './pages/layout/Layout';
 
 /**
@@ -28,7 +28,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/runs/:runNumber",
-        element: <RunPage />
+        element: <RunDetail />
       },
       {
         path: "/drivers",
