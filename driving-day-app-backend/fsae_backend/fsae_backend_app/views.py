@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .firebase.firestore import add_user
+import json
 
 @api_view(['POST'])
 def driver_profiles(request):
@@ -23,7 +24,8 @@ def driver_profiles(request):
     """
     if request.method == 'POST':
         print("Successfully connected!")
-        add_user({"name": "Placeholder", "email": "placeholder@example.com"})
+        data = json.loads(request.body.decode('utf-8'))
+        add_user(data)
         return JsonResponse({"message": "User registration successful!"}, status=200)
     else:
         return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)

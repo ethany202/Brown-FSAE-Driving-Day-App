@@ -23,10 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-5t)8l^6id73wk&ry88+#71lge2_*#^p$pdj=2tvid_ywe5g83b'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-
 
 # Application definition
 
@@ -72,10 +71,8 @@ TEMPLATES = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Your frontend URL
+    "http://localhost:3000",
 ]
-
-CORS_ALLOW_ALL_ORIGINS = True
 
 WSGI_APPLICATION = 'fsae_backend.wsgi.application'
 

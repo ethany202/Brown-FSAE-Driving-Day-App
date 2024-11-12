@@ -51,9 +51,9 @@ export default function DriversList({ allDrivers = defaultDriverData }: DriversL
                 await postDriverProfile(defaultDriverData[i]);
             }
         };
-    
+        
         postAllDriverProfiles();
-    }, [defaultDriverData]);    
+    }, []);    
 
     return (
         <div className="flex">
