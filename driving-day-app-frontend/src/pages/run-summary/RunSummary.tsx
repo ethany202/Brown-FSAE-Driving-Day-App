@@ -48,7 +48,7 @@ const RunsSummaryPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleRunClick = (runNumber: number) => {
-    navigate(`/runs/${runNumber}`);
+    navigate(`/runs/${runNumber}`, { state: { runNumber } });
   };
 
 
