@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from .firebase.firestore import add_user
 
 @api_view(['POST'])
-def user_registration(request):
+def driver_profiles(request):
     """
     Handles user registration via a POST request.
 
