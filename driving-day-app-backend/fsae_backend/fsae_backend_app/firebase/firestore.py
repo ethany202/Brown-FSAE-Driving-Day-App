@@ -35,9 +35,15 @@ def add_user(data):
         if not data:
             raise ValueError("Input dictionary cannot be empty.")
 
-        doc_ref = db.collection('driver-profiles').add(data)
-        print(f"Document added successfully with ID: {doc_ref[1].id}")
-        return doc_ref
+        main_db = db.collection('driver-profiles')
+        existing_driver_query = main_db.where('firstName', '==', data['firstName']).where('lastName', '==', data['lastName']).stream()
+        driver_exists = any(existing_driver_query)
+        if not driver_exists:
+            main_db.add(data)
+            print(f"Driver profile for {data['firstName']} {data['lastName']} added.")
+        else:
+            print(f"Driver profile for {data['firstName']} {data['lastName']} already exists.")
+
 
     except ValueError as ve:
         print(f"ValueError: {ve}")
