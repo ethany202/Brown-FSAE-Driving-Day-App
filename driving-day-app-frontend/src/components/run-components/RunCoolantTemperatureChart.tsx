@@ -36,7 +36,7 @@ const RunCoolantTemperatureChart: React.FC<RunCoolantTemperatureChartProps> = ({
         borderWidth: 2,
         pointRadius: 3,
         fill: true,
-        tension: 0.3, // Line smoothness
+        tension: 0.3, // Line smoothness,
       },
     ],
   };

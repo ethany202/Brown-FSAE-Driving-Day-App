@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilies;
+
+@layer components {
+    .wrapper {
+        display: flex;
+        width: 100%;
+    }
+
+    .page-content-main {
+        width: 100%;
+        margin-left: 16rem;
+    }
+}

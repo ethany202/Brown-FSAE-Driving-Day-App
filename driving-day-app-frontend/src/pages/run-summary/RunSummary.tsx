@@ -53,10 +53,9 @@ const RunsSummaryPage: React.FC = () => {
 
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Navbar />
-      <div className="flex-1 ml-64">
-        <div className="p-6 max-w-7xl mx-auto">
+    <div className="page-content-main">
+      <div className="w-full">
+        <div className="p-8 max-w-7xl mx-auto">
           <h1 className="mb-6 text-2xl font-semibold">Summary of Runs</h1>
 
           <div className="flex flex-col md:flex-row gap-4 mb-6">

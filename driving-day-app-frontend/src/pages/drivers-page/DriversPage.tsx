@@ -6,7 +6,7 @@ export default function DriversPage() {
     // TODO: Move entire DriversList code here
     // Modularize DriversList.tsx into multiple components
     return (
-        <div className="drivers-page">
+        <div className="page-content-main">
             <DriversList />
         </div>
     )

@@ -1,8 +1,8 @@
 import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
-import Navbar from '../../components/navbar-components/Navbar';
 import RunBubble from '../../components/run-components/RunBubble';
 import RunCoolantTemperatureChart from '../../components/run-components/RunCoolantTemperatureChart';
+import './ChartElements.css';
 
 interface Metric {
   label: string;
@@ -74,12 +74,10 @@ const RunDetail: React.FC = () => {
   const timeData = coolantTemperatureData.map((dataPoint) => dataPoint.time);
   const temperatureData = coolantTemperatureData.map((dataPoint) => dataPoint.temperature);
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="page-content-main">
 
-      <Navbar />
-
-      <div className="flex-1 ml-64">
-        <div className="p-6 max-w-7xl mx-auto">
+      <div className="w-full p-8">
+        <div className="run-detail-chart">
 
           <h1 className="mb-6 text-2xl font-semibold">{`Run ${runNumber} Details`}</h1>
 
