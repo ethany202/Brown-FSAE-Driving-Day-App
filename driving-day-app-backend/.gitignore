@@ -68,3 +68,6 @@ fsae_backend/fsae_backend_app/firebase/serviceAccountKey.json
 
 # Ignore all .csv files
 *.csv
+
+# Ignore all .ld files
+*.ld

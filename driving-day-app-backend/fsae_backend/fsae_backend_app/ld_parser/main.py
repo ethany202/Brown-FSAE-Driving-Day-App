@@ -1,7 +1,7 @@
 import os
 from django.conf import settings
 from .data_containers import ldData
-from ..firebase.firestore import upload_csv_to_firestore
+from ..firebase.firestore import upload_csv_to_firestore, upload_csv_columns_as_documents
 from ..firebase.firebase import firebase_app
 from firebase_admin import firestore
 
@@ -30,17 +30,18 @@ def process_and_upload_ld_files():
         print(f"Data saved to {csv_filename}")
         
         # Uploading CSV to Firebase
-        upload_csv_to_firestore(csv_filename)
+        upload_csv_columns_as_documents(csv_filename)
         print(f"Data from {csv_filename} uploaded to Firestore")
 
     # Deleting all files in the folder after processing
     for filename in os.listdir(data_path):
         file_path = os.path.join(data_path, filename)
-        try:
-            os.remove(file_path)
-            print(f"Deleted {file_path}")
-        except Exception as e:
-            print(f"Failed to delete {file_path}: {e}")
+        if filename.endswith('.ld') or filename.endswith('.csv'):
+            try:
+                os.remove(file_path)
+                print(f"Deleted {file_path}")
+            except Exception as e:
+                print(f"Failed to delete {file_path}: {e}")
 
 if __name__ == '__main__':
     process_and_upload_ld_files()
