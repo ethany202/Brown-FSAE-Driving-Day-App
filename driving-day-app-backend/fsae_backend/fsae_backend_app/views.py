@@ -1,8 +1,7 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from .firebase.firestore import add_user
+from .ld_parser.main import process_and_upload_ld_files
 
 @api_view(['POST'])
 def user_registration(request):
@@ -25,5 +24,36 @@ def user_registration(request):
         print("Successfully connected!")
         add_user({"name": "Placeholder", "email": "placeholder@example.com"})
         return JsonResponse({"message": "User registration successful!"}, status=200)
+    else:
+        return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
+
+
+@api_view(['GET'])
+def upload_ld(request):
+    """
+    Handle the GET request to upload and process LD files.
+
+    This view function processes LD files from the specified input directory, converts
+    them into DataFrames, and saves the resulting data as CSV files in the output directory.
+    After saving, each CSV file is uploaded to Firestore for further use.
+
+    Request Method:
+        GET: Triggers the `process_and_upload_ld_files` function to convert and upload
+        all LD files in the input directory. 
+
+    Returns:
+        JsonResponse: A JSON response indicating success or failure of the upload process.
+        - On Success: Returns a JSON message with HTTP 200 status indicating that the data upload
+          was successful.
+        - On Failure: Returns an error message with HTTP 400 status if a non-GET request is made.
+
+    Example:
+        GET /api/upload-data/ -> Triggers the upload process and returns success status.
+
+    """
+    if request.method == 'GET':
+        process_and_upload_ld_files()
+        print("Successfully connected!")
+        return JsonResponse({"message": "Successfully uploaded LD data to database!"}, status=200)
     else:
         return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
