@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
-import { db } from './firebaseConfig';
 
 const api = axios.create({
     baseURL: `${process.env.REACT_APP_BACKEND_URL}/api/`,
@@ -25,25 +23,15 @@ export const postRequest = async (content: any, path: string) => {
     }
 }
 
-export const postUserRegistration = async (userData: { payload: string; }) => {
-    const path = 'user-registration/';
-    return (await postRequest(userData, path))
-};
-
-export const postDriverProfile = async (profileData: {
+export const postDriverProfile = async (userData: {
     firstName: string;
     lastName: string;
     height: number;
     weight: number;
-    pedalBoxPos: string;
+    pedalBoxPos: number;
 }) => {
-    try {
-        const docRef = await addDoc(collection(db, 'driver-profiles'), profileData);
-        return { id: docRef.id, ...profileData };
-    } catch (error) {
-        console.error('Error adding driver profile:', error);
-        return {}
-    }
+    const path = 'driver-profiles/';
+    return (await postRequest(userData, path))
 };
 
 /**
