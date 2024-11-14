@@ -2,9 +2,10 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from .firebase.firestore import add_user
 from .ld_parser.main import process_and_upload_ld_files
+import json
 
 @api_view(['POST'])
-def user_registration(request):
+def driver_profiles(request):
     """
     Handles user registration via a POST request.
 
@@ -22,7 +23,8 @@ def user_registration(request):
     """
     if request.method == 'POST':
         print("Successfully connected!")
-        add_user({"name": "Placeholder", "email": "placeholder@example.com"})
+        data = json.loads(request.body.decode('utf-8'))
+        add_user(data)
         return JsonResponse({"message": "User registration successful!"}, status=200)
     else:
         return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
