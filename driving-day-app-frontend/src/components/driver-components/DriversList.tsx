@@ -1,25 +1,34 @@
 // DriversList.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Driver } from "./Driver";
 import { SpecificDriverProfile } from "./SpecificDriverProfile";
-
+import { postDriverProfile } from "../../api/api";
 
 interface DriversListProps {
     allDrivers?: Driver[];
 }
 
 const defaultDriverData: Driver[] = [
-    { name: "John Doe", height: 180, weight: 75 },
-    { name: "Jane Smith", height: 165, weight: 60 },
-    { name: "Mike Brown", height: 170, weight: 68 },
-    { name: "Emily Davis", height: 158, weight: 55 },
-    { name: "Chris Johnson", height: 185, weight: 85 },
-    { name: "Sarah Wilson", height: 162, weight: 58 },
+    { firstName: "John", lastName: "Doe", height: 180, weight: 75, pedalBoxPos: 1 },
+    { firstName: "Jane", lastName: "Smith", height: 165, weight: 60, pedalBoxPos: 2 },
+    { firstName: "Mike", lastName: "Brown", height: 170, weight: 68, pedalBoxPos: 3 },
+    { firstName: "Emily", lastName: "Davis", height: 158, weight: 55, pedalBoxPos: 4 },
+    { firstName: "Chris", lastName: "Johnson", height: 185, weight: 85, pedalBoxPos: 5 },
+    { firstName: "Sarah", lastName: "Wilson", height: 162, weight: 58, pedalBoxPos: 6 },
 ];
 
 
 export default function DriversList({ allDrivers = defaultDriverData }: DriversListProps) {
     const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
+    useEffect(() => {
+        const postAllDriverProfiles = async () => {
+            for (let i = 0; i < defaultDriverData.length; i++) {
+                await postDriverProfile(defaultDriverData[i]);
+            }
+        };
+
+        postAllDriverProfiles();
+    }, []);
 
     return (
         <div className="drivers-list grid grid-cols-2">
@@ -40,7 +49,7 @@ export default function DriversList({ allDrivers = defaultDriverData }: DriversL
                                 className="hover:bg-gray-100 cursor-pointer"
                                 onClick={() => setSelectedDriver(driver)} // Set selected driver on click
                             >
-                                <td className="border p-4 text-blue-600 underline">{driver.name}</td>
+                                <td className="border p-4 text-blue-600 underline">{driver.firstName}</td>
                                 <td className="border p-4">{driver.height}</td>
                                 <td className="border p-4">{driver.weight}</td>
                             </tr>
@@ -52,7 +61,7 @@ export default function DriversList({ allDrivers = defaultDriverData }: DriversL
             <div className="flex w-full">
                 {selectedDriver ?
                     <SpecificDriverProfile driver={selectedDriver} />
-                    : <SpecificDriverProfile driver={{ name: "(Select a Driver)", height: 0, weight: 0 }} />
+                    : <SpecificDriverProfile driver={{ firstName: "(Select a Driver)", lastName: "", height: 0, weight: 0, pedalBoxPos: -1 }} />
                 }
             </div>
         </div>
