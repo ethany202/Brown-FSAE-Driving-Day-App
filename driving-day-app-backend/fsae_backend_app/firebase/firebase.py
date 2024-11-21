@@ -32,7 +32,7 @@ from firebase_admin import credentials
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # Load .env file from the current directory
+load_dotenv()
 
 firebase_config = {
     "type": os.getenv("FIREBASE_TYPE"),
