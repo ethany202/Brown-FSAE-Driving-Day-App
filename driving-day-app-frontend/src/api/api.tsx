@@ -5,6 +5,7 @@ const api = axios.create({
     timeout: 10000,
 });
 
+
 // TODO: Configure POST request to use API token to obtain content/register
 /**
  * 
@@ -40,16 +41,23 @@ export const postDriverProfile = async (userData: {
  * @param path: string, corresponding to the path for the GET request
  * @returns: JSON content, representing the result of the GET request
  */
+
+export interface ApiResponse {
+    data: Array<Record<string, any>>; // Generic array for flexible data
+    message: string; // Message from the backend
+}
+
+
 export const getRequest = async (content: any, path: string) => {
     try {
-        const response = await api.get(path, content);
-        return response;
-    }
-    catch (err) {
+        const response = await api.get(path, { params: content }); 
+        return response.data;
+    } catch (err) {
         console.error(err);
-        return {}
+        return {}; 
     }
-}
+};
+
 
 export const getDriverData = async (driverFilter: {
     height: number,
@@ -75,3 +83,16 @@ export const getRunByID = async (runFilter: {
     const path = 'specific-run'
     return (await getRequest(runFilter, path))
 }
+
+
+export const getAllData = async () => {
+    const path = 'get-all-data/';
+    try {
+        const response = await getRequest({}, path);
+        console.log('API Response:', response); // Log the response
+        return response;
+    } catch (error) {
+        console.error("Error fetching all data:", error);
+        throw error;
+    }
+};

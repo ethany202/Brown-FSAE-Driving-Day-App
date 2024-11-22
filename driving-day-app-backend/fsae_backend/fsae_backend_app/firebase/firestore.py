@@ -150,3 +150,36 @@ def upload_csv_columns_as_documents(csv_file_path):
     
     except Exception as e:
         print(f"An error occurred while uploading CSV to Firestore: {e}")
+
+
+def get_all_data_rows_from_firestore():
+    """
+    Retrieves all documents from the 'data' sub-collection in Firestore.
+
+    Returns:
+        list: A list of dictionaries containing all data from the 'data' sub-collection.
+        None: If an error occurs during the operation.
+    """
+    try:
+        # Access the 'ecu-data' collection and the 'sample_test' document
+        sample_test_ref = db.collection('ecu-data').document('sample_test')
+        
+        # Access the 'data' sub-collection
+        data_subcollection = sample_test_ref.collection('data')
+        
+        # Stream all documents in the 'data' sub-collection
+        all_data_docs = data_subcollection.stream()
+        
+        data_list = []
+        for doc in all_data_docs:
+            # Append the document data along with the document ID
+            doc_data = doc.to_dict()
+            doc_data['id'] = doc.id  # Include the document ID if needed
+            data_list.append(doc_data)
+        
+        return data_list
+
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return None
+
