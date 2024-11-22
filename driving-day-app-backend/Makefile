@@ -1,8 +1,12 @@
 .PHONY: setvenv runserver
 
+VENV_NAME = venv
+PYTHON = python3
+PIP = $(VENV_NAME)/bin/pip
+
 setvenv:
-	python3 -m venv venv
-	venv/bin/pip install -r requirements.txt
+	$(PYTHON) -m $(VENV_NAME) $(VENV_NAME)
+	$(PIP) install -r requirements.txt
 
 runserver: setvenv
-	venv/bin/python3 manage.py runserver
+	$(PIP) manage.py runserver
