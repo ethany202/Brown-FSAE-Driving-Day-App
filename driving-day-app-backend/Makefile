@@ -2,11 +2,11 @@
 
 VENV_NAME = venv
 PYTHON = python3
-PIP = $(VENV_NAME)/bin/pip
+SOURCE = $(VENV_NAME)/bin/$(PYTHON)
 
 setvenv:
 	$(PYTHON) -m $(VENV_NAME) $(VENV_NAME)
-	$(PIP) install -r requirements.txt
+	pip install -r requirements.txt
 
 runserver: setvenv
-	$(PIP) manage.py runserver
+	$(SOURCE) manage.py runserver
