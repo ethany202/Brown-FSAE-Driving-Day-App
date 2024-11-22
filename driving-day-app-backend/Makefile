@@ -1,10 +1,8 @@
-.PHONY:
+.PHONY: setvenv runserver
 
 setvenv:
-	python3 -m venv venv && \
-	source venv/bin/activate && \
-	pip install -r requirements.txt
+	python3 -m venv venv
+	venv/bin/pip install -r requirements.txt
 
 runserver: setvenv
-	cd fsae_backend && \
-	python3 manage.py runserver
+	venv/bin/python3 fsae_backend/manage.py runserver
