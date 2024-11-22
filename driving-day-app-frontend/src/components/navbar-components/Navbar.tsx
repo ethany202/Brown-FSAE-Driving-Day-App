@@ -5,8 +5,8 @@ import './Navbar.css';
 
 const Navbar = () => {
   return (
-    <div className="navbar-wrapper flex flex-col h-full text-white w-64 fixed" style={{ backgroundColor: "#786C6C" }}>
-      <div className="flex items-center space-x-4 mb-10">
+    <div className="navbar-wrapper" style={{ backgroundColor: "#786C6C" }}>
+      <div className="">
         <Link to="/"><img src={logo} alt="Logo" className="navbar-logo" /></Link>
       </div>
       <ul className="navbar-buttons">
@@ -31,9 +31,9 @@ const Navbar = () => {
           </Link>
         </li>
       </ul>
-      <div className="mt-auto">
+      {/* <div className="">
         <Link to="/logout" className="logout">Logout</Link>
-      </div>
+      </div> */}
     </div>
   );
 };

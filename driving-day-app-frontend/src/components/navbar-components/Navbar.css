@@ -4,11 +4,14 @@
 
 @layer components {
     .navbar-wrapper {
-        padding-bottom: 0.65rem;
+        /* padding-bottom: 0.65rem; */
+        width: 16rem;
+        position: fixed;
+        height: 100vh;
+        z-index: 10;
     }
 
     .navbar-logo {
-        /* height: 15px; */
         padding: 1rem;
     }
 
@@ -25,15 +28,7 @@
 
     .navbar-link:hover {
         background-color: #9D2062;
-        background-color: 0.2s;
-    }
-
-    .logout {
-        color: red;
-        padding: 0.65rem;
-    }
-
-    .logout:hover {
+        transition: 0.2s;
         color: white;
     }
 }
