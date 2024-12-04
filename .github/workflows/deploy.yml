@@ -1,0 +1,47 @@
+name: Deploy to PythonAnywhere
+
+on:
+  push:
+    branches:
+      - main  # Trigger deployment on push to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy to PythonAnywhere
+        env:
+          PA_USERNAME: ${{ secrets.PA_USERNAME }}
+          PA_API_TOKEN: ${{ secrets.PA_API_TOKEN }}
+          PA_DOMAIN_NAME: ${{ secrets.PA_DOMAIN_NAME }}
+          PA_VIRTUAL_ENV: ${{ secrets.PA_VIRTUAL_ENV }}
+          PA_PROJECT_DIR: ${{ secrets.PA_PROJECT_DIR }}
+        run: |
+          # Install HTTPie for API requests
+          sudo apt-get install httpie
+
+          # Pull the latest code on PythonAnywhere
+          http --form POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/consoles/" \
+            "Authorization: Token $PA_API_TOKEN" \
+            executable=python3 \
+            command="cd $PA_PROJECT_DIR && git pull"
+
+          # Install dependencies
+          http --form POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/consoles/" \
+            "Authorization: Token $PA_API_TOKEN" \
+            executable=python3 \
+            command="source $PA_VIRTUAL_ENV/bin/activate && pip install -r $PA_PROJECT_DIR/requirements.txt"
+
+          # Run migrations
+          http --form POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/consoles/" \
+            "Authorization: Token $PA_API_TOKEN" \
+            executable=python3 \
+            command="source $PA_VIRTUAL_ENV/bin/activate && python $PA_PROJECT_DIR/manage.py migrate"
+
+          # Reload the web app
+          http --form POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/webapps/$PA_DOMAIN_NAME/reload/" \
+            "Authorization: Token $PA_API_TOKEN"
