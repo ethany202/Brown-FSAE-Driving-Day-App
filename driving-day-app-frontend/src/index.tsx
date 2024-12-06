@@ -1,7 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import RunsSummary from './pages/run-summary/RunSummary';
 import RunDetail from './pages/run-page/RunDetail';
@@ -49,5 +48,3 @@ const root = ReactDOM.createRoot(
 root.render(
   <RouterProvider router={router} />
 );
-
-reportWebVitals();
