@@ -49,37 +49,6 @@ export const getRequest = async (content: any, path: string) => {
   }
 };
 
-// export const getDriverData = async (driverFilter: {
-//   height: number;
-//   weight: number;
-// }) => {
-//   const path = "driver-data";
-//   return await getRequest(driverFilter, path);
-// };
-
-// export const getAllDrivers = async (filters?: {
-//   height?: number;
-//   weight?: number;
-// }) => {
-//   const path = "driver-data/";
-//   const params = new URLSearchParams();
-
-//   if (filters?.height) {
-//     params.append("height", filters.height.toString());
-//   }
-//   if (filters?.weight) {
-//     params.append("weight", filters.weight.toString());
-//   }
-
-//   try {
-//     const response = await api.get(path, { params });
-//     return response.data.drivers || [];
-//   } catch (err) {
-//     console.error("Error fetching drivers:", err);
-//     return [];
-//   }
-// };
-
 export const getAllDrivers = async (filters?: {
   height?: number;
   weight?: number;
