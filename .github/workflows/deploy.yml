@@ -25,9 +25,8 @@ jobs:
           PA_PROJECT_DIR: ${{ secrets.PA_PROJECT_DIR }}
         run: |
           echo "Checking if secrets are set:"
-          set +x
-          echo $PA_API_TOKEN
-          set -x
+          echo "Token length: ${#PA_API_TOKEN}"
+          echo "Token prefix: ${PA_API_TOKEN:0:4}..."          
           [ -z "$PA_USERNAME" ] && echo "PA_USERNAME is not set" || echo "PA_USERNAME is set"
           [ -z "$PA_API_TOKEN" ] && echo "PA_API_TOKEN is not set" || echo "PA_API_TOKEN is set"
           [ -z "$PA_DOMAIN_NAME" ] && echo "PA_DOMAIN_NAME is not set" || echo "PA_DOMAIN_NAME is set"
