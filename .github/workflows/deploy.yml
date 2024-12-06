@@ -16,6 +16,11 @@ jobs:
       - name: Install curl
         run: sudo apt-get update && sudo apt-get install -y curl
 
+      - name: Debug git and paths
+        run: |
+          echo "Current Directory: $PA_PROJECT_DIR"
+          ls -la $PA_PROJECT_DIR
+          git log -1
       - name: Deploy to PythonAnywhere
         env:
           PA_USERNAME: ${{ secrets.PA_USERNAME }}
@@ -35,7 +40,7 @@ jobs:
           echo "Debug: Checking git branch and latest commit"
           curl -X POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/consoles/" \
             -H "Authorization: Token $PA_API_TOKEN" \
-            --form executable=python3 \
+            --form executable=python3 \ 
             --form command="cd $PA_PROJECT_DIR && git branch && git log -1"
 
           # Debugging: Check Python version and virtual environment
