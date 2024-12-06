@@ -3,7 +3,7 @@ name: Deploy to PythonAnywhere
 on:
   push:
     branches:
-      - main
+      - main  # Trigger deployment on push to the main branch
 
 jobs:
   deploy:
@@ -24,22 +24,40 @@ jobs:
           PA_VIRTUAL_ENV: ${{ secrets.PA_VIRTUAL_ENV }}
           PA_PROJECT_DIR: ${{ secrets.PA_PROJECT_DIR }}
         run: |
-          # Debugging paths
+          # Debugging: Check current PythonAnywhere directory structure
+          echo "Debug: Checking project directory structure on PythonAnywhere"
           curl -X POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/consoles/" \
             -H "Authorization: Token $PA_API_TOKEN" \
             --form executable=python3 \
-            --form command="cd $PA_PROJECT_DIR && ls -la && git log -1"
+            --form command="cd $PA_PROJECT_DIR && pwd && ls -la"
+
+          # Debugging: Check the current branch and latest commit
+          echo "Debug: Checking git branch and latest commit"
+          curl -X POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/consoles/" \
+            -H "Authorization: Token $PA_API_TOKEN" \
+            --form executable=python3 \
+            --form command="cd $PA_PROJECT_DIR && git branch && git log -1"
+
+          # Debugging: Check Python version and virtual environment
+          echo "Debug: Checking Python and virtual environment"
+          curl -X POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/consoles/" \
+            -H "Authorization: Token $PA_API_TOKEN" \
+            --form executable=python3 \
+            --form command="source $PA_VIRTUAL_ENV/bin/activate && python --version && which python && pip list"
 
           # Pull latest code and install dependencies
+          echo "Pulling latest code and installing dependencies"
           curl -X POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/tasks/" \
             -H "Authorization: Token $PA_API_TOKEN" \
             --form command="cd $PA_PROJECT_DIR && git fetch origin main && git reset --hard origin/main && source $PA_VIRTUAL_ENV/bin/activate && pip install -r requirements.txt"
 
           # Run migrations
+          echo "Running database migrations"
           curl -X POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/tasks/" \
             -H "Authorization: Token $PA_API_TOKEN" \
             --form command="source $PA_VIRTUAL_ENV/bin/activate && python $PA_PROJECT_DIR/manage.py migrate"
 
           # Reload the web app
+          echo "Reloading the web app"
           curl -X POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/webapps/$PA_DOMAIN_NAME/reload/" \
             -H "Authorization: Token $PA_API_TOKEN"
