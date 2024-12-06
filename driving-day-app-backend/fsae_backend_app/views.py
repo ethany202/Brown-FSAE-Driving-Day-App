@@ -5,7 +5,7 @@ from .firebase.firestore import add_user
 from .ld_parser.main import process_and_upload_ld_files
 import json
 
-def homepage(request):
+def homepage():
     return JsonResponse({
         "message": "Welcome to the FSAE Backend!",
         "status": "success"
