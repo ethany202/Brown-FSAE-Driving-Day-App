@@ -27,4 +27,9 @@ code {
     font-family: "Geist Mono", monospace;
     font-size: 16px;
   }
+
+  h1 {
+    font-family: "Geist Mono", monospace;
+    font-size: 48px !important;
+  }
 }
