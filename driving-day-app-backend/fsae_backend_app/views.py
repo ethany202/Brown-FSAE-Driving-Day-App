@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
-from .firebase.firestore import add_user
+from .firebase.firestore import add_user, get_all_users
 from .ld_parser.main import process_and_upload_ld_files
 import json
 
@@ -12,7 +12,7 @@ def homepage():
     })
 
 @api_view(['POST'])
-def driver_profiles(request):
+def add_driver(request):
     """
     Handles user registration via a POST request.
 
@@ -35,6 +35,40 @@ def driver_profiles(request):
         return JsonResponse({"message": "User registration successful!"}, status=200)
     else:
         return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
+
+@api_view(['GET'])
+def get_driver_profiles(request):
+    """
+    Get all drivers with optional height/weight filtering
+    """
+    if request.method == 'GET':
+        try:
+            height = request.GET.get('height')
+            weight = request.GET.get('weight')
+            
+            filters = {}
+            if height:
+                filters['height'] = float(height)
+            if weight:
+                filters['weight'] = float(weight)
+            
+            drivers = get_all_users(filters=filters if filters else None)
+            
+            return JsonResponse({
+                "drivers": drivers,
+                "message": "Drivers retrieved successfully"
+            }, status=200)
+            
+        except Exception as e:
+            return JsonResponse({
+                "error": str(e),
+                "message": "Error retrieving drivers"
+            }, status=400)
+            
+    return JsonResponse({
+        "error": "Invalid request method. Use GET."
+    }, status=400)
+
 
 
 @api_view(['GET'])
