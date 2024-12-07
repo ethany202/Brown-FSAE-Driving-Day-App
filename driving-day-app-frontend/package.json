@@ -15,6 +15,8 @@
     "chart.js": "^4.4.6",
     "dotenv": "^16.4.5",
     "filepond": "^4.32.5",
+    "filepond-plugin-file-validate-size": "^2.2.8",
+    "filepond-plugin-file-validate-type": "^1.2.9",
     "filepond-plugin-image-preview": "^4.6.12",
     "firebase": "^11.0.1",
     "react": "^18.3.1",

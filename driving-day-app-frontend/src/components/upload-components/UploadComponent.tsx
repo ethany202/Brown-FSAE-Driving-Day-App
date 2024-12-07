@@ -1,33 +1,64 @@
 import React, { useState } from 'react';
 import { FilePond, registerPlugin } from 'react-filepond';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 import 'filepond/dist/filepond.min.css';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+import { postFiles } from '../../api/api';
 
-interface UploadComponentProps {
-    maxFiles: number,
-    fileDesc: string
-}
+registerPlugin(FilePondPluginImagePreview);
+registerPlugin(FilePondPluginFileValidateType);
+registerPlugin(FilePondPluginFileValidateSize);
 
-export default function UploadComponent({ maxFiles, fileDesc }: UploadComponentProps) {
+export default function UploadComponent() {
 
-    const [uploadedFiles, setUploadedFiles] = useState<any>([])
+    const [uploadedData, setUploadedData] = useState<any>()
+    const [uploadedMedia, setUploadedMedia] = useState<any>([])
 
-    registerPlugin(FilePondPluginImagePreview);
+    const submitUpload = async () => {
+        const fileData = {
+            dataFile: uploadedData,
+            mediaFiles: uploadedMedia
+        }
+        // const result = await postFiles(fileData)
+
+        window.location.href = "/run-data"
+    }
 
     return (
-        <div className="w-3/4 py-4 justify-center">
-            <div className="text-center p-2">
-                <p>{fileDesc}</p>
+        <div className="flex justify-center flex-col items-center">
+            <div className="w-3/4 py-4 justify-center">
+                <div className="text-center p-2">
+                    <p>Upload CSV or LD File</p>
+                </div>
+                <FilePond
+                    allowMultiple={true}
+                    onupdatefiles={setUploadedData}
+                    maxFiles={1}
+                    name="files" />
             </div>
-            <FilePond
-                allowMultiple={true}
-                onupdatefiles={setUploadedFiles}
-                maxFiles={maxFiles}
-                name="files"
-                imagePreviewHeight={192}
-                imagePreviewMaxHeight={228}
-                acceptedFileTypes={["ld", "csv"]} />
+
+            <div className="w-3/4 py-4 justify-center">
+                <div className="text-center p-2">
+                    <p>Upload Media Files</p>
+                </div>
+                <FilePond
+                    allowMultiple={true}
+                    onupdatefiles={setUploadedMedia}
+                    maxFiles={5}
+                    name="files"
+                    maxFileSize={"10MB"}
+                    imagePreviewHeight={192}
+                    imagePreviewMaxHeight={228}
+                    acceptedFileTypes={["image/*", "video/*"]} />
+            </div>
+
+            <div className="flex justify-center py-8">
+                <button onClick={submitUpload}>
+                    <p>Upload Data</p>
+                </button>
+            </div>
         </div>
     )
 }

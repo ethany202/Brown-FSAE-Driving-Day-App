@@ -34,6 +34,15 @@ export const postDriverProfile = async (userData: {
     return (await postRequest(userData, path))
 };
 
+export const postFiles = async (fileData: {
+    runId?: string,
+    dataFile: File,
+    mediaFiles: File[]
+}) => {
+    const path = 'upload-files/';
+    return (await postRequest(fileData, path))
+}
+
 /**
  * 
  * @param content: JSON data, consisting of the JSON content that should be sent to the backend upon making a GET request
