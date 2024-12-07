@@ -95,7 +95,7 @@ export default function UploadComponent() {
                     acceptedFileTypes={["image/*", "video/*"]} />
             </div>
 
-            <div className="grid grid-cols-2 w-3/4 justify-center items-center">
+            <div className="grid grid-cols-2 w-3/4 justify-center items-center py-8">
                 <div className="upload-metadata flex justify-center flex-col items-center">
                     <p>
                         <input placeholder='Run Month' onChange={(event) => setRunMonth(event.target.value)}></input>
@@ -123,7 +123,7 @@ export default function UploadComponent() {
             </div>
 
 
-            <div className="flex justify-center py-8">
+            <div className="flex justify-center py-14">
                 <button onClick={submitUpload}>
                     <p>Upload Data</p>
                 </button>
