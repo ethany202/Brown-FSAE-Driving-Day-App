@@ -1,0 +1,80 @@
+name: Deploy to PythonAnywhere
+
+on:
+  push:
+    branches:
+      - main  # Trigger deployment on push to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install curl
+        run: sudo apt-get update && sudo apt-get install -y curl
+
+      - name: Verify Secrets
+        env:
+          PA_USERNAME: ${{ secrets.PA_USERNAME }}
+          PA_API_TOKEN: ${{ secrets.PA_API_TOKEN }}
+          PA_DOMAIN_NAME: ${{ secrets.PA_DOMAIN_NAME }}
+          PA_VIRTUAL_ENV: ${{ secrets.PA_VIRTUAL_ENV }}
+          PA_PROJECT_DIR: ${{ secrets.PA_PROJECT_DIR }}
+        run: |
+          echo "Checking if secrets are set"
+          echo "Token length: ${#PA_API_TOKEN}"
+          echo "Token prefix: ${PA_API_TOKEN:0:4}..."          
+          [ -z "$PA_USERNAME" ] && echo "PA_USERNAME is not set" || echo "PA_USERNAME is set"
+          [ -z "$PA_API_TOKEN" ] && echo "PA_API_TOKEN is not set" || echo "PA_API_TOKEN is set"
+          [ -z "$PA_DOMAIN_NAME" ] && echo "PA_DOMAIN_NAME is not set" || echo "PA_DOMAIN_NAME is set"
+          [ -z "$PA_VIRTUAL_ENV" ] && echo "PA_VIRTUAL_ENV is not set" || echo "PA_VIRTUAL_ENV is set"
+          [ -z "$PA_PROJECT_DIR" ] && echo "PA_PROJECT_DIR is not set" || echo "PA_PROJECT_DIR is set"
+
+      - name: Deploy to PythonAnywhere
+        env:
+          PA_USERNAME: ${{ secrets.PA_USERNAME }}
+          PA_API_TOKEN: ${{ secrets.PA_API_TOKEN }}
+          PA_DOMAIN_NAME: ${{ secrets.PA_DOMAIN_NAME }}
+          PA_VIRTUAL_ENV: ${{ secrets.PA_VIRTUAL_ENV }}
+          PA_PROJECT_DIR: ${{ secrets.PA_PROJECT_DIR }}
+        run: |
+          # Debugging: Check current PythonAnywhere directory structure
+          echo "Debug: Checking project directory structure on PythonAnywhere"
+          curl -X POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/consoles/" \
+            -H "Authorization: Token $PA_API_TOKEN" \
+            --form executable=python3 \
+            --form command="cd $PA_PROJECT_DIR && pwd && ls -la"
+
+          # Debugging: Check the current branch and latest commit
+          echo "Debug: Checking git branch and latest commit"
+          curl -X POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/consoles/" \
+            -H "Authorization: Token $PA_API_TOKEN" \
+            --form executable=python3 \ 
+            --form command="cd $PA_PROJECT_DIR && git branch && git log -1"
+
+          # Debugging: Check Python version and virtual environment
+          echo "Debug: Checking Python and virtual environment"
+          curl -X POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/consoles/" \
+            -H "Authorization: Token $PA_API_TOKEN" \
+            --form executable=python3 \
+            --form command="source $PA_VIRTUAL_ENV/bin/activate && python --version && which python && pip list"
+
+          # Pull latest code and install dependencies
+          echo "Pulling latest code and installing dependencies"
+          curl -X POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/tasks/" \
+            -H "Authorization: Token $PA_API_TOKEN" \
+            --form command="cd $PA_PROJECT_DIR && git fetch origin main && git reset --hard origin/main && source $PA_VIRTUAL_ENV/bin/activate && pip install -r requirements.txt"
+
+          # Run migrations
+          echo "Running database migrations"
+          curl -X POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/tasks/" \
+            -H "Authorization: Token $PA_API_TOKEN" \
+            --form command="source $PA_VIRTUAL_ENV/bin/activate && python $PA_PROJECT_DIR/manage.py migrate"
+
+          # Reload the web app
+          echo "Reloading the web app"
+          curl -X POST "https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/webapps/$PA_DOMAIN_NAME/reload/" \
+            -H "Authorization: Token $PA_API_TOKEN"
