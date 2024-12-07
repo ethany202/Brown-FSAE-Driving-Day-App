@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { FilePond, registerPlugin } from 'react-filepond';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
@@ -6,6 +6,9 @@ import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 import 'filepond/dist/filepond.min.css';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 import { postFiles } from '../../api/api';
+import { ActualFileObject, FilePondFile } from 'filepond';
+
+import axios from 'axios';
 
 registerPlugin(FilePondPluginImagePreview);
 registerPlugin(FilePondPluginFileValidateType);
@@ -13,17 +16,26 @@ registerPlugin(FilePondPluginFileValidateSize);
 
 export default function UploadComponent() {
 
-    const [uploadedData, setUploadedData] = useState<any>()
+    const [uploadedData, setUploadedData] = useState<File>()
     const [uploadedMedia, setUploadedMedia] = useState<any>([])
 
-    const submitUpload = async () => {
-        const fileData = {
-            dataFile: uploadedData,
-            mediaFiles: uploadedMedia
+    const handleDataFile = (newFiles: any) => {
+        if (newFiles.length > 0) {
+            setUploadedData(newFiles[0].file as File)
         }
-        // const result = await postFiles(fileData)
+    }
 
-        window.location.href = "/run-data"
+    const submitUpload = async () => {
+
+        if (uploadedData) {
+            // Edit to include media files
+            const formData = new FormData();
+            formData.append('data_file', uploadedData);
+
+            const result = await postFiles(formData)
+            console.log(result)
+        }
+        //window.location.href = "/run-data"
     }
 
     return (
@@ -34,9 +46,10 @@ export default function UploadComponent() {
                 </div>
                 <FilePond
                     allowMultiple={true}
-                    onupdatefiles={setUploadedData}
+                    onupdatefiles={handleDataFile}
                     maxFiles={1}
-                    name="files" />
+                    name="files"
+                    server={null} />
             </div>
 
             <div className="w-3/4 py-4 justify-center">

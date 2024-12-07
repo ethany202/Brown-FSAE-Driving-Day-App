@@ -71,8 +71,8 @@ def get_driver_profiles(request):
 
 
 
-@api_view(['GET'])
-def upload_ld(request):
+@api_view(['POST'])
+def upload_files(request):
     """
     Handle the GET request to upload and process LD files.
 
@@ -94,8 +94,15 @@ def upload_ld(request):
         GET /api/upload-data/ -> Triggers the upload process and returns success status.
 
     """
-    if request.method == 'GET':
-        process_and_upload_ld_files()
+    if request.method == 'POST':
+
+        # Pull LD file
+        all_files = request.FILES
+        data_file = all_files.get('data_file')
+        print(data_file)
+
+        # Pull media files
+        # process_and_upload_ld_files()
         print("Successfully connected!")
         return JsonResponse({"message": "Successfully uploaded LD data to database!"}, status=200)
     else:
