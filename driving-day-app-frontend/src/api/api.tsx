@@ -1,4 +1,5 @@
 import axios from "axios";
+import { AxiosError } from "axios";
 
 const api = axios.create({
     baseURL: `${process.env.REACT_APP_BACKEND_URL}/api/`,
@@ -17,9 +18,10 @@ export const postRequest = async (content: any, path: string) => {
     try {
         const response = await api.post(path, content);
         return response;
-    } catch (err) {
-        console.error(err);
-        return {};
+    } catch (error) {
+        console.error(error);
+        const axiosError = error as AxiosError;
+        return { status: axiosError.status }
     }
 };
 
@@ -48,12 +50,11 @@ export const postFiles = async (formData: FormData) => {
                 'Content-Type': 'multipart/form-data'
             }
         });
-
-        console.log('File uploaded successfully:', response.data);
         return response;
     } catch (error) {
         console.error('Error uploading file:', error);
-        return {}
+        const axiosError = error as AxiosError;
+        return { status: axiosError.status }
     }
 }
 
@@ -67,9 +68,10 @@ export const getRequest = async (content: any, path: string) => {
     try {
         const response = await api.get(path, content);
         return response;
-    } catch (err) {
-        console.error(err);
-        return {};
+    } catch (error) {
+        console.error(error);
+        const axiosError = error as AxiosError;
+        return { status: axiosError.status }
     }
 };
 
@@ -91,6 +93,9 @@ export const getAllDrivers = async (filters?: {
         const response = (await getRequest({ params }, path)) as {
             data: { drivers: any[] };
         };
+
+        console.log(response)
+
         return response.data?.drivers || [];
     } catch (err) {
         console.error("Error fetching drivers:", err);

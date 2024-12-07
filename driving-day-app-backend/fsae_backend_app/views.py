@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from .firebase.firestore import add_user, get_all_users
-from .ld_parser.main import process_and_upload_ld_files
+from .ld_parser.main import process_and_upload_ld_files, process_and_upload_inputted_ld_file
 import json
 
 def homepage():
@@ -96,13 +96,27 @@ def upload_files(request):
     """
     if request.method == 'POST':
 
+        # Pull Metadata:
+        driver_id = request.POST.get('driverId')
+        run_month = request.POST.get('runMonth')
+        run_date = request.POST.get('runDate')
+        run_year = request.POST.get('runYear')
+        run_title = request.POST.get('runTitle')
+
+        print(request.POST)
+
         # Pull LD file
         all_files = request.FILES
         data_file = all_files.get('data_file')
-        print(data_file)
 
-        # Pull media files
-        # process_and_upload_ld_files()
+        # Pull Media Files
+        media_files = list(all_files.keys())
+        media_files.pop(0)
+
+        # if data_file is None:
+        #     return JsonResponse({"error: No LD file was uploaded"}, status=400)
+        
+        process_and_upload_inputted_ld_file(data_file, run_month, run_date, run_year, run_title)
         print("Successfully connected!")
         return JsonResponse({"message": "Successfully uploaded LD data to database!"}, status=200)
     else:
