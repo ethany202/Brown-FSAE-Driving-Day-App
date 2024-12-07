@@ -6,6 +6,7 @@ import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 import 'filepond/dist/filepond.min.css';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 import { postFiles } from '../../api/api';
+import './UploadComponent.css';
 
 registerPlugin(FilePondPluginImagePreview);
 registerPlugin(FilePondPluginFileValidateType);
@@ -16,10 +17,11 @@ export default function UploadComponent() {
     const [uploadedData, setUploadedData] = useState<File>()
     const [uploadedMedia, setUploadedMedia] = useState<File[]>([])
 
-    const [runMonth, setRunMonth] = useState<string>("1")
-    const [runDate, setRunDate] = useState<string>("1")
-    const [runYear, setRunYear] = useState<string>("2024")
-    const [runTitle, setRunTitle] = useState<string>("Shifting-Test-1")
+    const [runMonth, setRunMonth] = useState<string>("")
+    const [runDate, setRunDate] = useState<string>("")
+    const [runYear, setRunYear] = useState<string>("")
+    const [runTitle, setRunTitle] = useState<string>("")
+    const [driverId, setDriverId] = useState<string>("")
 
     const handleDataFile = (newFiles: any) => {
         if (newFiles.length > 0) {
@@ -38,6 +40,7 @@ export default function UploadComponent() {
     const submitUpload = async () => {
         const formData = new FormData();
 
+        // TODO: Do not submit unless LD file and Metadata is filled out
         if (uploadedData) {
             formData.append('data_file', uploadedData);
         }
@@ -50,6 +53,7 @@ export default function UploadComponent() {
         formData.append("runDate", runDate)
         formData.append("runYear", runYear)
         formData.append("runTitle", runTitle)
+        formData.append("driverId", driverId)
 
         // TODO: Set screen to be unclickable while file is uploading
 
@@ -90,6 +94,34 @@ export default function UploadComponent() {
                     imagePreviewMaxHeight={228}
                     acceptedFileTypes={["image/*", "video/*"]} />
             </div>
+
+            <div className="grid grid-cols-2 w-3/4 justify-center items-center">
+                <div className="upload-metadata flex justify-center flex-col items-center">
+                    <p>
+                        <input placeholder='Run Month' onChange={(event) => setRunMonth(event.target.value)}></input>
+                    </p>
+                    <p>
+                        <input placeholder='Run Date' onChange={(event) => setRunDate(event.target.value)}></input>
+                    </p>
+                    <p>
+                        <input placeholder='Run Year' onChange={(event) => setRunYear(event.target.value)}></input>
+                    </p>
+                </div>
+                <div className="upload-metadata flex justify-center flex-col items-center">
+                    <p>
+                        <input placeholder='Run Title' onChange={(event) => setRunTitle(event.target.value)}></input>
+                    </p>
+                    <p>
+                        <select onChange={(event) => setDriverId(event.target.value)}>
+                            <option value="" className="text-gray-600">Select Driver</option>
+                            <option value="option1">John Doe</option>
+                            <option value="option2">Test Doe</option>
+                            <option value="option3">Sally Sam</option>
+                        </select>
+                    </p>
+                </div>
+            </div>
+
 
             <div className="flex justify-center py-8">
                 <button onClick={submitUpload}>

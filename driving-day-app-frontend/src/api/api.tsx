@@ -90,6 +90,7 @@ export const getAllDrivers = async (filters?: {
     }
 
     try {
+        // TODO: Revise to match with existing API calls
         const response = (await getRequest({ params }, path)) as {
             data: { drivers: any[] };
         };

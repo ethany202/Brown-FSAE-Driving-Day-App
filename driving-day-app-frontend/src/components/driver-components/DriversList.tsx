@@ -47,7 +47,7 @@ const DriversList = () => {
   }
 
   return (
-    <div className="w-full bg-white rounded-lg shadow-sm p-6">
+    <div className="w-full bg-white rounded-lg shadow-sm p-8">
       <div className="mb-6">
         <h2 className="text-2xl font-semibold">Driver Profiles</h2>
       </div>
