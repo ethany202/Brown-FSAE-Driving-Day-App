@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
-from .firebase.firestore import add_user, get_all_users
+from .firebase.firestore import add_driver, get_all_drivers
 from .ld_parser.main import process_and_upload_ld_files, process_and_upload_inputted_ld_file
 import json
 
@@ -12,7 +12,7 @@ def homepage():
     })
 
 @api_view(['POST'])
-def add_driver(request):
+def add_driver_call(request):
     """
     Handles user registration via a POST request.
 
@@ -31,13 +31,13 @@ def add_driver(request):
     if request.method == 'POST':
         print("Successfully connected!")
         data = json.loads(request.body.decode('utf-8'))
-        add_user(data)
+        add_driver_profile(data)
         return JsonResponse({"message": "User registration successful!"}, status=200)
     else:
         return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
 
 @api_view(['GET'])
-def get_driver_profiles(request):
+def get_all_drivers_call(request):
     """
     Get all drivers with optional height/weight filtering
     """
@@ -52,7 +52,7 @@ def get_driver_profiles(request):
             if weight:
                 filters['weight'] = float(weight)
             
-            drivers = get_all_users(filters=filters if filters else None)
+            drivers = get_all_drivers(filters=filters if filters else None)
             
             return JsonResponse({
                 "drivers": drivers,
@@ -72,7 +72,7 @@ def get_driver_profiles(request):
 
 
 @api_view(['POST'])
-def upload_files(request):
+def upload_files_call(request):
     """
     Handle the GET request to upload and process LD files.
 
@@ -102,8 +102,6 @@ def upload_files(request):
         run_date = request.POST.get('runDate')
         run_year = request.POST.get('runYear')
         run_title = request.POST.get('runTitle')
-
-        print(request.POST)
 
         # Pull LD file
         all_files = request.FILES

@@ -1,25 +1,18 @@
-// // DriversList.tsx
 import React, { useState, useEffect } from "react";
 import { getAllDrivers, postDriverProfile } from "../../api/api";
-import { Driver } from "./Driver";
+import { Driver } from "../../utils/Driver";
 import { SpecificDriverProfile } from "./SpecificDriverProfile";
 
 const DriversList = () => {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDrivers = async () => {
-      try {
-        const response = await getAllDrivers();
-        setDrivers(response);
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to fetch drivers. Please try again later.");
-        setLoading(false);
-      }
+      const response = await getAllDrivers();
+      setDrivers(response);
+      setLoading(false);
     };
 
     fetchDrivers();
@@ -53,12 +46,6 @@ const DriversList = () => {
       </div>
 
       <div className="space-y-4">
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md mb-4">
-            {error}
-          </div>
-        )}
-
         <div className="grid grid-cols-2 gap-8">
           <div className="drivers-list">
             <table className="w-full border-collapse">
@@ -77,7 +64,7 @@ const DriversList = () => {
                     onClick={() => setSelectedDriver(driver)}
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
                   >
-                    <td className="border p-4 text-blue-600">
+                    <td className="border p-4 text-[#24a0ed]">
                       {`${driver.firstName} ${driver.lastName}`}
                     </td>
                     <td className="border p-4">{driver.height}</td>

@@ -15,9 +15,9 @@ from firebase_admin import firestore
 
 db = firestore.client()
 
-def add_user(data):
+def add_driver(data):
     """
-    Adds a user document to the 'driver-profiles' collection in Firestore.
+    Adds a driver document to the 'driver-profiles' collection in Firestore.
 
     Args:
         data (dict): A dictionary containing user information to be stored.
@@ -55,7 +55,7 @@ def add_user(data):
         print(f"An unexpected error occurred: {e}")
         return None
 
-def get_all_users(filters=None):
+def get_all_drivers(filters=None):
     """
     Retrieves all users from the 'driver-profiles' collection with optional filtering.
     
@@ -76,13 +76,13 @@ def get_all_users(filters=None):
         
         docs = query.stream()
         
-        users = []
+        drivers = []
         for doc in docs:
-            user_data = doc.to_dict()
-            user_data['id'] = doc.id
-            users.append(user_data)
-            
-        return users
+            driver_data = doc.to_dict()
+            driver_data['driverId'] = doc.id
+            drivers.append(driver_data)
+                        
+        return drivers
     
     except Exception as e:
         print(f"An error occurred while retrieving users: {e}")

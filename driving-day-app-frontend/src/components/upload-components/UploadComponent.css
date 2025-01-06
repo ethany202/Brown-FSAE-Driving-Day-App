@@ -1,16 +1,17 @@
-.upload-metadata input {
-    margin: 0.75rem 0;
-    background-color: white;
-    border: black 0.1rem solid;
+.upload-metadata input,
+.upload-metadata select {
     border-radius: 0.25rem;
-    color: #24a0ed;
+    margin: 1.5rem 0;
     padding: 0.2rem 0.5rem;
+    border: lightgrey 1px solid;
+    color: black;
 }
 
-.upload-metadata select {
-    margin: 0.75rem 0;
-    padding: 0.2rem 0.5rem;
-    border: black 0.1rem solid;
-    border-radius: 0.25rem;
-    /* color: #24a0ed; */
+.upload-metadata input::placeholder {
+    color: black;
+}
+
+
+.driver-option {
+    color: #24a0ed;
 }

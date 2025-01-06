@@ -36,11 +36,6 @@ export const postDriverProfile = async (userData: {
     return await postRequest(userData, path);
 };
 
-//fileData: {
-//     runId?: string,
-//     dataFile: File,
-//     mediaFiles: File[]
-// }
 
 export const postFiles = async (formData: FormData) => {
     const path = 'upload-files/';
@@ -94,9 +89,6 @@ export const getAllDrivers = async (filters?: {
         const response = (await getRequest({ params }, path)) as {
             data: { drivers: any[] };
         };
-
-        console.log(response)
-
         return response.data?.drivers || [];
     } catch (err) {
         console.error("Error fetching drivers:", err);
