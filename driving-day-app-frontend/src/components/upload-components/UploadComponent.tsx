@@ -22,12 +22,11 @@ export default function UploadComponent() {
     const [uploadedData, setUploadedData] = useState<File>()
     const [uploadedMedia, setUploadedMedia] = useState<File[]>([])
 
-    // const [runMonth, setRunMonth] = useState<string>("")
-    // const [runDate, setRunDate] = useState<string>("")
-    // const [runYear, setRunYear] = useState<string>("")
-    const [startDate, setStartDate] = useState<Date | null>(new Date());
+    const [runDate, setRunDate] = useState<Date | null>(new Date());
     const [runTitle, setRunTitle] = useState<string>("")
     const [driverId, setDriverId] = useState<string>("")
+
+    const [uploading, setUploading] = useState<boolean>(false)
 
     const handleDataFile = (newFiles: any) => {
         if (newFiles.length > 0) {
@@ -44,27 +43,27 @@ export default function UploadComponent() {
     }
 
     const submitUpload = async () => {
-        const formData = new FormData();
+        if (!uploadedData || !runTitle || !runDate || !driverId) {
+            return;
+        }
+        setUploading(true)
 
-        // TODO: Do not submit unless LD file and Metadata is filled out
-        if (uploadedData) {
-            formData.append('data_file', uploadedData);
-        }
-        if (uploadedMedia) {
-            for (var i = 0; i < uploadedMedia.length; i++) {
-                formData.append(`media_file_${i}`, uploadedMedia[i])
-            }
-        }
-        // formData.append("runMonth", runMonth)
-        // formData.append("runDate", runDate)
-        // formData.append("runYear", runYear)
+        const formData = new FormData();
+        formData.append("runMonth", `${runDate.getMonth() + 1}`)
+        formData.append("runDate", `${runDate.getDate()}`)
+        formData.append("runYear", `${runDate.getFullYear()}`)
         formData.append("runTitle", runTitle)
         formData.append("driverId", driverId)
 
-        // TODO: Set screen to be unclickable while file is uploading
+        formData.append('data_file', uploadedData);
+        for (var i = 0; i < uploadedMedia.length; i++) {
+            formData.append(`media_file_${i}`, uploadedMedia[i])
+        }
 
         const result = await postFiles(formData)
-        if (result.status == 200) {
+        setUploading(false)
+
+        if (result.status === 200) {
             window.location.href = "/run-data"
         }
         else {
@@ -116,14 +115,20 @@ export default function UploadComponent() {
                 <div className="upload-metadata flex flex-col items-center w-full">
 
                     <p>
-                        <input placeholder='Enter run title...' onChange={(event) => setRunTitle(event.target.value)}></input>
+                        <input
+                            className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            placeholder='Enter run title...'
+                            onChange={(event) => setRunTitle(event.target.value)}>
+                        </input>
                     </p>
+
                     <DatePicker
-                        selected={startDate}
-                        onChange={(date) => setStartDate(date)}
+                        className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        selected={runDate}
+                        onChange={(date) => setRunDate(date)}
                     />
                     <p>
-                        <select onChange={(event) => setDriverId(event.target.value)}>
+                        <select className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent" onChange={(event) => setDriverId(event.target.value)}>
                             <option value="">
                                 Select Driver
                             </option>
@@ -145,9 +150,15 @@ export default function UploadComponent() {
 
 
             <div className="flex justify-center py-10">
-                <button onClick={submitUpload}>
-                    <p>Upload Data</p>
-                </button>
+                {uploading
+                    ? <button disabled={true} className="disabled-upload-button opacity-70">
+                        <p>Uploading...</p>
+                    </button>
+                    : <button onClick={submitUpload} className="upload-button">
+                        <p>Upload Data</p>
+                    </button>
+                }
+
             </div>
         </div >
     )

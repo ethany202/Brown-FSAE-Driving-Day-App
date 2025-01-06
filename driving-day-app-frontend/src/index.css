@@ -17,16 +17,6 @@ code {
     monospace;
 }
 
-input:focus {
-  outline-width: 0;
-}
-
-input:focus,
-select:focus {
-  -moz-box-shadow: 0 2px 5px 0 black;
-  -webkit-box-shadow: 0 2px 5px 0 black;
-}
-
 @layer base {
   /* p {
     font-family: "Geist Mono", monospace;

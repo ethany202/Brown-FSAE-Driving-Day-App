@@ -24,18 +24,6 @@
         margin-left: 16rem;
     }
 
-    button {
-        background-color: #24a0ed;
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-    }
-
-    button:hover {
-        animation: fadeIn 0.5s;
-        opacity: 0.75;
-    }
-
     p {
         font-family: "Geist Mono", monospace;
         font-size: 16px;
