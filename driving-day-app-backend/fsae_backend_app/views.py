@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from .firebase.firestore import add_user, get_all_users
 from .ld_parser.main import process_and_upload_ld_files
 import json
+from .firebase.firestore import get_all_data_rows_from_firestore
 
 def homepage(request):
     return JsonResponse({
@@ -98,4 +99,39 @@ def upload_ld(request):
         print("Successfully connected!")
         process_and_upload_ld_files()
         return JsonResponse({"message": "Successfully uploaded LD data to database!"}, status=200)
-    return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
+    else:
+        return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
+    
+@api_view(['GET'])
+def get_all_data(request):
+    """
+    Handle the GET request to retrieve all data from Firestore.
+
+    This view function retrieves all data from Firestore and returns it as a JSON response.
+
+    Request Method:
+        GET: Retrieves all data from Firestore.
+
+    Returns:
+        JsonResponse: A JSON response containing all data from Firestore.
+
+    Example:
+        GET /api/get-all-data/ -> Retrieves all data from Firestore.
+
+    """
+    try:
+        if request.method == 'GET':
+            # Call the function to retrieve data from Firestore
+            data = get_all_data_rows_from_firestore()
+
+            # Check if data retrieval was successful
+            if data is not None:
+                return JsonResponse({"data": data, "message": "Successfully retrieved all data from Firestore!"}, status=200)
+            else:
+                return JsonResponse({"error": "Failed to fetch data from Firestore."}, status=500)
+        else:
+            return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
+
+    except Exception as e:
+        # Catch and handle unexpected errors
+        return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)

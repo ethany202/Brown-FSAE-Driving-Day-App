@@ -1,6 +1,5 @@
 import React from "react";
 import RunBubble from "../../components/run-components/RunBubble";
-import Navbar from "../../components/navbar-components/Navbar";
 import { useNavigate } from "react-router-dom";
 
 interface Metric {

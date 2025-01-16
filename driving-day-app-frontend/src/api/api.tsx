@@ -12,7 +12,7 @@ const api = axios.create({
  * @param path: string, corresponding to the path for the POST request
  * @returns: JSON content, representing the result of the POST request
  */
-export const postRequest = async (content: any, path: string) => {
+export const postRequest = async (path: string, content: any) => {
   try {
     const response = await api.post(path, content);
     return response;
@@ -30,18 +30,19 @@ export const postDriverProfile = async (userData: {
   pedalBoxPos: number;
 }) => {
   const path = "driver-profiles/";
-  return await postRequest(userData, path);
+  return await postRequest(path, userData);
 };
 
+
 /**
- *
- * @param content: JSON data, consisting of the JSON content that should be sent to the backend upon making a GET request
- * @param path: string, corresponding to the path for the GET request
- * @returns: JSON content, representing the result of the GET request
+ * 
+ * @param path 
+ * @param content 
+ * @returns 
  */
-export const getRequest = async (content: any, path: string) => {
+export const getRequest = async (path: string, searchParams: URLSearchParams) => {
   try {
-    const response = await api.get(path, content);
+    const response = await api.get(path, { searchParams });
     return response;
   } catch (err) {
     console.error(err);
@@ -64,7 +65,7 @@ export const getAllDrivers = async (filters?: {
   }
 
   try {
-    const response = (await getRequest({ params }, path)) as {
+    const response = (await getRequest(path, params)) as {
       data: { drivers: any[] };
     };
     return response.data?.drivers || [];
@@ -77,14 +78,19 @@ export const getAllDrivers = async (filters?: {
 // TODO: Implement pagination/filtering
 export const getRunData = async (runFilter: {
   date: Date;
-  driverID: number;
+  driverId: number;
 }) => {
   const path = "run-data";
-  return await getRequest(runFilter, path);
+  const params = new URLSearchParams({
+    date: runFilter.date.toString(),
+    driverId: runFilter.driverId.toString()
+  });
+
+  return await getRequest(path, params);
+
 };
 
-// Pull data specifically for a given RUN
-export const getRunByID = async (runFilter: { runFilter: number }) => {
-  const path = "specific-run";
-  return await getRequest(runFilter, path);
+export const getAllData = async () => {
+  const path = 'get-all-data/';
+  return await getRequest(path, new URLSearchParams());
 };
