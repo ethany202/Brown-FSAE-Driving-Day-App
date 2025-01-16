@@ -16,11 +16,21 @@ jobs:
       - name: Install curl
         run: sudo apt-get update && sudo apt-get install -y curl
 
-      - name: Debug git and paths
+      - name: Verify Secrets
+        env:
+          PA_USERNAME: ${{ secrets.PA_USERNAME }}
+          PA_API_TOKEN: ${{ secrets.PA_API_TOKEN }}
+          PA_DOMAIN_NAME: ${{ secrets.PA_DOMAIN_NAME }}
+          PA_VIRTUAL_ENV: ${{ secrets.PA_VIRTUAL_ENV }}
+          PA_PROJECT_DIR: ${{ secrets.PA_PROJECT_DIR }}
         run: |
-          echo "Current Directory: $PA_PROJECT_DIR"
-          ls -la $PA_PROJECT_DIR
-          git log -1
+          echo "Checking if secrets are set"      
+          [ -z "$PA_USERNAME" ] && echo "PA_USERNAME is not set" || echo "PA_USERNAME is set"
+          [ -z "$PA_API_TOKEN" ] && echo "PA_API_TOKEN is not set" || echo "PA_API_TOKEN is set"
+          [ -z "$PA_DOMAIN_NAME" ] && echo "PA_DOMAIN_NAME is not set" || echo "PA_DOMAIN_NAME is set"
+          [ -z "$PA_VIRTUAL_ENV" ] && echo "PA_VIRTUAL_ENV is not set" || echo "PA_VIRTUAL_ENV is set"
+          [ -z "$PA_PROJECT_DIR" ] && echo "PA_PROJECT_DIR is not set" || echo "PA_PROJECT_DIR is set"
+
       - name: Deploy to PythonAnywhere
         env:
           PA_USERNAME: ${{ secrets.PA_USERNAME }}

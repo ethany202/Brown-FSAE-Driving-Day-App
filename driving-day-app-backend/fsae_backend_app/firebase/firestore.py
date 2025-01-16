@@ -55,6 +55,39 @@ def add_user(data):
         print(f"An unexpected error occurred: {e}")
         return None
 
+def get_all_users(filters=None):
+    """
+    Retrieves all users from the 'driver-profiles' collection with optional filtering.
+    
+    Args:
+        filters (dict, optional): Dictionary of filter conditions.
+    
+    Returns:
+        list: List of dictionaries containing user data
+    """
+    try:
+        main_db = db.collection('driver-profiles')
+        query = main_db
+        
+        if filters:
+            for key, value in filters.items():
+                if value is not None:
+                    query = query.where(key, '==', value)
+        
+        docs = query.stream()
+        
+        users = []
+        for doc in docs:
+            user_data = doc.to_dict()
+            user_data['id'] = doc.id
+            users.append(user_data)
+            
+        return users
+    
+    except Exception as e:
+        print(f"An error occurred while retrieving users: {e}")
+        return []
+
 def upload_csv_to_firestore(csv_file_path):
     """
     Uploads data from a CSV file to a Firestore subcollection within a document named after the CSV file.

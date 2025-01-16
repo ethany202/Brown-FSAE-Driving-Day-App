@@ -1,7 +1,5 @@
 from django.urls import path
-from .views import upload_ld
-from .views import driver_profiles
-from .views import get_all_data
+from .views import upload_ld, add_driver, get_driver_profiles
 
 urlpatterns = [
     # path('user-registration/', user_registration, name='user-registration'),
