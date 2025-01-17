@@ -1,8 +1,8 @@
 from django.http import JsonResponse
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
-from .firebase.firestore import add_user, get_all_users
-from .ld_parser.main import process_and_upload_ld_files
+from .firebase.firestore import add_driver, get_all_drivers
+from .ld_parser.main import process_and_upload_ld_files, process_and_upload_inputted_ld_file
 import json
 from .firebase.firestore import get_all_data_rows_from_firestore
 
@@ -13,7 +13,7 @@ def homepage(request):
     })
 
 @api_view(['POST'])
-def add_driver(request):
+def add_driver_call(request):
     """
     Handles user registration via a POST request.
 
@@ -32,13 +32,13 @@ def add_driver(request):
     if request.method == 'POST':
         print("Successfully connected!")
         data = json.loads(request.body.decode('utf-8'))
-        add_user(data)
+        add_driver_profile(data)
         return JsonResponse({"message": "User registration successful!"}, status=200)
     else:
         return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
 
 @api_view(['GET'])
-def get_driver_profiles(request):
+def get_all_drivers_call(request):
     """
     Get all drivers with optional height/weight filtering
     """
@@ -53,7 +53,7 @@ def get_driver_profiles(request):
             if weight:
                 filters['weight'] = float(weight)
             
-            drivers = get_all_users(filters=filters if filters else None)
+            drivers = get_all_drivers(filters=filters if filters else None)
             
             return JsonResponse({
                 "drivers": drivers,
@@ -72,8 +72,8 @@ def get_driver_profiles(request):
 
 
 
-@api_view(['GET'])
-def upload_ld(request):
+@api_view(['POST'])
+def upload_files_call(request):
     """
     Handle the GET request to upload and process LD files.
 
@@ -95,9 +95,24 @@ def upload_ld(request):
         GET /api/upload-data/ -> Triggers the upload process and returns success status.
 
     """
-    if request.method == 'GET':
-        print("Successfully connected!")
-        process_and_upload_ld_files()
+    if request.method == 'POST':
+        # Pull Metadata:
+        all_files = request.FILES
+        # Pull LD file
+        data_file = all_files.get('dataFile')
+
+        # Pull Media Files
+        media_files = list(all_files.keys())
+        media_files.pop(0)
+
+        # Driver ID
+        driver_id = request.POST.get('driverId')
+        # Run Date
+        run_date=request.POST.get('runDate')
+        # Title for Run
+        run_title = request.POST.get('runTitle')
+
+        process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_file)
         return JsonResponse({"message": "Successfully uploaded LD data to database!"}, status=200)
     else:
         return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)

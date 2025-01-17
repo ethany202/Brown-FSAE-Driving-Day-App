@@ -16,6 +16,11 @@ const Navbar = () => {
           </Link>
         </li>
         <li>
+          <Link to="/upload-files" className="navbar-link">
+            Upload Files
+          </Link>
+        </li>
+        <li>
           <Link to="/run-data" className="navbar-link">
             Run Data
           </Link>

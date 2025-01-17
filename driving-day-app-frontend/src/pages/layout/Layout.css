@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilies;
 
+@keyframes fadeIn {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.75;
+    }
+
+}
+
 @layer components {
     .wrapper {
         display: flex;
@@ -11,5 +22,20 @@
     .page-content-main {
         width: 100%;
         margin-left: 16rem;
+    }
+
+    p {
+        font-family: "Geist Mono", monospace;
+        font-size: 16px;
+    }
+
+    a {
+        font-family: "Geist Mono", monospace;
+        font-size: 16px;
+    }
+
+    h1 {
+        font-family: "Geist Mono", monospace;
+        font-size: 48px;
     }
 }

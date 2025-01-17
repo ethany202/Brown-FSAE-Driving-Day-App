@@ -27,7 +27,8 @@
     }
 
     .navbar-link:hover {
-        background-color: #9D2062;
+        /* background-color: #9D2062; */
+        background-color: black;
         transition: 0.2s;
         color: white;
     }

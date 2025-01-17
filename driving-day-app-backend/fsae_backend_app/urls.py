@@ -1,9 +1,12 @@
 from django.urls import path
-from .views import upload_ld, add_driver, get_driver_profiles
+from .views import upload_files_call, add_driver_call, get_all_drivers_call, get_all_data
 
 urlpatterns = [
-    # path('user-registration/', user_registration, name='user-registration'),
-    path('upload-data/', upload_ld, name='upload-data'),
-    path('driver-profiles/', driver_profiles, name='driver-profiles'),
-    path('get-all-data/', get_all_data, name='get-all-data'),
+    # POST Requests (indicated by /)
+    path('upload-files/', upload_files_call, name='upload-files'),
+    path('add-driver/', add_driver_call, name='add-driver'),
+
+    # GET Requests (indicated by NO /)
+    path('all-drivers', get_all_drivers_call, name='all-drivers'),
+    path('all-data', get_all_data, name='all-data'),
 ]

@@ -4,8 +4,30 @@ from .data_containers import ldData
 from ..firebase.firestore import upload_csv_to_firestore
 from ..firebase.firebase import firebase_app
 from firebase_admin import firestore
+from django.core.files.storage import default_storage
+from datetime import datetime
 
 db = firestore.client()
+
+def process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_file):
+    '''
+        Process LD file that is inputted by the user
+    '''
+
+    data_path = settings.DATA_DIR
+
+    if data_file.name.endswith('.ld'):
+        file_content = data_file.read()
+        run_date = datetime.fromisoformat(run_date)
+        file_path = os.path.join(data_path, f'{run_date.year}-{run_date.month}-{run_date.day}-{run_title}.ld')
+        # Change to account for uploaded metadata
+        with default_storage.open(file_path, "wb+") as destination_file:
+            destination_file.write(file_content)
+        
+        process_and_upload_ld_files()
+        os.remove(file_path)
+        # Delete LD file afterwards
+    # print(inputted_file.name)
 
 def process_and_upload_ld_files():
     '''

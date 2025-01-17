@@ -14,10 +14,12 @@ from .firebase import firebase_app
 from firebase_admin import firestore
 
 db = firestore.client()
+# Declares the MAX number of entries to read into Firebase
+max_entries_counter = 1800
 
-def add_user(data):
+def add_driver(data):
     """
-    Adds a user document to the 'driver-profiles' collection in Firestore.
+    Adds a driver document to the 'driver-profiles' collection in Firestore.
 
     Args:
         data (dict): A dictionary containing user information to be stored.
@@ -55,7 +57,7 @@ def add_user(data):
         print(f"An unexpected error occurred: {e}")
         return None
 
-def get_all_users(filters=None):
+def get_all_drivers(filters=None):
     """
     Retrieves all users from the 'driver-profiles' collection with optional filtering.
     
@@ -76,13 +78,13 @@ def get_all_users(filters=None):
         
         docs = query.stream()
         
-        users = []
+        drivers = []
         for doc in docs:
-            user_data = doc.to_dict()
-            user_data['id'] = doc.id
-            users.append(user_data)
-            
-        return users
+            driver_data = doc.to_dict()
+            driver_data['driverId'] = doc.id
+            drivers.append(driver_data)
+                        
+        return drivers
     
     except Exception as e:
         print(f"An error occurred while retrieving users: {e}")
@@ -113,12 +115,18 @@ def upload_csv_to_firestore(csv_file_path):
     subcollection_ref = main_doc_ref.collection(subcollection)
     
     try:
+
         # Opening and iterating through CSV file
         with open(csv_file_path, mode='r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             document_counter = 0
             
             for row_number, row in enumerate(reader):
+                # If the number of rows EXCEEDS the max_entries_counter
+                if document_counter >= max_entries_counter:
+                    print(f"Reached the max entry number: {document_counter}")
+                    break
+
                 # When the CSV file stops giving complete values
                 if any(value == '' for value in row.values()):
                     print(f"Stopping processing at row {row_number}.")
