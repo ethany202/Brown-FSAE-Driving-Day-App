@@ -6,6 +6,8 @@ from .ld_parser.main import process_and_upload_ld_files, process_and_upload_inpu
 import json
 from .firebase.firestore import get_all_data_rows_from_firestore
 
+# TODO: Create Standard JSON Response Body
+
 def homepage(request):
     return JsonResponse({
         "message": "Welcome to the FSAE Backend!",
@@ -48,15 +50,15 @@ def get_all_drivers_call(request):
             weight = request.GET.get('weight')
             
             filters = {}
-            if height:
+            if int(height) != -1:
                 filters['height'] = float(height)
-            if weight:
+            if int(weight) != -1:
                 filters['weight'] = float(weight)
             
             drivers = get_all_drivers(filters=filters if filters else None)
             
             return JsonResponse({
-                "drivers": drivers,
+                "data": drivers,
                 "message": "Drivers retrieved successfully"
             }, status=200)
             

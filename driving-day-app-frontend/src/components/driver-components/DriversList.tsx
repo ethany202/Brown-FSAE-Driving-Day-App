@@ -8,13 +8,16 @@ const DriversList = () => {
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchDrivers = async () => {
-      const response = await getAllDrivers();
-      setDrivers(response);
-      setLoading(false);
-    };
+  // Place API call outside:
+  const fetchDrivers = async () => {
+    const response = await getAllDrivers()
+    if (response.status === 200) {
+      setDrivers(response.data)
+      setLoading(false)
+    }
+  }
 
+  useEffect(() => {
     fetchDrivers();
   }, []);
 

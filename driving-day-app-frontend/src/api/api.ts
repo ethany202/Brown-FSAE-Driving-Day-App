@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import { AxiosError } from "axios";
 
 const api = axios.create({
@@ -54,9 +54,9 @@ export const postFiles = async (formData: FormData) => {
 
 /**
  * 
- * @param path 
- * @param content 
- * @returns 
+ * @param path: Corresponds to the relative backend path to which the GET request is sent
+ * @param searchParams: Corresponds to a selection of GET Request Parameters
+ * @returns: A JSON object representing the result of making the GET Request
  */
 export const getRequest = async (path: string, searchParams: URLSearchParams) => {
   try {
@@ -68,30 +68,26 @@ export const getRequest = async (path: string, searchParams: URLSearchParams) =>
   }
 };
 
-export const getAllDrivers = async (filters?: {
+export const getAllDrivers = async () => {
+  const path = "all-drivers";
+  return await getRequest(path, new URLSearchParams())
+};
+
+export const getDriversFiltered = async (filters: {
   height?: number;
   weight?: number;
 }) => {
   const path = "all-drivers";
-  const params = new URLSearchParams();
 
-  if (filters?.height) {
-    params.append("height", filters.height.toString());
-  }
-  if (filters?.weight) {
-    params.append("weight", filters.weight.toString());
-  }
+  const heightFilter = filters.height || -1
+  const weightFilter = filters.weight || -1
+  const searchParams = new URLSearchParams({
+    height: heightFilter.toString(),
+    weight: weightFilter.toString()
+  })
 
-  try {
-    const response = (await getRequest(path, params)) as {
-      data: { drivers: any[] };
-    };
-    return response.data?.drivers || [];
-  } catch (err) {
-    console.error("Error fetching drivers:", err);
-    return [];
-  }
-};
+  return await getRequest(path, searchParams);
+}
 
 // TODO: Implement pagination/filtering
 export const getRunData = async (runFilter: {
