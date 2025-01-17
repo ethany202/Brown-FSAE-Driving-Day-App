@@ -121,14 +121,16 @@ export default function UploadComponent() {
 
                         <p>
                             <input
+                                value={runTitle}
                                 className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                                 placeholder='Enter run title...'
                                 onKeyDown={(event) => {
                                     if (event.key === " ") {
                                         event.preventDefault()
+                                        setRunTitle(runTitle + "-")
                                     }
                                 }}
-                                onChange={(event) => setRunTitle(event.target.value)}>
+                                onChange={(event) => setRunTitle(event.target.value.toLocaleLowerCase())}>
                             </input>
                         </p>
 
