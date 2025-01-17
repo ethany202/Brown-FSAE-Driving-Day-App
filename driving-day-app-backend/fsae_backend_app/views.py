@@ -95,27 +95,23 @@ def upload_files_call(request):
 
     """
     if request.method == 'POST':
-
         # Pull Metadata:
-        driver_id = request.POST.get('driverId')
-        run_month = request.POST.get('runMonth')
-        run_date = request.POST.get('runDate')
-        run_year = request.POST.get('runYear')
-        run_title = request.POST.get('runTitle')
-
-        # Pull LD file
         all_files = request.FILES
-        data_file = all_files.get('data_file')
+        # Pull LD file
+        data_file = all_files.get('dataFile')
 
         # Pull Media Files
         media_files = list(all_files.keys())
         media_files.pop(0)
 
-        # if data_file is None:
-        #     return JsonResponse({"error: No LD file was uploaded"}, status=400)
-        
-        process_and_upload_inputted_ld_file(data_file, run_month, run_date, run_year, run_title)
-        print("Successfully connected!")
+        # Driver ID
+        driver_id = request.POST.get('driverId')
+        # Run Date
+        run_date=request.POST.get('runDate')
+        # Title for Run
+        run_title = request.POST.get('runTitle')
+
+        process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_file)
         return JsonResponse({"message": "Successfully uploaded LD data to database!"}, status=200)
     else:
         return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)

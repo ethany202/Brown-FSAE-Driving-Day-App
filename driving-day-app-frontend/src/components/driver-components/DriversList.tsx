@@ -48,8 +48,8 @@ const DriversList = () => {
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-8">
           <div className="drivers-list">
-            <table className="w-full border-collapse">
-              <thead className="bg-gray-100">
+            <table className="w-full">
+              <thead className="bg-gray-100 border-none">
                 <tr>
                   <th className="border p-4 text-left">Name</th>
                   <th className="border p-4 text-left">Height (cm)</th>
