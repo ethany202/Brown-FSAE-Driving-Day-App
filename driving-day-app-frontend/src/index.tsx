@@ -7,6 +7,7 @@ import RunDetail from './pages/run-page/RunDetail';
 import Layout from './pages/layout/Layout';
 import DriversPage from './pages/drivers-page/DriversPage';
 import UploadFiles from './pages/upload-page/UploadFiles';
+import Home from './pages/home-page/Home';
 
 /**
  * Creates an object that handles routing for all webpages:
@@ -21,7 +22,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/home",
-        element: <App />
+        element: <Home />
       },
       {
         path: "/run-data",
