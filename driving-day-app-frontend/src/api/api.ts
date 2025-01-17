@@ -1,9 +1,10 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { AxiosError } from "axios";
 
 const api = axios.create({
   baseURL: `${process.env.REACT_APP_BACKEND_URL}/api/`,
   timeout: 10000,
+  withCredentials: false
 });
 
 // TODO: Configure POST request to use API token to obtain content/register
@@ -30,7 +31,7 @@ export const postDriverProfile = async (userData: {
   weight: number;
   pedalBoxPos: number;
 }) => {
-  const path = "driver-profiles/";
+  const path = "add-driver/";
   return await postRequest(path, userData);
 };
 
@@ -59,7 +60,7 @@ export const postFiles = async (formData: FormData) => {
  */
 export const getRequest = async (path: string, searchParams: URLSearchParams) => {
   try {
-    const response = await api.get(path, { searchParams });
+    const response = await api.get(`${path}?${searchParams.toString()}`);
     return response;
   } catch (err) {
     console.error(err);
@@ -71,7 +72,7 @@ export const getAllDrivers = async (filters?: {
   height?: number;
   weight?: number;
 }) => {
-  const path = "driver-data/";
+  const path = "all-drivers";
   const params = new URLSearchParams();
 
   if (filters?.height) {
@@ -108,6 +109,6 @@ export const getRunData = async (runFilter: {
 };
 
 export const getAllData = async () => {
-  const path = 'get-all-data/';
+  const path = 'all-data';
   return await getRequest(path, new URLSearchParams());
 };
