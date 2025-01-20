@@ -58,7 +58,7 @@ def get_all_drivers_call(request):
             drivers = get_all_drivers(filters=filters if filters else None)
             
             return JsonResponse({
-                "data": drivers,
+                "drivers": drivers,
                 "message": "Drivers retrieved successfully"
             }, status=200)
             

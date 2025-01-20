@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { Axios } from "axios";
 import { AxiosError } from "axios";
 
 const api = axios.create({
@@ -18,9 +18,10 @@ export const postRequest = async (path: string, content: any) => {
   try {
     const response = await api.post(path, content);
     return response;
-  } catch (err) {
-    console.error(err);
-    return {};
+  } catch (error) {
+    console.error(error);
+    const axiosError = error as AxiosError;
+    return { status: axiosError.status }
   }
 };
 
@@ -48,7 +49,7 @@ export const postFiles = async (formData: FormData) => {
   } catch (error) {
     console.error('Error uploading file:', error);
     const axiosError = error as AxiosError;
-    return { status: axiosError.status }
+    return { status: axiosError.status, data: undefined }
   }
 }
 
@@ -62,15 +63,19 @@ export const getRequest = async (path: string, searchParams: URLSearchParams) =>
   try {
     const response = await api.get(`${path}?${searchParams.toString()}`);
     return response;
-  } catch (err) {
-    console.error(err);
-    return {};
+  } catch (error) {
+    console.error(error);
+    const axiosError = error as AxiosError;
+    return { status: axiosError.status, data: undefined }
   }
 };
 
 export const getAllDrivers = async () => {
   const path = "all-drivers";
-  return await getRequest(path, new URLSearchParams())
+  return await getRequest(path, new URLSearchParams({
+    height: "-1",
+    weight: "-1"
+  }))
 };
 
 export const getDriversFiltered = async (filters: {
