@@ -1,6 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getAllData } from '../../api/api';
 
 const Home: React.FC = () => {
+
+    async function getAllDataAsync() {
+        const result = await getAllData()
+
+        console.log(result)
+        return result
+
+    }
+
+    useEffect(() => {
+        getAllDataAsync()
+    }, [])
 
     return (
         <div>
