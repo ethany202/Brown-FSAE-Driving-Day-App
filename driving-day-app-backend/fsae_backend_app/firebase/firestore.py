@@ -12,6 +12,7 @@ import csv
 import os
 from .firebase import firebase_app
 from firebase_admin import firestore
+from django.core.paginator import Paginator
 
 db = firestore.client()
 # Declares the MAX number of entries to read into Firebase
@@ -193,26 +194,18 @@ def upload_csv_columns_as_documents(csv_file_path):
         print(f"An error occurred while uploading CSV to Firestore: {e}")
 
 
-def get_all_data_rows_from_firestore():
-    """
-    Retrieves all documents from the 'data' sub-collection in Firestore.
-
-    Returns:
-        list: A list of dictionaries containing all data from the 'data' sub-collection.
-        None: If an error occurs during the operation.
-    """
+def get_specific_document_data(document_name):
     try:
         # Access the 'ecu-data' collection and the 'sample_test' document
-        sample_test_ref = db.collection('ecu-data').document('sample_test')
-        
-        # Access the 'data' sub-collection
-        data_subcollection = sample_test_ref.collection('data')
-        
+        document_query = db.collection('ecu-data')\
+            .document(document_name)\
+                .collection('data')
+                    
         # Stream all documents in the 'data' sub-collection
-        all_data_docs = data_subcollection.stream()
+        document_data = document_query.stream()
         
         data_list = []
-        for doc in all_data_docs:
+        for doc in document_data:
             # Append the document data along with the document ID
             doc_data = doc.to_dict()
             doc_data['id'] = doc.id  # Include the document ID if needed
@@ -221,6 +214,39 @@ def get_all_data_rows_from_firestore():
         return data_list
 
     except Exception as e:
+        print(f"An unexpected error occurred when pulling specific document data: {e}")
+        return None 
+
+
+def get_simplified_run_data(filter_limit=10, filtered_date=None, filtered_driver=None):
+    """
+    Retrieves run-relevant data in a simplified format from the Firestore database,
+    as demonstrated in the /run-data path. To support pagination, the 10 most recent entries are taken
+
+    Args:
+        filtered_date (datetime): Corresponds to the datetime to filter the run data by
+        filtered_driver (str): Corresponds the str to filter the run data by
+
+    Returns:
+        List of all simplified results
+
+    """
+    try:
+        # Access the 'ecu-data' collection and the 'sample_test' document
+        filtered_docs_query = db.collection('ecu-data')\
+            .order_by('timestamp', direction=firestore.Query.DESCENDING)\
+            .limit(filter_limit)
+
+        filtered_docs = filtered_docs_query.stream()
+
+        data_list = []
+        for doc in filtered_docs:
+            doc_data = doc.to_dict()
+            doc_data['id'] = doc.id
+            
+            data_list.append(get_specific_document_data(doc.id))
+        
+        return data_list
+    except Exception as e:
         print(f"An unexpected error occurred: {e}")
         return None
-

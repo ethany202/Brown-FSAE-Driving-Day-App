@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from .firebase.firestore import add_driver, get_all_drivers
 from .ld_parser.main import process_and_upload_ld_files, process_and_upload_inputted_ld_file
 import json
-from .firebase.firestore import get_all_data_rows_from_firestore
+from .firebase.firestore import get_simplified_run_data
 
 # TODO: Create Standard JSON Response Body
 
@@ -139,7 +139,8 @@ def get_all_data(request):
     try:
         if request.method == 'GET':
             # Call the function to retrieve data from Firestore
-            data = get_all_data_rows_from_firestore()
+            #data = get_all_data_rows_from_firestore()
+            data = get_simplified_run_data()
 
             # Check if data retrieval was successful
             if data is not None:
