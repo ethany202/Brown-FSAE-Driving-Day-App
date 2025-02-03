@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import upload_files_call, add_driver_call, get_all_drivers_call, get_all_data
+from .views import *
 
 urlpatterns = [
     # POST Requests (indicated by /)
@@ -9,4 +9,5 @@ urlpatterns = [
     # GET Requests (indicated by NO /)
     path('all-drivers', get_all_drivers_call, name='all-drivers'),
     path('all-data', get_all_data, name='all-data'),
+    path('specific-run-data', get_specific_run_data_call, name='specific-run-data')
 ]
