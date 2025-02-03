@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import DatePicker from "react-datepicker";
 import { FilePond, registerPlugin } from 'react-filepond';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
@@ -9,10 +9,7 @@ import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 import "react-datepicker/dist/react-datepicker.css";
 import { postFiles, getAllDrivers } from '../../api/api';
 import './UploadComponent.css';
-import { Driver } from '../../utils/Driver';
-import Alert from 'react-bootstrap/Alert';
-
-// import 'bootstrap/dist/css/bootstrap.min.css';
+import AppDataContext from '../contexts/AppDataContext';
 
 registerPlugin(FilePondPluginImagePreview);
 registerPlugin(FilePondPluginFileValidateType);
@@ -21,7 +18,7 @@ registerPlugin(FilePondPluginFileValidateSize);
 export default function UploadComponent() {
 
     // Data-related states
-    const [drivers, setDrivers] = useState<Driver[]>([])
+    const { drivers } = useContext(AppDataContext)
 
     const [uploadedData, setUploadedData] = useState<File>()
     const [uploadedMedia, setUploadedMedia] = useState<File[]>([])
@@ -74,15 +71,6 @@ export default function UploadComponent() {
             // Set error pop-up
         }
     }
-
-    useEffect(() => {
-        const fetchDrivers = async () => {
-            const response = await getAllDrivers();
-            setDrivers(response);
-        };
-
-        fetchDrivers();
-    }, []);
 
     return (
         <>

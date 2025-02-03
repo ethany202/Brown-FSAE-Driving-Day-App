@@ -1,40 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { getAllDrivers, postDriverProfile } from "../../api/api";
+import React, { useState, useEffect, useContext } from "react";
 import { Driver } from "../../utils/Driver";
 import { SpecificDriverProfile } from "./SpecificDriverProfile";
+import AppDataContext from "../contexts/AppDataContext";
 
 const DriversList = () => {
-  const [drivers, setDrivers] = useState<Driver[]>([]);
+
+  const { drivers, isLoading } = useContext(AppDataContext)
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  // Place API call outside:
-  const fetchDrivers = async () => {
-    const response = await getAllDrivers()
-    if (response.status === 200) {
-      setDrivers(response.data)
-      setLoading(false)
-    }
-  }
 
-  useEffect(() => {
-    fetchDrivers();
-  }, []);
-
-  // Adding driver functionality
-  //   const handleAddDriver = async (driver: Driver) => {
-  //     try {
-  //       const response = await postDriverProfile(driver);
-  //       if (response.status === 200) {
-  //         const updatedDrivers = await getAllDrivers();
-  //         setDrivers(updatedDrivers);
-  //       }
-  //     } catch (err) {
-  //       setError("Failed to add driver. Please try again.");
-  //     }
-  //   };
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         Loading drivers...
