@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
@@ -6,95 +6,55 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 const ThreeDViewer: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
-
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  
   useEffect(() => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.05, 1000);
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    // Append renderer to the div
     if (mountRef.current) {
       mountRef.current.appendChild(renderer.domElement);
     }
 
-    // Set up the GLTFLoader with DRACOLoader for compressed models
-    const loader = new GLTFLoader();
-    const dracoLoader = new DRACOLoader();
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableZoom = true;
+    camera.position.set(-1.9, 0.5, 3.75);
 
-    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.3/'); 
-    loader.setDRACOLoader(dracoLoader);
-
-    // Load the .glb model
-    loader.load(
-      // URL to the .glb file
-      // '/ses-fuel_chass_shifting_battery_headrest_fea.glb',
-      '/ses-fuel_chass_shifting_battery_headrest_fea.glb',
-      (gltf) => {
-        const root = gltf.scene;
-        scene.add(root);
-
-        // Function to recursively print all subassemblies (children)
-        const printSubassemblies = (object: THREE.Object3D, parentName: string = '') => {
-          if (object instanceof THREE.Group || object instanceof THREE.Mesh) {
-            console.log(`Subassembly: ${parentName}${object.name ? ' - ' + object.name : ''}`);
-          }
-
-          object.children.forEach((child) => {
-            printSubassemblies(child, `${parentName}${object.name ? object.name + ' > ' : ''}`);
-          });
-        };
-
-        // Print all subassemblies of the root object
-        printSubassemblies(root);
-
-
-        // Compute the bounding box of the model to find its center
-        // const box = new THREE.Box3().setFromObject(root);
-        // const center = new THREE.Vector3();
-        // box.getCenter(center);
-
-        // Adjust the OrbitControls to rotate around the model's center
-        const controls = new OrbitControls(camera, renderer.domElement);
-        // controls.target.copy(center); // Set the target to the center of the model
-        controls.enableZoom = true;
-
-        // Set initial camera position
-        // camera.lookAt(center);   
-
-        // Update camera position based on the bounding box size
-        // const size = box.getSize(new THREE.Vector3());
-
-        camera.position.set(-1.9, .5, 3.75);
-        // camera.lookAt(center); // Ensure the camera looks at the model's center
-
-        scene.background = new THREE.Color(0xffffff);
-      },
-      (xhr) => {
-        console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-      },
-      (error) => {
-        console.error('An error happened', error);
-      }
-    );
-
-    // Add lighting to the scene
-    const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
-    scene.add(ambientLight);
-
+    scene.add(new THREE.AmbientLight(0x404040));
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
     directionalLight.position.set(5, 5, 5).normalize();
     scene.add(directionalLight);
 
-    // Animation loop
+    // GLTFLoader with DRACO
+    const loader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.3/');
+    loader.setDRACOLoader(dracoLoader);
+
+    loader.load(
+      '/ses-fuel_chass_shifting_battery_headrest_fea.glb',
+      (gltf) => {
+        scene.add(gltf.scene);
+        setIsLoading(false); // Hide loading bar when finished
+      },
+      (xhr) => {
+        setLoadingProgress((xhr.loaded / xhr.total) * 100);
+      },
+      (error) => {
+        console.error('Error loading model:', error);
+        setIsLoading(false);
+      }
+    );
+
     const animate = () => {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
-      console.log(camera.position);
     };
     animate();
 
-    // Cleanup on component unmount
     return () => {
       renderer.dispose();
       if (mountRef.current) {
@@ -103,7 +63,24 @@ const ThreeDViewer: React.FC = () => {
     };
   }, []);
 
-  return <div ref={mountRef} style={{ width: '100%', height: '100%' }} />;
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {isLoading && (
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: '#ddd', width: '200px', height: '20px', borderRadius: '5px',
+          overflow: 'hidden'
+        }}>
+          <div style={{
+            width: `${loadingProgress}%`, height: '100%',
+            background: '#4caf50', transition: 'width 0.1s'
+          }} />
+        </div>
+      )}
+      <div ref={mountRef} style={{ width: '100%', height: '100%' }} />
+    </div>
+  );
 };
 
 export default ThreeDViewer;
