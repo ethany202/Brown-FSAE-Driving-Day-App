@@ -8,6 +8,16 @@ const ThreeDViewer: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+
+  // to select objects in the heatmap
+  let selectedObject: THREE.Mesh | null = null;
+  const highlightColor = new THREE.Color(0xff0000);
+  const defaultColor = new THREE.Color(0xaaaaaa);
+
+  // to toggle between heatmap and regular cad model 
+  // TODO: add the toggle
+  const [isHeatMap, setIsHeatMap] = useState(false);
+
   
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -19,10 +29,13 @@ const ThreeDViewer: React.FC = () => {
       mountRef.current.appendChild(renderer.domElement);
     }
 
+    // zoom
+    // TODO: add pan? 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableZoom = true;
     camera.position.set(-1.9, 0.5, 3.75);
 
+    // lighting
     scene.add(new THREE.AmbientLight(0x404040));
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
     directionalLight.position.set(5, 5, 5).normalize();
@@ -34,10 +47,21 @@ const ThreeDViewer: React.FC = () => {
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.3/');
     loader.setDRACOLoader(dracoLoader);
 
+    // update file name here
+    // loads file and includes loading bar
     loader.load(
       '/ses-fuel_chass_shifting_battery_headrest_fea.glb',
       (gltf) => {
-        scene.add(gltf.scene);
+        const root = gltf.scene;
+        scene.add(root);
+        // Assign default color and log subassemblies
+        root.traverse((child) => {
+          if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
+            child.material = child.material.clone();
+            child.material.color.set(defaultColor);
+            console.log(`Subassembly: ${child.name}`);
+          }
+        });
         setIsLoading(false); // Hide loading bar when finished
       },
       (xhr) => {
@@ -49,6 +73,47 @@ const ThreeDViewer: React.FC = () => {
       }
     );
 
+
+    // Raycasting for subassembly selection
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const onMouseClick = (event: MouseEvent) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+
+      if (intersects.length > 0) {
+        const clickedObject = intersects[0].object as THREE.Mesh;
+
+        if (clickedObject.material instanceof THREE.MeshStandardMaterial) {
+          // Reset previous selection
+          if (selectedObject && selectedObject.material instanceof THREE.MeshStandardMaterial) {
+            selectedObject.material.color.set(defaultColor);
+          }
+
+          // Highlight new selection
+          selectedObject = clickedObject;
+          if (Array.isArray(selectedObject.material)) {
+            selectedObject.material.forEach((mat) => {
+              if (mat instanceof THREE.MeshStandardMaterial) {
+                mat.color.set(highlightColor);
+              }
+            });
+          } else if (selectedObject.material instanceof THREE.MeshStandardMaterial) {
+            selectedObject.material.color.set(highlightColor);
+          }
+          
+          console.log(`Selected Subassembly: ${selectedObject.name}`);
+        }
+      }
+    };
+
+    window.addEventListener('click', onMouseClick);
+
+    // allows us to move the model around
     const animate = () => {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
@@ -63,6 +128,7 @@ const ThreeDViewer: React.FC = () => {
     };
   }, []);
 
+  // loading bar; helpful for large files
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       {isLoading && (
