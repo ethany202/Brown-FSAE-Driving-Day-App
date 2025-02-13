@@ -34,7 +34,7 @@ def add_driver_call(request):
     if request.method == 'POST':
         print("Successfully connected!")
         data = json.loads(request.body.decode('utf-8'))
-        add_driver_profile(data)
+        add_driver(data)
         return JsonResponse({"message": "User registration successful!"}, status=200)
     else:
         return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
