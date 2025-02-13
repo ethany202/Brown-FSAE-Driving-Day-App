@@ -4,6 +4,13 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader';
+
+
 const ThreeDViewer: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -59,6 +66,7 @@ const ThreeDViewer: React.FC = () => {
           if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
             child.material = child.material.clone();
             child.material.color.set(defaultColor);
+            child.material.emissiveIntensity = 0;
             console.log(`Subassembly: ${child.name}`);
           }
         });
@@ -73,6 +81,20 @@ const ThreeDViewer: React.FC = () => {
       }
     );
 
+    // Add Unreal Bloom Pass to existing Three.js scene
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+
+    const bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      1.5, // strength
+      0.4, // radius
+      0.85 // threshold
+    );
+    composer.addPass(bloomPass);
+
+    const gammaPass = new ShaderPass(GammaCorrectionShader);
+    composer.addPass(gammaPass);
 
     // Raycasting for subassembly selection
     const raycaster = new THREE.Raycaster();
@@ -92,6 +114,7 @@ const ThreeDViewer: React.FC = () => {
           // Reset previous selection
           if (selectedObject && selectedObject.material instanceof THREE.MeshStandardMaterial) {
             selectedObject.material.color.set(defaultColor);
+            selectedObject.material.emissiveIntensity = 0
           }
 
           // Highlight new selection
@@ -100,10 +123,15 @@ const ThreeDViewer: React.FC = () => {
             selectedObject.material.forEach((mat) => {
               if (mat instanceof THREE.MeshStandardMaterial) {
                 mat.color.set(highlightColor);
+                mat.emissive = new THREE.Color(0xff0000);
+                mat.emissiveIntensity = 1;
+                
               }
             });
           } else if (selectedObject.material instanceof THREE.MeshStandardMaterial) {
             selectedObject.material.color.set(highlightColor);
+            selectedObject.material.emissive = new THREE.Color(0xff0000);
+            selectedObject.material.emissiveIntensity = 1;
           }
           
           console.log(`Selected Subassembly: ${selectedObject.name}`);
@@ -117,6 +145,7 @@ const ThreeDViewer: React.FC = () => {
     const animate = () => {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
+      composer.render();
     };
     animate();
 
