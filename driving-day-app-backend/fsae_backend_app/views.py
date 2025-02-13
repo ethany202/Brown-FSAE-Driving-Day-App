@@ -113,6 +113,8 @@ def upload_files_call(request):
         # Title for Run
         run_title = request.POST.get('runTitle')
 
+        # Upload to S3
+        # Obtain Image URLs:
         process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_file)
         return JsonResponse({"message": "Successfully uploaded LD data to database!"}, status=200)
     else:
@@ -142,10 +144,12 @@ def get_all_data(request):
             # data = get_simplified_run_data()
 
             # Check if data retrieval was successful
-            if data is not None:
-                return JsonResponse({"data": "Get Specific Run Instead", "message": "Successfully retrieved all data from Firestore!"}, status=200)
-            else:
-                return JsonResponse({"error": "Failed to fetch data from Firestore."}, status=500)
+            # if data is not None:
+            #     return JsonResponse({"data": "Get Specific Run Instead", "message": "Successfully retrieved all data from Firestore!"}, status=200)
+            # else:
+            #     return JsonResponse({"error": "Failed to fetch data from Firestore."}, status=500)
+            return JsonResponse({"error": "Avoid fetching all data."}, status=500)
+
         else:
             return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
 
@@ -154,7 +158,7 @@ def get_all_data(request):
         return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
 
 @api_view(['GET'])
-async def get_specific_run_data_cal(request):
+async def get_specific_run_data_call(request):
     try:
         if request.method == 'GET':
             document_name = request.GET.get('documentName')
