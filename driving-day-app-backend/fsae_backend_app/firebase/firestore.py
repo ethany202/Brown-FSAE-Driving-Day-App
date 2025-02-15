@@ -16,7 +16,8 @@ from django.core.paginator import Paginator
 
 db = firestore.client()
 # Declares the MAX number of entries to read into Firebase
-max_entries_counter = 1800
+# 1200 seconds = 20 minutes
+max_entries_counter = 1200
 
 def add_driver(data):
     """
@@ -194,7 +195,7 @@ def upload_csv_columns_as_documents(csv_file_path):
         print(f"An error occurred while uploading CSV to Firestore: {e}")
 
 
-async def get_specific_document_data(document_name):
+def get_specific_document_data(document_name):
     try:
         # Access the 'ecu-data' collection and the 'sample_test' document
         document_query = db.collection('ecu-data')\
@@ -202,7 +203,7 @@ async def get_specific_document_data(document_name):
                 .collection('data')
                     
         # Stream all documents in the 'data' sub-collection
-        document_data = await document_query.stream()
+        document_data = document_query.stream()
         
         data_list = []
         for doc in document_data:

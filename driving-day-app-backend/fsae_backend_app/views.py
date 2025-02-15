@@ -33,7 +33,7 @@ def add_driver_call(request):
     if request.method == 'POST':
         print("Successfully connected!")
         data = json.loads(request.body.decode('utf-8'))
-        add_driver_profile(data)
+        add_driver(data)
         return JsonResponse({"message": "User registration successful!"}, status=200)
     else:
         return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
@@ -137,32 +137,15 @@ def get_all_data(request):
         GET /api/get-all-data/ -> Retrieves all data from Firestore.
 
     """
-    try:
-        if request.method == 'GET':
-            # Call the function to retrieve data from Firestore
-            #data = get_all_data_rows_from_firestore()
-            # data = get_simplified_run_data()
+    return JsonResponse({"error": "Avoid fetching all data."}, status=500)
 
-            # Check if data retrieval was successful
-            # if data is not None:
-            #     return JsonResponse({"data": "Get Specific Run Instead", "message": "Successfully retrieved all data from Firestore!"}, status=200)
-            # else:
-            #     return JsonResponse({"error": "Failed to fetch data from Firestore."}, status=500)
-            return JsonResponse({"error": "Avoid fetching all data."}, status=500)
-
-        else:
-            return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
-
-    except Exception as e:
-        # Catch and handle unexpected errors
-        return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
 
 @api_view(['GET'])
-async def get_specific_run_data_call(request):
+def get_specific_run_data_call(request):
     try:
         if request.method == 'GET':
-            document_name = request.GET.get('documentName')
-            data = await get_specific_document_data(document_name)
+            document_name = request.GET.get('runTitle')
+            data = get_specific_document_data(document_name)
 
             return JsonResponse({"data": data}, status=200)
         else:

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { getAllData } from '../../api/api';
+import { getSpecificRunData } from '../../api/api';
 
 const Home: React.FC = () => {
 
     async function getAllDataAsync() {
-        const result = await getAllData()
+        const result = await getSpecificRunData({
+            runTitle: "2025-2-12-coolant-test"
+        })
 
         console.log(result)
         return result

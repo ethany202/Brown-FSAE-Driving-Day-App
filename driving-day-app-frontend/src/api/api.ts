@@ -94,22 +94,45 @@ export const getDriversFiltered = async (filters: {
   return await getRequest(path, searchParams);
 }
 
-// TODO: Implement pagination/filtering
-export const getRunData = async (runFilter: {
-  date: Date;
-  driverId: number;
+
+/**
+ * 
+ * @param runFilter: JSON object containing filters for:
+ *                      -> driverId, runDate, etc.
+ * @returns: JSON object of the most-recent runs, in simplified form
+ */
+export const getGeneralRunData = async (runFilter: {
+  runDate?: Date,
+  driverId?: string
 }) => {
-  const path = "run-data";
+  const path = "general-run-data";
+  
+  
+  const runDateFilter = runFilter.runDate || new Date(0);
+  const driverIdFilter = runFilter.driverId || "";
+
   const params = new URLSearchParams({
-    date: runFilter.date.toString(),
-    driverId: runFilter.driverId.toString()
+    runDate: runDateFilter.toDateString(),
+    driverId: driverIdFilter.toString()
+  })
+
+  return await getRequest(path, params);
+}
+
+/**
+ * 
+ * @param runFilter: JSON containing the run title
+ * @returns: JSON object representing the specific run data being pulleds
+ */
+export const getSpecificRunData = async (runFilter: {
+  runTitle: string;
+}) => {
+  const path = "specific-run-data";
+  const params = new URLSearchParams({
+    runTitle: runFilter.runTitle.toString(),
   });
 
   return await getRequest(path, params);
 
 };
 
-export const getAllData = async () => {
-  const path = 'all-data';
-  return await getRequest(path, new URLSearchParams());
-};
