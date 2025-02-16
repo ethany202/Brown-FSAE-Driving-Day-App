@@ -195,13 +195,17 @@ def upload_csv_columns_as_documents(csv_file_path):
         print(f"An error occurred while uploading CSV to Firestore: {e}")
 
 
-def get_specific_document_data(document_name):
+def get_specific_document_data(document_name, categories_list):
     try:
         # Access the 'ecu-data' collection and the 'sample_test' document
         document_query = db.collection('ecu-data')\
             .document(document_name)\
                 .collection('data')
                     
+        if len(categories_list) > 0:
+            print(categories_list[0])
+            categories_formatted = [f'`{c}`' for c in categories_list]
+            document_query = document_query.select(categories_formatted)
         # Stream all documents in the 'data' sub-collection
         document_data = document_query.stream()
         
@@ -211,7 +215,7 @@ def get_specific_document_data(document_name):
             doc_data = doc.to_dict()
             doc_data['id'] = doc.id  # Include the document ID if needed
             data_list.append(doc_data)
-        
+                
         return data_list
 
     except Exception as e:

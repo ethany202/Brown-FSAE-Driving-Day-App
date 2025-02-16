@@ -145,9 +145,16 @@ def get_specific_run_data_call(request):
     try:
         if request.method == 'GET':
             document_name = request.GET.get('runTitle')
-            data = get_specific_document_data(document_name)
+            categories = request.GET.get('categories')
 
-            return JsonResponse({"data": data}, status=200)
+            categories_list = categories.strip().split(",")
+
+            data = get_specific_document_data(document_name, categories_list)
+            key_points = {
+                "Highest Coolant Temperature": "-100"
+            }
+
+            return JsonResponse({"runDataPoints": data, "keyPoints": key_points}, status=200)
         else:
             return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
     except Exception as e:

@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import Navbar from "../../components/navbar-components/Navbar";
 import './Layout.css';
 import { createContext, useState, useEffect } from "react";
-import { Driver } from "../../utils/Driver";
+import { Driver } from "../../utils/DriverType";
 import { getAllDrivers } from "../../api/api";
 import AppDataContext from "../../components/contexts/AppDataContext";
 

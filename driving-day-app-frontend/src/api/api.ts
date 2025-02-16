@@ -1,5 +1,6 @@
 import axios, { Axios } from "axios";
 import { AxiosError } from "axios";
+import { DataCategory } from "../utils/DataTypes";
 
 const api = axios.create({
   baseURL: `${process.env.REACT_APP_BACKEND_URL}/api/`,
@@ -125,11 +126,16 @@ export const getGeneralRunData = async (runFilter: {
  * @returns: JSON object representing the specific run data being pulleds
  */
 export const getSpecificRunData = async (runFilter: {
-  runTitle: string;
+  runTitle: string,
+  categories?: DataCategory[]
 }) => {
   const path = "specific-run-data";
+
+  const categoriesFiltered = runFilter.categories || []
+
   const params = new URLSearchParams({
     runTitle: runFilter.runTitle.toString(),
+    categories: categoriesFiltered.toString()
   });
 
   return await getRequest(path, params);

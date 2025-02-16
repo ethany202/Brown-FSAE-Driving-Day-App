@@ -11,19 +11,24 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import { ChartDataProps } from '../../utils/DataTypes';
 // import './ChartElements.css';
 
 // Register necessary components from Chart.js
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend);
 
-interface RunCoolantTemperatureChartProps {
-  timeData: number[]; // Array of time values (e.g., [1, 2, 3, 4, 5])
-  temperatureData: number[]; // Array of corresponding coolant temperatures
-}
+// interface LineChartProps {
+//   timeData: number[]; // Array of time values (e.g., [1, 2, 3, 4, 5])
+//   temperatureData: number[]; // Array of corresponding coolant temperatures
 
-const RunCoolantTemperatureChart: React.FC<RunCoolantTemperatureChartProps> = ({
-  timeData,
-  temperatureData,
+
+// }
+
+const LineChartTemplate: React.FC<ChartDataProps> = ({
+    frequency,
+    verticalLabel,
+    horizontalLabel,
+    chartPoints,
 }) => {
   // Configuration for the chart data
   const data = {
@@ -75,4 +80,4 @@ const RunCoolantTemperatureChart: React.FC<RunCoolantTemperatureChartProps> = ({
   return <Line data={data} options={options} />;
 };
 
-export default RunCoolantTemperatureChart;
+export default LineChartTemplate;
