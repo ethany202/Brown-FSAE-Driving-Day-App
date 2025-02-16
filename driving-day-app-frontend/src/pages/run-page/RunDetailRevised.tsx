@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import SpecificRunBubble from '../../components/run-components/SpecificRunBubble';
-import RunCoolantTemperatureChart from '../../components/run-components/RunCoolantTemperatureChart';
+import LineChartTemplate from '../../components/run-components/LineChartTemplate';
 import './ChartElements.css';
 import { getSpecificRunData } from '../../api/api';
 import { CATEGORIES } from '../../utils/DataTypes';
@@ -60,10 +60,10 @@ const RunDetailRevised: React.FC = () => {
         const response = await getSpecificRunData({
             runTitle: runTitle || "sample_data",
             categories: [
-                CATEGORIES.BR_PRESSURE_FRONT, 
-                CATEGORIES.BR_PRESSURE_FRONT, 
+                // CATEGORIES.BR_PRESSURE_FRONT, 
+                // CATEGORIES.BR_PRESSURE_FRONT, 
                 CATEGORIES.COOL_TEMP, 
-                //CATEGORIES.ENG_OIL_PRESSURE
+                CATEGORIES.ENG_OIL_PRESSURE
             ]
         })
         if (response.status === 200) {
@@ -121,15 +121,13 @@ const RunDetailRevised: React.FC = () => {
 {/** Pass in runDataPoints to chart */}
 {/*
             <RunCoolantTemperatureChart timeData={timeData} temperatureData={temperatureData} /> */}
-
-{/* 
-            <button
-                onClick={() => navigate(-1)}
-                className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
-            >
-                Go Back
-            </button> */}
-
+            <LineChartTemplate 
+                frequency={1}
+                categoryName={CATEGORIES.ENG_OIL_PRESSURE}
+                verticalLabel={"Engine Oil Pressure (kPa)"}
+                horizontalLabel={"Time (s)"}
+                chartPoints={runDataPoints}
+            />
 
             </div>
         </div>
