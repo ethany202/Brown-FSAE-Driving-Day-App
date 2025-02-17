@@ -13,7 +13,6 @@ interface SpecificRunBubbleProps {
   keyPoints: any,
   keyCategories: string[],
   driver: Driver,
-  onClick?: () => void;
 }
 
 export default function SpecificRunBubble({
@@ -21,7 +20,6 @@ export default function SpecificRunBubble({
   keyPoints,
   keyCategories,
   driver,
-  onClick,
 }: SpecificRunBubbleProps) {
 
     const [runDate, setRunDate] = useState<string>("2025-01-01");
@@ -37,7 +35,6 @@ export default function SpecificRunBubble({
   return (
     <div
       className="font-face bg-white rounded-lg border border-gray-200 p-4 cursor-pointer transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
-      onClick={onClick}
       role="button"
       tabIndex={0}
     >

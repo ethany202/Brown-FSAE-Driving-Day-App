@@ -8,7 +8,6 @@ import Layout from './pages/layout/Layout';
 import DriversPage from './pages/drivers-page/DriversPage';
 import UploadFiles from './pages/upload-page/UploadFiles';
 import Home from './pages/home-page/Home';
-import RunDetailRevised from './pages/run-page/RunDetailRevised';
 import DevPage from './pages/dev-page/DevPage';
 
 /**
@@ -33,12 +32,8 @@ const router = createBrowserRouter([
       //TODO: Temporary path
       {
         path: "/runs/:runTitle",
-        element: <RunDetailRevised/>
+        element: <RunDetail/>
       },
-      // {
-      //   path: "/runs/:runNumber",
-      //   element: <RunDetail />
-      // },
       {
         path: "/drivers",
         element: <DriversPage />

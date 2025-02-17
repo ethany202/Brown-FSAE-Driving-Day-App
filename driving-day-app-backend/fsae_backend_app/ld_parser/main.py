@@ -21,8 +21,8 @@ def process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_fil
         run_date = datetime.fromisoformat(run_date)
 
         year = str(run_date.year)
-        month = str(run_date.month) if run_date.month < 10 else "0" + str(run_date.month)
-        day = str(run_date.day) if run_date.day < 10 else "0" + str(run_date.day)
+        month = str(run_date.month) if run_date.month > 10 else "0" + str(run_date.month)
+        day = str(run_date.day) if run_date.day > 10 else "0" + str(run_date.day)
 
 
         file_path = os.path.join(data_path, f'{year}-{month}-{day}-{run_title}.ld')
@@ -31,9 +31,7 @@ def process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_fil
             destination_file.write(file_content)
         
         process_and_upload_ld_files()
-        os.remove(file_path)
-        # Delete LD file afterwards
-    # print(inputted_file.name)
+
 
 def process_and_upload_ld_files():
     '''

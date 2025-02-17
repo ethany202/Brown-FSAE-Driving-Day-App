@@ -132,13 +132,10 @@ export const getSpecificRunData = async (runFilter: {
   const path = "specific-run-data";
 
   const categoriesFiltered = runFilter.categories || []
-
   const params = new URLSearchParams({
     runTitle: runFilter.runTitle.toString(),
     categories: categoriesFiltered.toString()
   });
-
   return await getRequest(path, params);
-
 };
 

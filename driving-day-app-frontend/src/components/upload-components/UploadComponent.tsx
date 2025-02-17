@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DatePicker from "react-datepicker";
 import { FilePond, registerPlugin } from 'react-filepond';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
@@ -7,7 +8,7 @@ import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 import 'filepond/dist/filepond.min.css';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { postFiles, getAllDrivers } from '../../api/api';
+import { postFiles } from '../../api/api';
 import './UploadComponent.css';
 import AppDataContext from '../contexts/AppDataContext';
 
@@ -19,6 +20,8 @@ export default function UploadComponent() {
 
     // Data-related states
     const { drivers } = useContext(AppDataContext)
+
+    const navigate = useNavigate()
 
     const [uploadedData, setUploadedData] = useState<File>()
     const [uploadedMedia, setUploadedMedia] = useState<File[]>([])
@@ -65,7 +68,7 @@ export default function UploadComponent() {
         setUploading(false)
 
         if (result.status === 200) {
-            window.location.href = "/run-data"
+            navigate("/run-data");
         }
         else {
             // Set error pop-up

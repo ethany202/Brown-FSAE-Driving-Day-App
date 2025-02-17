@@ -114,6 +114,11 @@ def upload_csv_to_firestore(csv_file_path):
     main_document = file_name
     
     main_doc_ref = db.collection(main_collection).document(main_document)
+
+    main_doc_ref.set({
+        "run-date": file_name[0:10]
+    })
+
     subcollection_ref = main_doc_ref.collection(subcollection)
     
     try:
@@ -203,7 +208,6 @@ def get_specific_document_data(document_name, categories_list):
                 .collection('data')
                     
         if len(categories_list) > 0:
-            print(categories_list[0])
             categories_formatted = [f'`{c}`' for c in categories_list]
             document_query = document_query.select(categories_formatted)
         # Stream all documents in the 'data' sub-collection
@@ -223,7 +227,7 @@ def get_specific_document_data(document_name, categories_list):
         return None 
 
 
-def get_simplified_run_data(filter_limit=1, filtered_date=None, filtered_driver=None):
+def get_simplified_run_data(filter_limit=10, filtered_date=None, filtered_driver=None):
     """
     Retrieves run-relevant data in a simplified format from the Firestore database,
     as demonstrated in the /run-data path. To support pagination, the 10 most recent entries are taken
@@ -239,8 +243,8 @@ def get_simplified_run_data(filter_limit=1, filtered_date=None, filtered_driver=
     try:
         # Access the 'ecu-data' collection and the 'sample_test' document
         filtered_docs_query = db.collection('ecu-data')\
-            .order_by('timestamp', direction=firestore.Query.DESCENDING)\
-            .limit(filter_limit)
+            .order_by('`run-date`', direction=firestore.Query.DESCENDING)\
+                .limit(filter_limit)
 
         filtered_docs = filtered_docs_query.stream()
 
@@ -248,8 +252,8 @@ def get_simplified_run_data(filter_limit=1, filtered_date=None, filtered_driver=
         for doc in filtered_docs:
             doc_data = doc.to_dict()
             doc_data['id'] = doc.id
-            
-            data_list.append(get_specific_document_data(doc.id))
+            data_list.append(doc_data)
+            # data_list.append(get_specific_document_data(doc.id))
         
         return data_list
     except Exception as e:
