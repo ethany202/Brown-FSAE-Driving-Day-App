@@ -6,10 +6,14 @@ from ..firebase.firebase import firebase_app
 from firebase_admin import firestore
 from django.core.files.storage import default_storage
 from datetime import datetime
+import asyncio
+
 
 db = firestore.client()
 
-def process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_file):
+# Entire function is made asynchronous by turning the process_and_upload_ld_files() function into a 
+# non-blocking call
+async def process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_file):
     '''
         Process LD file that is inputted by the user
     '''
@@ -30,7 +34,7 @@ def process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_fil
         with default_storage.open(file_path, "wb+") as destination_file:
             destination_file.write(file_content)
         
-        process_and_upload_ld_files()
+        await asyncio.to_thread(process_and_upload_ld_files())
 
 
 def process_and_upload_ld_files():

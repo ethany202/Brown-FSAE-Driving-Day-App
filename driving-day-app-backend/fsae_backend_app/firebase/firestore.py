@@ -59,7 +59,7 @@ def add_driver(data):
         print(f"An unexpected error occurred: {e}")
         return None
 
-def get_all_drivers(filters=None):
+async def get_all_drivers(filters=None):
     """
     Retrieves all users from the 'driver-profiles' collection with optional filtering.
     
@@ -78,7 +78,7 @@ def get_all_drivers(filters=None):
                 if value is not None:
                     query = query.where(key, '==', value)
         
-        docs = query.stream()
+        docs = await query.stream()
         
         drivers = []
         for doc in docs:
@@ -200,7 +200,7 @@ def upload_csv_columns_as_documents(csv_file_path):
         print(f"An error occurred while uploading CSV to Firestore: {e}")
 
 
-def get_specific_document_data(document_name, categories_list):
+async def get_specific_document_data(document_name, categories_list):
     try:
         # Access the 'ecu-data' collection and the 'sample_test' document
         document_query = db.collection('ecu-data')\
@@ -210,8 +210,9 @@ def get_specific_document_data(document_name, categories_list):
         if len(categories_list) > 0:
             categories_formatted = [f'`{c}`' for c in categories_list]
             document_query = document_query.select(categories_formatted)
+
         # Stream all documents in the 'data' sub-collection
-        document_data = document_query.stream()
+        document_data = await document_query.stream()
         
         data_list = []
         for doc in document_data:
@@ -227,7 +228,7 @@ def get_specific_document_data(document_name, categories_list):
         return None 
 
 
-def get_simplified_run_data(filter_limit=10, filtered_date=None, filtered_driver=None):
+async def get_simplified_run_data(filter_limit=10, filtered_date=None, filtered_driver=None):
     """
     Retrieves run-relevant data in a simplified format from the Firestore database,
     as demonstrated in the /run-data path. To support pagination, the 10 most recent entries are taken
@@ -246,7 +247,7 @@ def get_simplified_run_data(filter_limit=10, filtered_date=None, filtered_driver
             .order_by('`run-date`', direction=firestore.Query.DESCENDING)\
                 .limit(filter_limit)
 
-        filtered_docs = filtered_docs_query.stream()
+        filtered_docs = await filtered_docs_query.stream()
 
         data_list = []
         for doc in filtered_docs:
