@@ -1,114 +1,113 @@
-import React from 'react'
-import { useLocation, useNavigate } from 'react-router-dom';
-import RunBubble from '../../components/run-components/RunBubble';
-import RunCoolantTemperatureChart from '../../components/run-components/RunCoolantTemperatureChart';
+import React, {useState, useEffect} from 'react'
+import { useNavigate, useParams } from 'react-router-dom';
+import SpecificRunBubble from '../../components/run-components/SpecificRunBubble';
+import LineChartTemplate from '../../components/run-components/LineChartTemplate';
 import './ChartElements.css';
-
-interface Metric {
-  label: string;
-  value: string;
-}
-
-interface Run {
-  runNumber: number;
-  driver: string;
-  date: string;
-  metrics: Metric[];
-}
-
-interface TemperatureDataPoint {
-  time: number;          // Time in seconds
-  temperature: number;    // Coolant temperature in °C
-}
-
-const coolantTemperatureData: TemperatureDataPoint[] = [
-  { time: 0, temperature: 60 },
-  { time: 1, temperature: 62 },
-  { time: 2, temperature: 64 },
-  { time: 3, temperature: 65 },
-  { time: 4, temperature: 67 },
-  { time: 5, temperature: 70 },
-  { time: 6, temperature: 73 },
-  { time: 7, temperature: 75 },
-  { time: 8, temperature: 78 },
-  { time: 9, temperature: 80 },
-  { time: 10, temperature: 82 },
-];
-
-const runs: Run[] = [
-  {
-    runNumber: 1,
-    driver: "xxx",
-    date: "10/15/2024",
-    metrics: [
-      { label: "Engine", value: "xxx" },
-      { label: "Cooling", value: "xxx" },
-      { label: "Metric 3", value: "xxx" },
-      { label: "Metric 4", value: "xxx" },
-      { label: "Metric 5", value: "xxx" },
-      { label: "Metric 6", value: "xxx" },
-    ],
-  },
-  {
-    runNumber: 2,
-    driver: "xxx",
-    date: "10/15/2024",
-    metrics: [
-      { label: "Engine", value: "xxx" },
-      { label: "Cooling", value: "xxx" },
-      { label: "Metric 3", value: "xxx" },
-      { label: "Metric 4", value: "xxx" },
-      { label: "Metric 5", value: "xxx" },
-      { label: "Metric 6", value: "xxx" },
-    ],
-  },
-];
+import { getSpecificRunData } from '../../api/api';
+import { CATEGORIES } from '../../utils/DataTypes';
+import { Driver } from '../../utils/DriverType';
 
 
-const RunDetail: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const runNumber = location.state?.runNumber;
-
-  const run = runs.find(r => r.runNumber === runNumber)
-  const timeData = coolantTemperatureData.map((dataPoint) => dataPoint.time);
-  const temperatureData = coolantTemperatureData.map((dataPoint) => dataPoint.temperature);
-  return (
-    <div className="page-content-main">
-
-      <div className="w-full p-8">
-        <div className="run-detail-chart">
-
-          <h1 className="mb-6 text-2xl font-semibold">{`Run ${runNumber} Details`}</h1>
-
-          {run ? (
-            <RunBubble
-              runNumber={run.runNumber}
-              driver={run.driver}
-              date={run.date}
-              metrics={run.metrics}
-              onClick={() => console.log(`Viewing details for Run ${run.runNumber}`)}
-            />
-          ) : (
-            <p className="text-lg text-gray-600">Run details not found.</p>
-          )}
-
-          <RunCoolantTemperatureChart timeData={timeData} temperatureData={temperatureData} />
+const RunDetailRevised: React.FC = () => {
+    
+    const {runTitle} = useParams()
+    const navigate = useNavigate()
 
 
-          <button
-            onClick={() => navigate(-1)}
-            className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
-          >
-            Go Back
-          </button>
+    // Adapt this into DataTypes.ts
+    const keyCategories = ["Highest Coolant Temperature"]
+
+    const [isLoading, setLoading] = useState<boolean>(true);
+    const [driver, setDriver] = useState<Driver>({
+        driverId: 'UNDEF',
+        firstName: 'UNDEF',
+        lastName: 'UNDEF',
+        height: -1,
+        weight: -1,
+        pedalBoxPos: -1
+    })
+    // Array of JSON entries
+    const [runDataPoints, setRunDataPoints] = useState<any[]>([])
+    // JSON entries of most important points
+    const [keyPoints, setKeyPoints] = useState<JSON>(JSON.parse("{}"))
+    
+
+    const fetchSpecificRunData = async () => {
+        const response = await getSpecificRunData({
+            runTitle: runTitle || "sample_data",
+            categories: [
+                // CATEGORIES.BR_PRESSURE_FRONT, 
+                // CATEGORIES.BR_PRESSURE_FRONT, 
+                CATEGORIES.COOL_TEMP, 
+                CATEGORIES.ENG_OIL_PRESSURE
+            ]
+        })
+        if (response.status === 200) {
+            setRunDataPoints(response.data.runDataPoints)
+            setKeyPoints(response.data.keyPoints)
+            setLoading(false)
+        }
+
+        // Update driver too
+    }
+
+    
+    useEffect(() => {
+        // USE localStorage to cache in the future
+        // Flush data out after 1 week or browser reaches max memory
+        /**
+         * Item Structure:
+         *      key: runTitle,
+         *      expiry: <1 Week date time>
+         *      value: JSON.stringify(<content>)
+         */
+        fetchSpecificRunData()
+    }, [])
 
 
+    if (isLoading) {
+        return (
+            <div className='page-content-main'>
+                <div className="flex items-center justify-center h-64">
+                    Loading run data...
+                </div>
+            </div>    
+        );
+    }
+
+    return (
+        <div className="page-content-main">
+
+        <div className="w-full p-8">
+            <div className="run-detail-chart">
+                <h1 className="mb-6 text-2xl font-semibold">{`"${runTitle}" Details`}</h1>
+
+                {runTitle ? (
+                    <SpecificRunBubble
+                        runTitle={runTitle}
+                        keyPoints={keyPoints}
+                        keyCategories={keyCategories}
+                        driver={driver}
+                        />
+                ) : (
+                    <p className="text-lg text-gray-600">Run details not found.</p>
+                )}
+
+                <div className="py-8">
+                    <LineChartTemplate 
+                        frequency={1}
+                        categoryName={CATEGORIES.ENG_OIL_PRESSURE}
+                        verticalLabel={"Engine Oil Pressure (kPa)"}
+                        horizontalLabel={"Time (s)"}
+                        chartPoints={runDataPoints}
+                    />
+                </div>
+                
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 
 };
 
-export default RunDetail;
+export default RunDetailRevised;

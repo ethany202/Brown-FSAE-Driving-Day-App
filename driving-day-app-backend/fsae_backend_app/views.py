@@ -1,10 +1,9 @@
 from django.http import JsonResponse
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
-from .firebase.firestore import add_driver, get_all_drivers
 from .ld_parser.main import process_and_upload_ld_files, process_and_upload_inputted_ld_file
 import json
-from .firebase.firestore import get_all_data_rows_from_firestore
+from .firebase.firestore import *
 
 # TODO: Create Standard JSON Response Body
 
@@ -32,12 +31,14 @@ def add_driver_call(request):
     - JSON response with an error message if the request method is not POST.
     """
     if request.method == 'POST':
-        print("Successfully connected!")
-        data = json.loads(request.body.decode('utf-8'))
-        add_driver(data)
-        return JsonResponse({"message": "User registration successful!"}, status=200)
-    else:
-        return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            add_driver(data)
+            return JsonResponse({"message": "User registration successful!"}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
+        
+    return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
 
 @api_view(['GET'])
 def get_all_drivers_call(request):
@@ -98,26 +99,30 @@ def upload_files_call(request):
 
     """
     if request.method == 'POST':
-        # Pull Metadata:
-        all_files = request.FILES
-        # Pull LD file
-        data_file = all_files.get('dataFile')
 
-        # Pull Media Files
-        media_files = list(all_files.keys())
-        media_files.pop(0)
+        try:
+            # Pull Metadata:
+            all_files = request.FILES
 
-        # Driver ID
-        driver_id = request.POST.get('driverId')
-        # Run Date
-        run_date=request.POST.get('runDate')
-        # Title for Run
-        run_title = request.POST.get('runTitle')
+            data_file = all_files.get('dataFile')
+            media_files = list(all_files.keys())
+            media_files.pop(0)
 
-        process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_file)
-        return JsonResponse({"message": "Successfully uploaded LD data to database!"}, status=200)
-    else:
-        return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
+            # Driver ID
+            driver_id = request.POST.get('driverId')
+            # Run Date
+            run_date=request.POST.get('runDate')
+            # Title for Run
+            run_title = request.POST.get('runTitle')
+
+            # Upload to S3
+            # Obtain Image URLs:
+            process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_file)
+            return JsonResponse({"message": "Successfully uploaded LD data to database!"}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
     
 @api_view(['GET'])
 def get_all_data(request):
@@ -136,19 +141,41 @@ def get_all_data(request):
         GET /api/get-all-data/ -> Retrieves all data from Firestore.
 
     """
-    try:
-        if request.method == 'GET':
-            # Call the function to retrieve data from Firestore
-            data = get_all_data_rows_from_firestore()
+    return JsonResponse({"error": "Avoid fetching all data."}, status=500)
 
-            # Check if data retrieval was successful
-            if data is not None:
-                return JsonResponse({"data": data, "message": "Successfully retrieved all data from Firestore!"}, status=200)
-            else:
-                return JsonResponse({"error": "Failed to fetch data from Firestore."}, status=500)
-        else:
-            return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
 
-    except Exception as e:
-        # Catch and handle unexpected errors
-        return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
+@api_view(['GET'])
+def get_general_run_data_call(request):
+
+    if request.method == 'GET':
+        try:
+            data = get_simplified_run_data(filter_limit=10)
+            
+            return JsonResponse({"recentRuns": data}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
+    
+    return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
+
+
+
+@api_view(['GET'])
+def get_specific_run_data_call(request):
+    if request.method == 'GET':
+        try:
+            document_name = request.GET.get('runTitle')
+            categories = request.GET.get('categories')
+
+            categories_list = categories.strip().split(",")
+
+            data = get_specific_document_data(document_name, categories_list)
+            key_points = {
+                "Highest Coolant Temperature": "-100"
+            }
+
+            return JsonResponse({"runDataPoints": data, "keyPoints": key_points}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
+    
+    return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
+

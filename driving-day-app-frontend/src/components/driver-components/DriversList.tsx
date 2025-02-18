@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Driver } from "../../utils/Driver";
+import { Driver } from "../../utils/DriverType";
 import { SpecificDriverProfile } from "./SpecificDriverProfile";
 import AppDataContext from "../contexts/AppDataContext";
 
+// TODO: Move this to DriversPage.tsx
 const DriversList = () => {
 
   const { drivers, isLoading } = useContext(AppDataContext)
