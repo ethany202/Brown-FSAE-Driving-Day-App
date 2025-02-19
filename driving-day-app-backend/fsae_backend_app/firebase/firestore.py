@@ -71,8 +71,6 @@ def get_all_drivers(filters=None):
         list: List of dictionaries containing user data
     """
     try:
-        db = firestore.client()
-
         main_db = db.collection('driver-profiles')
         query = main_db
         
