@@ -1,11 +1,8 @@
 from django.http import JsonResponse
-from django.http import HttpResponse
-from rest_framework.decorators import api_view
 from .ld_parser.main import process_and_upload_inputted_ld_file
 import json
 from .firebase.firestore import *
-
-# TODO: Create Standard JSON Response Body
+from asgiref.sync import sync_to_async
 
 def homepage(request):
     return JsonResponse({
@@ -13,8 +10,8 @@ def homepage(request):
         "status": "success"
     })
 
-@api_view(['POST'])
-def add_driver_call(request):
+
+async def add_driver_call(request):
     """
     Handles user registration via a POST request.
 
@@ -33,14 +30,14 @@ def add_driver_call(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body.decode('utf-8'))
-            add_driver(data)
+            await sync_to_async(add_driver)(data)
             return JsonResponse({"message": "User registration successful!"}, status=200)
         except Exception as e:
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
         
     return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
 
-@api_view(['GET'])
+
 async def get_all_drivers_call(request):
     """
     Get all drivers with optional height/weight filtering
@@ -56,8 +53,10 @@ async def get_all_drivers_call(request):
             if int(weight) != -1:
                 filters['weight'] = float(weight)
             
-            drivers = await get_all_drivers(filters=filters if filters else None)
-            
+            get_all_drivers_async = sync_to_async(get_all_drivers)
+
+            drivers = await get_all_drivers_async(filters=filters if filters else None)
+
             return JsonResponse({
                 "drivers": drivers,
                 "message": "Drivers retrieved successfully"
@@ -74,8 +73,6 @@ async def get_all_drivers_call(request):
     }, status=400)
 
 
-
-@api_view(['POST'])
 async def upload_files_call(request):
     """
     Handle the POST request to upload and process LD files.
@@ -117,7 +114,7 @@ async def upload_files_call(request):
 
             # Upload to S3
             # Obtain Image URLs:
-            await process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_file)
+            await sync_to_async(process_and_upload_inputted_ld_file)(driver_id, run_date, run_title, data_file)
             return JsonResponse({"message": "Successfully uploaded LD data to database!"}, status=200)
         except Exception as e:
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
@@ -125,7 +122,6 @@ async def upload_files_call(request):
     return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
 
 
-@api_view(['GET'])
 async def get_general_run_data_call(request):
     """
     Handle the GET request to retrieve the most recent GENERAL data from Firestore.
@@ -145,7 +141,7 @@ async def get_general_run_data_call(request):
 
     if request.method == 'GET':
         try:
-            data = await get_simplified_run_data(filter_limit=10)
+            data = await sync_to_async(get_general_run_data)(filter_limit=10)
             
             return JsonResponse({"recentRuns": data}, status=200)
         except Exception as e:
@@ -154,7 +150,6 @@ async def get_general_run_data_call(request):
     return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
 
 
-@api_view(['GET'])
 async def get_specific_run_data_call(request):
     if request.method == 'GET':
         try:
@@ -163,7 +158,7 @@ async def get_specific_run_data_call(request):
 
             categories_list = categories.strip().split(",")
 
-            data = await get_specific_document_data(document_name, categories_list)
+            data = await sync_to_async(get_specific_document_data)(document_name, categories_list)
             key_points = {
                 "Highest Coolant Temperature": "-100"
             }
