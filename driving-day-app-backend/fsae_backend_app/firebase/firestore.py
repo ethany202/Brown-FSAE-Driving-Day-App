@@ -224,3 +224,37 @@ def get_all_data_rows_from_firestore():
         print(f"An unexpected error occurred: {e}")
         return None
 
+def get_user_by_email(email):
+    """
+    Retrieves a user document from Firestore by email.
+
+    Args:
+        email (str): The user's email address
+
+    Returns:
+        dict: User data if found
+        None: If user not found or error occurs
+    """
+    try:
+        user_doc = db.collection('users').document(email).get()
+        if user_doc.exists:
+            return user_doc.to_dict()
+        return None
+    except Exception as e:
+        print(f"Error retrieving user: {e}")
+        return None
+
+def update_user_last_login(email):
+    """
+    Updates the user's last login timestamp.
+
+    Args:
+        email (str): The user's email address
+    """
+    try:
+        db.collection('users').document(email).update({
+            'lastLogin': firestore.SERVER_TIMESTAMP
+        })
+    except Exception as e:
+        print(f"Error updating last login: {e}")
+
