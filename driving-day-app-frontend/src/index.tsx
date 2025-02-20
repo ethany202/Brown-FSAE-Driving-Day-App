@@ -8,6 +8,7 @@ import Layout from './pages/layout/Layout';
 import DriversPage from './pages/drivers-page/DriversPage';
 import UploadFiles from './pages/upload-page/UploadFiles';
 import Home from './pages/home-page/Home';
+import MyAccount from './pages/account-page/MyAccount';
 import DevPage from './pages/dev-page/DevPage';
 
 /**
@@ -40,7 +41,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/my-account",
-        element: <App />
+        element: <MyAccount />
       },
       {
         path: "/upload-files",
