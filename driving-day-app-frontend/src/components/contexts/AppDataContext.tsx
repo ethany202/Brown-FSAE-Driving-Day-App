@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { Driver } from "../../utils/Driver";
+import { Driver } from "../../utils/DriverType";
 
 interface AppDataContextType {
     drivers: Driver[],

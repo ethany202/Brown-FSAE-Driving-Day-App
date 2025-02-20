@@ -19,15 +19,19 @@ def process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_fil
     if data_file.name.endswith('.ld'):
         file_content = data_file.read()
         run_date = datetime.fromisoformat(run_date)
-        file_path = os.path.join(data_path, f'{run_date.year}-{run_date.month}-{run_date.day}-{run_title}.ld')
+
+        year = str(run_date.year)
+        month = str(run_date.month) if run_date.month > 10 else "0" + str(run_date.month)
+        day = str(run_date.day) if run_date.day > 10 else "0" + str(run_date.day)
+
+
+        file_path = os.path.join(data_path, f'{year}-{month}-{day}-{run_title}.ld')
         # Change to account for uploaded metadata
         with default_storage.open(file_path, "wb+") as destination_file:
             destination_file.write(file_content)
         
         process_and_upload_ld_files()
-        os.remove(file_path)
-        # Delete LD file afterwards
-    # print(inputted_file.name)
+
 
 def process_and_upload_ld_files():
     '''
