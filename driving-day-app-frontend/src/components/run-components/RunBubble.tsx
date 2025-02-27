@@ -1,5 +1,5 @@
 import React from "react";
-import './RunBubble.css';
+import "./RunBubble.css";
 
 interface Metric {
   label: string;
@@ -50,4 +50,4 @@ export default function RunBubble({
       </div>
     </div>
   );
-};
+}
