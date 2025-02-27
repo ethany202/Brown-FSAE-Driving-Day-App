@@ -1,55 +1,43 @@
-import React from "react";
-import RunBubble from "../../components/run-components/RunBubble";
+import React, {useState, useEffect} from "react";
+// import RunBubble from "../../components/run-components/RunBubble";
+import GeneralRunBubble from "../../components/run-components/GeneralRunBubble";
 import { useNavigate } from "react-router-dom";
-
-interface Metric {
-  label: string;
-  value: string;
-}
-
-interface Run {
-  runNumber: number;
-  driver: string;
-  date: string;
-  metrics: Metric[];
-}
+import { getGeneralRunData } from "../../api/api";
+import { Driver } from "../../utils/DriverType";
 
 const RunsSummaryPage: React.FC = () => {
-  const runs: Run[] = [
-    {
-      runNumber: 1,
-      driver: "xxx",
-      date: "10/15/2024",
-      metrics: [
-        { label: "Engine", value: "xxx" },
-        { label: "Cooling", value: "xxx" },
-        { label: "Metric 3", value: "xxx" },
-        { label: "Metric 4", value: "xxx" },
-        { label: "Metric 5", value: "xxx" },
-        { label: "Metric 6", value: "xxx" },
-      ],
-    },
-    {
-      runNumber: 2,
-      driver: "xxx",
-      date: "10/15/2024",
-      metrics: [
-        { label: "Engine", value: "xxx" },
-        { label: "Cooling", value: "xxx" },
-        { label: "Metric 3", value: "xxx" },
-        { label: "Metric 4", value: "xxx" },
-        { label: "Metric 5", value: "xxx" },
-        { label: "Metric 6", value: "xxx" },
-      ],
-    },
-  ];
 
   const navigate = useNavigate();
-
-  const handleRunClick = (runNumber: number) => {
-    navigate(`/runs/${runNumber}`, { state: { runNumber } });
+  const templateDriver : Driver = {
+    driverId: 'UNDEF',
+    firstName: 'UNDEF',
+    lastName: 'UNDEF',
+    height: -1,
+    weight: -1,
+    pedalBoxPos: -1
+  }
+  const [isLoading, setLoading] = useState<boolean>(true);
+  // JSON array of general run data
+  const [generalRuns, setGeneralRuns] = useState<any[]>([])
+  
+  const handleRunClick = (runTitle: string) => {
+    navigate(`/runs/${runTitle}`);
   };
 
+  const fetchGeneralRunData = async () => {
+    const response = await getGeneralRunData({
+      // TOOO: Detect filters
+    })
+    if (response.status === 200){
+      console.log(response.data)
+      setGeneralRuns(response.data.recentRuns)
+    }
+
+  }
+
+  useEffect(() => {
+    fetchGeneralRunData()
+  }, [])
 
   return (
     <div className="page-content-main">
@@ -57,6 +45,7 @@ const RunsSummaryPage: React.FC = () => {
         <div className="p-8 max-w-7xl mx-auto">
           <h1 className="mb-6 text-2xl font-semibold">Summary of Runs</h1>
 
+          {/** Create Actual Filtering System */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <select className="px-4 py-2 border border-gray-200 rounded-md bg-white min-w-[200px] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
               <option value="10/15/2024">Date: 10/15/2024</option>
@@ -72,14 +61,12 @@ const RunsSummaryPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-min">
-            {runs.map((run) => (
-              <RunBubble
-                key={run.runNumber}
-                runNumber={run.runNumber}
-                driver={run.driver}
-                date={run.date}
-                metrics={run.metrics}
-                onClick={() => handleRunClick(run.runNumber)}
+            {generalRuns.map((generalRun) => (
+              <GeneralRunBubble
+                key={generalRun.id}
+                runTitle={generalRun.id}
+                driver={templateDriver}
+                onClick={() => handleRunClick(generalRun.id)}
               />
             ))}
           </div>

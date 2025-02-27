@@ -8,7 +8,7 @@ import Layout from "./pages/layout/Layout";
 import DriversPage from "./pages/drivers-page/DriversPage";
 import UploadFiles from "./pages/upload-page/UploadFiles";
 import Home from "./pages/home-page/Home";
-import Issues from "./pages/issues-page/Issues";
+import DevPage from "./pages/dev-page/DevPage";
 
 /**
  * Creates an object that handles routing for all webpages:
@@ -29,8 +29,9 @@ const router = createBrowserRouter([
         path: "/run-data",
         element: <RunsSummary />,
       },
+      //TODO: Temporary path
       {
-        path: "/runs/:runNumber",
+        path: "/runs/:runTitle",
         element: <RunDetail />,
       },
       {
@@ -45,11 +46,11 @@ const router = createBrowserRouter([
         path: "/upload-files",
         element: <UploadFiles />,
       },
-      {
-        path: "/issues",
-        element: <Issues />,
-      },
     ],
+  },
+  {
+    path: "/dev-page",
+    element: <DevPage />,
   },
 ]);
 

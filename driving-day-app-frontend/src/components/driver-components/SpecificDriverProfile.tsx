@@ -1,5 +1,5 @@
 import React from "react";
-import { Driver } from "../../utils/Driver";
+import { Driver } from "../../utils/DriverType";
 
 export const SpecificDriverProfile = ({ driver }: { driver: Driver }) => (
   <div className="justify-center bg-white border rounded-lg shadow-lg flex flex-col items-center w-full">
