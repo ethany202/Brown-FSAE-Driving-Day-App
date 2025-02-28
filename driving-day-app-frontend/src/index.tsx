@@ -9,6 +9,7 @@ import DriversPage from "./pages/drivers-page/DriversPage";
 import UploadFiles from "./pages/upload-page/UploadFiles";
 import Home from "./pages/home-page/Home";
 import DevPage from "./pages/dev-page/DevPage";
+import Issues from "./pages/issues-page/Issues";
 
 /**
  * Creates an object that handles routing for all webpages:
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
       {
         path: "/upload-files",
         element: <UploadFiles />,
+      },
+      {
+        path: "/issues",
+        element: <Issues />,
       },
     ],
   },
