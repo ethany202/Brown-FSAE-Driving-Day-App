@@ -1,13 +1,15 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import logo from '../../assets/images/image.png';
-import './Navbar.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import logo from "../../assets/images/image.png";
+import "./Navbar.css";
 
 const Navbar = () => {
   return (
     <div className="navbar-wrapper" style={{ backgroundColor: "#786C6C" }}>
       <div className="">
-        <Link to="/"><img src={logo} alt="Logo" className="navbar-logo" /></Link>
+        <Link to="/">
+          <img src={logo} alt="Logo" className="navbar-logo" />
+        </Link>
       </div>
       <ul className="navbar-buttons">
         <li>
@@ -33,6 +35,11 @@ const Navbar = () => {
         <li>
           <Link to="/my-account" className="navbar-link">
             My Account
+          </Link>
+        </li>
+        <li>
+          <Link to="/issues" className="navbar-link">
+            Issues
           </Link>
         </li>
       </ul>

@@ -1,35 +1,35 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilies;
+@tailwind utilities;
 
 @layer components {
-    .navbar-wrapper {
-        /* padding-bottom: 0.65rem; */
-        width: 16rem;
-        position: fixed;
-        height: 100vh;
-        z-index: 10;
-    }
+  .navbar-wrapper {
+    /* padding-bottom: 0.65rem; */
+    width: 16rem;
+    position: fixed;
+    height: 100vh;
+    z-index: 10;
+  }
 
-    .navbar-logo {
-        padding: 1rem;
-    }
+  .navbar-logo {
+    padding: 1rem;
+  }
 
-    .navbar-buttons {
-        display: flex;
-        flex-direction: column;
-    }
+  .navbar-buttons {
+    display: flex;
+    flex-direction: column;
+  }
 
-    .navbar-link {
-        display: block;
-        padding: 0.65rem 1rem;
-        margin: 0.5rem 0;
-    }
+  .navbar-link {
+    display: block;
+    padding: 0.65rem 1rem;
+    margin: 0.5rem 0;
+  }
 
-    .navbar-link:hover {
-        /* background-color: #9D2062; */
-        background-color: black;
-        transition: 0.2s;
-        color: white;
-    }
+  .navbar-link:hover {
+    /* background-color: #9D2062; */
+    background-color: black;
+    transition: 0.2s;
+    color: white;
+  }
 }

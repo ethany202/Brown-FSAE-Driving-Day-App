@@ -1,9 +1,9 @@
 @tailwind components;
 @tailwind base;
-@tailwind utilies;
+@tailwind utilities;
 
 @layer base {
-    .run-detail-chart canvas {
-        width: 100% !important;
-    }
+  .run-detail-chart canvas {
+    width: 100% !important;
+  }
 }
