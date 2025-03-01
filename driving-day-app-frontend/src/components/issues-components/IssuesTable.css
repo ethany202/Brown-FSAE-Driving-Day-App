@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .table-container {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .tag {
+    font-size: 0.875rem;
+    border-radius: 9999px;
+    padding: 0.25rem 0.75rem;
+  }
+}
