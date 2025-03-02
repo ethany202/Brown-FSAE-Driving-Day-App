@@ -101,6 +101,8 @@ def upload_files_call(request):
     if request.method == 'POST':
 
         try:
+            print("Entered")
+
             # Pull Metadata:
             all_files = request.FILES
 
@@ -117,31 +119,13 @@ def upload_files_call(request):
 
             # Upload to S3
             # Obtain Image URLs:
+            print("Processing")
             process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_file)
             return JsonResponse({"message": "Successfully uploaded LD data to database!"}, status=200)
         except Exception as e:
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
-    
-@api_view(['GET'])
-def get_all_data(request):
-    """
-    Handle the GET request to retrieve all data from Firestore.
-
-    This view function retrieves all data from Firestore and returns it as a JSON response.
-
-    Request Method:
-        GET: Retrieves all data from Firestore.
-
-    Returns:
-        JsonResponse: A JSON response containing all data from Firestore.
-
-    Example:
-        GET /api/get-all-data/ -> Retrieves all data from Firestore.
-
-    """
-    return JsonResponse({"error": "Avoid fetching all data."}, status=500)
 
 
 @api_view(['GET'])
