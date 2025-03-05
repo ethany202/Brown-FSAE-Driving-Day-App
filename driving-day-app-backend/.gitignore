@@ -26,6 +26,7 @@ ENV/
 env/
 env.bak/
 venv.bak/
+fsae_env/
 
 # PyInstaller
 *.manifest
