@@ -113,6 +113,7 @@ def upload_csv_to_firestore(csv_file_path):
 
     file_name = os.path.splitext(os.path.basename(csv_file_path))[0]
     main_document = file_name
+    frequency = int(file_name.split("-")[-2])
     
     main_doc_ref = db.collection(main_collection).document(main_document)
 
@@ -130,6 +131,10 @@ def upload_csv_to_firestore(csv_file_path):
             document_counter = 0
             
             for row_number, row in enumerate(reader):
+                if document_counter % frequency != 0:
+                    document_counter += 1
+                    continue    # Proceed if frequency does not represent a SINGLE SECOND ==> ensures that each data entry corresponds to a discrete second
+
                 # If the number of rows EXCEEDS the max_entries_counter
                 if document_counter >= max_entries_counter:
                     print(f"Reached the max entry number: {document_counter}")

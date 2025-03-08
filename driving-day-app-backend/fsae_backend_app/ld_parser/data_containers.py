@@ -56,31 +56,24 @@ class ldData(object):
             DataFrame: A pandas DataFrame containing the channel data.
         """
         data_dict = {}
-
+        lengths = {}
+        
         for chann in self.channs:
-            print("Parsing channel:", chann.name)
             try:
                 chann_data = chann.data
                 if chann_data is not None:
-                    if isinstance(chann_data, np.ndarray):
-                        chann_data = chann_data.tolist()
-                    data_dict[chann.name] = chann_data
+                    data_dict[chann.name] = chann_data.tolist() if isinstance(chann_data, np.ndarray) else chann_data
+                    lengths[chann.name] = len(data_dict[chann.name])
             except Exception as e:
                 print(f"Error parsing {chann.name}: {e}")
-
-        max_length = max(len(v) for v in data_dict.values())
-        # Fill shorter lists with NaN to match the maximum length
+        
+        # Group data by unique lengths
+        grouped_data = {}
         for key, value in data_dict.items():
-            if len(value) < max_length:
-                if isinstance(value, list):
-                    value.extend([float('nan')] * (max_length - len(value)))
-                else:
-                    value = np.concatenate(
-                        [value, np.full((max_length - len(value),), np.nan)])
-                    data_dict[key] = value.tolist()
-
-        df = pd.DataFrame(data_dict)
-        return df
+            grouped_data.setdefault(len(value), {})[key] = value
+        
+        # Create DataFrames for each unique length
+        return {length: pd.DataFrame(group) for length, group in grouped_data.items()}
 
     @classmethod
     def fromfile(cls, f):
@@ -266,7 +259,7 @@ class ldChan(object):
 
     This class handles the parsing and retrieval of channel-specific metadata
     and actual data values from a binary ld file. Channel data is accessed on-demand
-    via the `data` property.
+    via the data property.
     """
 
     fmt = '<' + (
