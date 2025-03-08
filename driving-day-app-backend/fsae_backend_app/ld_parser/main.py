@@ -7,7 +7,6 @@ from ..firebase.firebase import firebase_app
 from firebase_admin import firestore
 from django.core.files.storage import default_storage
 from datetime import datetime
-import asyncio
 
 
 db = firestore.client()

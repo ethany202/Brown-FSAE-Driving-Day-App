@@ -98,8 +98,6 @@ async def upload_files_call(request):
     if request.method == 'POST':
 
         try:
-            print("Entered")
-
             # Pull Metadata:
             all_files = request.FILES
 

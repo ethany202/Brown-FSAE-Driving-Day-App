@@ -124,7 +124,6 @@ def upload_csv_to_firestore(csv_file_path):
     subcollection_ref = main_doc_ref.collection(subcollection)
     
     try:
-
         # Opening and iterating through CSV file
         with open(csv_file_path, mode='r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
@@ -136,7 +135,7 @@ def upload_csv_to_firestore(csv_file_path):
                     continue    # Proceed if frequency does not represent a SINGLE SECOND ==> ensures that each data entry corresponds to a discrete second
 
                 # If the number of rows EXCEEDS the max_entries_counter
-                if document_counter >= max_entries_counter:
+                if document_counter >= (frequency * max_entries_counter):
                     print(f"Reached the max entry number: {document_counter}")
                     break
 
@@ -145,12 +144,9 @@ def upload_csv_to_firestore(csv_file_path):
                     print(f"Stopping processing at row {row_number}.")
                     break
                 
-                doc_id = f'data_{document_counter:04}'
+                doc_id = f'data_{document_counter:06}'
                 subcollection_ref.document(doc_id).set(row)
-                
-                # Print every 100 documents uploaded
-                if document_counter % 100 == 0: 
-                    print(f"Document {doc_id} uploaded to '{subcollection}' subcollection.")
+
                 document_counter += 1
 
         print(f"All data from {csv_file_path} has been successfully uploaded to Firestore under document '{main_document}'.")
