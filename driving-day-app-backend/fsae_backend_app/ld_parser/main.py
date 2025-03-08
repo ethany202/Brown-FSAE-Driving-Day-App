@@ -57,7 +57,7 @@ def process_and_upload_ld_files():
             min_length = min(df_dict.keys())
 
             for length, df in df_dict.items(): 
-                csv_filename = os.path.join(data_path, os.path.splitext(filename)[0] + '_' + str(math.ceil(length/min_length)) + '_hz' + '.csv')
+                csv_filename = os.path.join(data_path, os.path.splitext(filename)[0] + '-' + str(math.ceil(length/min_length)) + '-hz' + '.csv')
                 df.to_csv(csv_filename, index=False)
                 print(f"Data saved to {csv_filename}")
 
