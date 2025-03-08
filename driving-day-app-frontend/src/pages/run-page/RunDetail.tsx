@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import SpecificRunBubble from '../../components/run-components/SpecificRunBubble';
 import LineChartTemplate from '../../components/run-components/LineChartTemplate';
+import PageBase from '../../components/base-component/PageBase';
 import './ChartElements.css';
 import { getSpecificRunData } from '../../api/api';
 import { CATEGORIES } from '../../utils/DataTypes';
@@ -67,20 +68,18 @@ const RunDetailRevised: React.FC = () => {
 
     if (isLoading) {
         return (
-            <div className='page-content-main'>
+            <PageBase>
                 <div className="flex items-center justify-center h-64">
                     Loading run data...
                 </div>
-            </div>    
+            </PageBase>    
         );
     }
 
     return (
-        <div className="page-content-main">
-
-        <div className="w-full p-8">
+        <PageBase>
             <div className="run-detail-chart">
-                <h1 className="mb-6 text-2xl font-semibold">{`"${runTitle}" Details`}</h1>
+                <h1>{`"${runTitle}" Details`}</h1>
 
                 {runTitle ? (
                     <SpecificRunBubble
@@ -94,6 +93,7 @@ const RunDetailRevised: React.FC = () => {
                 )}
 
                 <div className="py-8">
+                    {/* <h2 className="text-2xl font-semibold py-4">Graphs</h2> */}
                     <LineChartTemplate 
                         frequency={1}
                         categoryName={CATEGORIES.ENG_OIL_PRESSURE}
@@ -102,10 +102,8 @@ const RunDetailRevised: React.FC = () => {
                         chartPoints={runDataPoints}
                     />
                 </div>
-                
-                </div>
             </div>
-        </div>
+        </PageBase>
     );
 
 };

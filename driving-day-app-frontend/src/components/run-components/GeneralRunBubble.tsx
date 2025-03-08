@@ -32,7 +32,7 @@ export default function GeneralRunBubble({
             tabIndex={0}
             >
         <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100 flex-col">
-            <span className="text-lg font-medium">
+            <span className="text-lg font-bold">
                 <p>{runTitle}</p>
             </span>
             <div className="text-sm text-gray-600">

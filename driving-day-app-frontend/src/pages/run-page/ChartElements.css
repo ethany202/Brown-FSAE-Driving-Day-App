@@ -6,4 +6,10 @@
   .run-detail-chart canvas {
     width: 100% !important;
   }
+
+  .graph-heading{
+    font-weight: 600;
+    font-size: 1.5rem;
+    padding: 1rem 0;
+  }
 }

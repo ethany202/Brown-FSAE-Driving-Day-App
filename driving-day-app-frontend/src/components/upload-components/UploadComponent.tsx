@@ -80,7 +80,7 @@ export default function UploadComponent() {
             <div className="flex justify-center flex-col items-center">
                 <div className="grid grid-cols-2 w-full justify-center items-center">
                     <div className="flex flex-col justify-center items-center">
-                        <div className="w-10/12 py-4 justify-center">
+                        <div className="w-11/12 py-4 justify-center">
                             <div className="text-center p-2">
                                 <p>Upload CSV or LD File</p>
                             </div>
@@ -92,7 +92,7 @@ export default function UploadComponent() {
                                 server={null} />
                         </div>
 
-                        <div className="w-10/12 py-4 justify-center">
+                        <div className="w-11/12 py-4 justify-center">
                             <div className="text-center p-2">
                                 <p>Upload Media Files</p>
                             </div>
@@ -109,29 +109,25 @@ export default function UploadComponent() {
                     </div>
 
                     <div className="upload-metadata flex flex-col items-center w-full">
-
-                        <p>
-                            <input
-                                value={runTitle}
-                                className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                                placeholder='Enter run title...'
-                                onKeyDown={(event) => {
-                                    if (event.key === " ") {
-                                        event.preventDefault()
-                                        setRunTitle(runTitle + "-")
-                                    }
-                                }}
-                                onChange={(event) => setRunTitle(event.target.value.toLocaleLowerCase())}>
-                            </input>
-                        </p>
+                        <input
+                            value={runTitle}
+                            className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            placeholder='Enter run title...'
+                            onKeyDown={(event) => {
+                                if (event.key === " ") {
+                                    event.preventDefault()
+                                    setRunTitle(runTitle + "-")
+                                }
+                            }}
+                            onChange={(event) => setRunTitle(event.target.value.toLocaleLowerCase())}>
+                        </input>
 
                         <DatePicker
                             className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                             selected={runDate}
                             onChange={(date) => setRunDate(date)}
                         />
-                        <p>
-                            <select className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent" onChange={(event) => setDriverId(event.target.value)}>
+                        <select className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent" onChange={(event) => setDriverId(event.target.value)}>
                                 <option value="">
                                     Select Driver
                                 </option>
@@ -146,8 +142,7 @@ export default function UploadComponent() {
                                         </option>
                                     )
                                 })}
-                            </select>
-                        </p>
+                        </select>
                     </div>
                 </div>
 
