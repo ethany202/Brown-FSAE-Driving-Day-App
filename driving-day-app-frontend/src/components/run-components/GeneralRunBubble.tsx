@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from "react";
-import './RunBubble.css';
 import { Driver } from "../../utils/DriverType";
 
 interface GeneralRunBubbleProps {

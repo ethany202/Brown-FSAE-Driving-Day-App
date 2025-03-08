@@ -33,4 +33,8 @@
         font-size: 48px; */
         @apply mb-6 text-2xl font-semibold;
     }
+
+    select, input{
+        @apply focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent;
+    }
 }

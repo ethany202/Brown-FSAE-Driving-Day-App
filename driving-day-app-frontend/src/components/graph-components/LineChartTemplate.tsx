@@ -70,10 +70,6 @@ const LineChartTemplate: React.FC<ChartDataProps> = ({
         display: true,
         position: 'top' as const,
       },
-      // title: {
-      //   display: true,
-      //   text: `${verticalLabel} Over ${horizontalLabel}`,
-      // },
     },
     scales: {
       x: {
@@ -92,7 +88,11 @@ const LineChartTemplate: React.FC<ChartDataProps> = ({
     },
   };
 
-  return <Line data={data} options={options} />;
+  return (
+    <div className="py-6">
+      <Line data={data} options={options} />
+    </div>
+  )
 };
 
 export default LineChartTemplate;

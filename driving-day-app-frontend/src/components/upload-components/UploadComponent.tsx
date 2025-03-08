@@ -111,7 +111,6 @@ export default function UploadComponent() {
                     <div className="upload-metadata flex flex-col items-center w-full">
                         <input
                             value={runTitle}
-                            className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                             placeholder='Enter run title...'
                             onKeyDown={(event) => {
                                 if (event.key === " ") {
@@ -127,21 +126,17 @@ export default function UploadComponent() {
                             selected={runDate}
                             onChange={(date) => setRunDate(date)}
                         />
-                        <select className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent" onChange={(event) => setDriverId(event.target.value)}>
-                                <option value="">
-                                    Select Driver
-                                </option>
-
-                                {drivers && drivers.map(currentDriver => {
-                                    return (
-                                        <option
-                                            value={currentDriver.driverId}
-                                            className="driver-option"
-                                            key={currentDriver.driverId}>
-                                            {currentDriver.firstName} {currentDriver.lastName}
-                                        </option>
-                                    )
-                                })}
+                        <select onChange={(event) => setDriverId(event.target.value)}>
+                            {drivers && drivers.map(currentDriver => {
+                                return (
+                                    <option
+                                        value={currentDriver.driverId}
+                                        className="driver-option"
+                                        key={currentDriver.driverId}>
+                                        {currentDriver.firstName} {currentDriver.lastName}
+                                    </option>
+                                )
+                            })}
                         </select>
                     </div>
                 </div>
@@ -149,10 +144,10 @@ export default function UploadComponent() {
 
                 <div className="flex justify-center py-10">
                     {uploading
-                        ? <button disabled={true} className="disabled-upload-button opacity-70">
+                        ? <button disabled={true} className="disabled-upload-button opacity-70 bg-blue-600">
                             <p>Uploading...</p>
                         </button>
-                        : <button onClick={submitUpload} className="upload-button">
+                        : <button onClick={submitUpload} className="upload-button bg-blue-500">
                             <p>Upload Data</p>
                         </button>
                     }
