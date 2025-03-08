@@ -13,6 +13,7 @@ import os
 from .firebase import firebase_app
 from firebase_admin import firestore
 from django.core.paginator import Paginator
+from asgiref.sync import sync_to_async
 
 db = firestore.client()
 # Declares the MAX number of entries to read into Firebase
@@ -215,6 +216,7 @@ def get_specific_document_data(document_name, categories_list):
         if len(categories_list) > 0:
             categories_formatted = [f'`{c}`' for c in categories_list]
             document_query = document_query.select(categories_formatted)
+
         # Stream all documents in the 'data' sub-collection
         document_data = document_query.stream()
         
@@ -232,7 +234,7 @@ def get_specific_document_data(document_name, categories_list):
         return None 
 
 
-def get_simplified_run_data(filter_limit=10, filtered_date=None, filtered_driver=None):
+def get_general_run_data(filter_limit=10, filtered_date=None, filtered_driver=None):
     """
     Retrieves run-relevant data in a simplified format from the Firestore database,
     as demonstrated in the /run-data path. To support pagination, the 10 most recent entries are taken
