@@ -179,3 +179,79 @@ def get_specific_run_data_call(request):
     
     return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
 
+@api_view(['POST'])
+def add_issue_call(request):
+    """
+    Handles adding a new issue via a POST request.
+    """
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            result = add_issue(data)
+            
+            if result is None:
+                return JsonResponse({"error": "Failed to create issue"}, status=400)
+                
+            return JsonResponse({
+                "message": "Issue created successfully!",
+                "issue_id": result["issue_id"]
+            }, status=201)
+            
+        except Exception as e:
+            return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
+        
+    return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
+
+@api_view(['GET'])
+def get_all_issues_call(request):
+    """
+    Retrieves all issues with optional filtering.
+    """
+    if request.method == 'GET':
+        try:
+            filters = {}
+            driver_filter = request.GET.get('driver')
+            subsystem_filter = request.GET.get('subsystem')
+            
+            if driver_filter:
+                filters['driver'] = driver_filter
+            if subsystem_filter:
+                filters['subsystem'] = subsystem_filter
+            
+            issues = get_all_issues(filters if filters else None)
+            
+            if issues is None:
+                return JsonResponse({"error": "Failed to retrieve issues"}, status=500)
+            
+            return JsonResponse({
+                "issues": issues,
+                "message": "Issues retrieved successfully",
+                "count": len(issues)
+            }, status=200)
+            
+        except Exception as e:
+            return JsonResponse({
+                "error": f"An unexpected error occurred: {str(e)}"
+            }, status=500)
+    
+    return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
+
+@api_view(['PUT'])
+def update_issue_call(request, issue_id):
+    if request.method == 'PUT':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            result = update_issue(issue_id, data)
+            
+            if result is None:
+                return JsonResponse({"error": "Failed to update issue or issue not found"}, status=400)
+                
+            return JsonResponse({
+                "message": "Issue updated successfully!",
+                "issue_id": result["issue_id"]
+            }, status=200)
+            
+        except Exception as e:
+            return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
+        
+    return JsonResponse({"error": "Invalid request method. Use PUT."}, status=400)

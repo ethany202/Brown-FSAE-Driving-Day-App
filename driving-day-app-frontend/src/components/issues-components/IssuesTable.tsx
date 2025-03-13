@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import IssueModal from "./IssueModal";
 import AddIssueModal from "./AddIssueModal";
+import { getAllIssues } from "../../api/api";
 
 interface Issue {
-  id: number;
+  id: string;
   driver: string;
   date: string;
   synopsis: string;
@@ -16,9 +17,44 @@ export default function IssueTable() {
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchIssues();
+  }, []);
+
+  const fetchIssues = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await getAllIssues();
+      if (response.status !== 200) {
+        throw new Error("Failed to fetch issues");
+      }
+      const updatedIssues = response.data.issues || [];
+      setIssues(updatedIssues);
+      if (selectedIssue) {
+        const updatedSelected = updatedIssues.find(
+          (issue: Issue) => issue.id === selectedIssue.id
+        );
+        setSelectedIssue(updatedSelected || null);
+      }
+    } catch (err) {
+      setError("Failed to load issues. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSave = () => {
+    fetchIssues();
+  };
 
   return (
     <div>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {isLoading && <p>Loading issues...</p>}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <table className="w-full font-face table-fixed">
           <colgroup>
@@ -62,7 +98,7 @@ export default function IssueTable() {
                 }`}
                 tabIndex={0}
               >
-                <td className="px-6 py-4 text-lg font-medium">{issue.id}</td>
+                <td className="px-6 py-4 text-lg font-medium">{index + 1}</td>
                 <td className="px-6 py-4 text-gray-600">
                   <div className="break-words">{issue.driver}</div>
                 </td>
@@ -92,7 +128,7 @@ export default function IssueTable() {
                 </td>
               </tr>
             ))}
-            {issues.length === 0 && (
+            {issues.length === 0 && !isLoading && (
               <tr>
                 <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
                   No issues found. Click "Add Issue" to create one.
@@ -108,22 +144,14 @@ export default function IssueTable() {
           issue={selectedIssue}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          onSave={(updatedIssue) => {
-            setIssues(
-              issues.map((i) => (i.id === updatedIssue.id ? updatedIssue : i))
-            );
-            setSelectedIssue(updatedIssue);
-          }}
+          onSave={handleSave}
         />
       )}
 
       <AddIssueModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onSave={(newIssue) => {
-          setIssues([...issues, { ...newIssue, id: issues.length + 1 }]);
-          setIsAddModalOpen(false);
-        }}
+        onSave={handleSave}
         nextIssueNumber={issues.length + 1}
       />
     </div>

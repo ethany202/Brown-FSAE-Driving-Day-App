@@ -259,3 +259,101 @@ def get_simplified_run_data(filter_limit=10, filtered_date=None, filtered_driver
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
         return None
+
+def add_issue(data):
+    try:
+        if not isinstance(data, dict):
+            raise ValueError("Input must be a dictionary.")
+
+        required_fields = ['driver', 'date', 'synopsis', 'subsystems', 'description']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                raise ValueError(f"Missing or empty required field: {field}")
+
+        issue_data = {
+            'driver': data['driver'],
+            'date': data['date'],
+            'synopsis': data['synopsis'],
+            'subsystems': data['subsystems'],
+            'description': data['description'],
+            'created_at': firestore.SERVER_TIMESTAMP
+        }
+
+        main_db = db.collection('issues')
+        doc_ref = main_db.document()
+        doc_ref.set(issue_data)
+
+        print(f"Issue '{data['synopsis']}' added with ID: {doc_ref.id}")
+        return {"issue_id": doc_ref.id}
+
+    except ValueError as ve:
+        print(f"ValueError: {ve}")
+        return None
+
+    except Exception as e:
+        print(f"An unexpected error occurred while adding issue: {e}")
+        return None
+    
+def get_all_issues(filters=None):
+    try:
+        main_db = db.collection('issues')
+        query = main_db.order_by('created_at', direction=firestore.Query.DESCENDING)
+
+        # for future filtering
+        if filters:
+            if 'driver' in filters and filters['driver']:
+                query = query.where('driver', '==', filters['driver'])
+        
+        docs = query.stream()
+        
+        issues = []
+        for doc in docs:
+            issue_data = doc.to_dict()
+            issue_data['id'] = doc.id
+            
+            if filters and 'subsystem' in filters and filters['subsystem']:
+                if filters['subsystem'] in issue_data['subsystems']:
+                    issues.append(issue_data)
+            else:
+                issues.append(issue_data)
+                        
+        return issues
+    
+    except Exception as e:
+        print(f"An error occurred while retrieving issues: {e}")
+        return None
+    
+def update_issue(issue_id: str, data: dict):
+    try:
+        if not isinstance(data, dict):
+            raise ValueError("Input must be a dictionary.")
+        if not issue_id:
+            raise ValueError("Issue ID must be provided.")
+
+        issue_data = {
+            'driver': data.get('driver'),
+            'date': data.get('date'),
+            'synopsis': data.get('synopsis'),
+            'subsystems': data.get('subsystems'),
+            'description': data.get('description'),
+            'updated_at': firestore.SERVER_TIMESTAMP
+        }
+        issue_data = {k: v for k, v in issue_data.items() if v is not None}
+
+        main_db = db.collection('issues')
+        doc_ref = main_db.document(issue_id)
+        
+        # Check if document exists
+        if not doc_ref.get().exists:
+            raise ValueError(f"Issue with ID {issue_id} not found.")
+        
+        doc_ref.update(issue_data)
+        print(f"Issue {issue_id} updated successfully")
+        return {"issue_id": issue_id}
+
+    except ValueError as ve:
+        print(f"ValueError: {ve}")
+        return None
+    except Exception as e:
+        print(f"An unexpected error occurred while updating issue: {e}")
+        return None
