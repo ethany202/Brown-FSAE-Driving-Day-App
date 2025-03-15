@@ -36,7 +36,13 @@ const RunDetailRevised: React.FC = () => {
     /**
      * useState variables for chart-data
      */
-    const [chartData, setChartData] = useState<ReusableChartProps>()
+    const [chartData, setChartData] = useState<ReusableChartProps>({
+        frequency: 1,
+        categoryName: "",
+        verticalLabel: "Metric Y",
+        horizontalLabel: "Metrix X (E.X. Time)",
+        chartPoints: [],
+    })
 
     /**
      * Perform fetch call to pull specific run data
@@ -56,11 +62,21 @@ const RunDetailRevised: React.FC = () => {
             setKeyPoints(response.data.keyPoints)
             setLoading(false)
         }
-
-        // Update driver too
     }
 
-    // TODO: Create fetch API call to obtain run meta-data by runTitle
+    const updateChartData = async () => {
+        // TODO: Update to whatever the user toggles
+        setChartData({
+            frequency: 1,
+            categoryName: CATEGORIES.ENG_OIL_PRESSURE,
+            verticalLabel: verticalLabel,
+            horizontalLabel: horizontalLabel,
+            chartPoints: runDataPoints
+        })
+    }
+
+    // TODO: Create fetch API call to obtain current driver based on ID
+    // TODO: Create fetch API call to obtain run meta-data by runTitle (called when necessary)
 
 
 
@@ -74,12 +90,13 @@ const RunDetailRevised: React.FC = () => {
          *      expiry: <1 Week date time>
          *      value: JSON.stringify(<content>)
          */
-        fetchSpecificRunData()
-
         if(location.state){
             setRunDate(location.state['run-date'])
             setDriverId(location.state['driver-id'])
         }
+
+        fetchSpecificRunData()
+        updateChartData()        
     }, [])
 
 
@@ -144,12 +161,8 @@ const RunDetailRevised: React.FC = () => {
                         horizontalLabel={horizontalLabel}
                         chartPoints={runDataPoints}
                     /> */}
-                        <ScatterChartTemplate
-                            frequency={1}
-                            categoryName={CATEGORIES.ENG_OIL_PRESSURE}
-                            verticalLabel={verticalLabel}
-                            horizontalLabel={horizontalLabel}
-                            chartPoints={runDataPoints}/>
+                        {/* {...props} : Method of passing in props as an object*/}
+                        <ScatterChartTemplate {...chartData}/>
                 </div>
             </div>
         </PageBase>
