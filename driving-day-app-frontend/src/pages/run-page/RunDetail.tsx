@@ -1,30 +1,29 @@
 import React, {useState, useEffect} from 'react'
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import SpecificRunBubble from '../../components/run-components/SpecificRunBubble';
 import LineChartTemplate from '../../components/graph-components/LineChartTemplate';
+import ScatterChartTemplate from '../../components/graph-components/ScatterChartTemplate';
 import PageBase from '../../components/base-component/PageBase';
 import './ChartElements.css';
 import { getSpecificRunData } from '../../api/api';
-import { CATEGORIES } from '../../utils/DataTypes';
-import { Driver } from '../../utils/DriverType';
+import { CATEGORIES, ReusableChartProps } from '../../utils/DataTypes';
 
 
 const RunDetailRevised: React.FC = () => {
     
     const {runTitle} = useParams()
-
-    // Adapt this into DataTypes.ts
-    const keyCategories = ["Highest Coolant Temperature"]
+    const location = useLocation()
 
     const [isLoading, setLoading] = useState<boolean>(true);
-    const [driver, setDriver] = useState<Driver>({
-        driverId: 'UNDEF',
-        firstName: 'UNDEF',
-        lastName: 'UNDEF',
-        height: -1,
-        weight: -1,
-        pedalBoxPos: -1
-    })
+    const [runDate, setRunDate] = useState<string>("")
+    const [driverId, setDriverId] = useState<string>("")
+
+    
+    // Adapt this into DataTypes.ts
+    const keyCategories = ["Highest Coolant Temperature"]
+    /**
+     * useState variables for run-data
+     */
     // Array of JSON entries
     const [runDataPoints, setRunDataPoints] = useState<any[]>([])
     // JSON entries of most important points
@@ -34,7 +33,14 @@ const RunDetailRevised: React.FC = () => {
     const [verticalLabel, setVerticalLabel] = useState<string>(CATEGORIES.ENG_OIL_PRESSURE)
     const [horizontalLabel, setHorizontalLabel] = useState<string>("Time")
     
+    /**
+     * useState variables for chart-data
+     */
+    const [chartData, setChartData] = useState<ReusableChartProps>()
 
+    /**
+     * Perform fetch call to pull specific run data
+     */
     const fetchSpecificRunData = async () => {
         const response = await getSpecificRunData({
             runTitle: runTitle || "sample_data",
@@ -54,6 +60,10 @@ const RunDetailRevised: React.FC = () => {
         // Update driver too
     }
 
+    // TODO: Create fetch API call to obtain run meta-data by runTitle
+
+
+
     
     useEffect(() => {
         // USE localStorage to cache in the future
@@ -65,6 +75,11 @@ const RunDetailRevised: React.FC = () => {
          *      value: JSON.stringify(<content>)
          */
         fetchSpecificRunData()
+
+        if(location.state){
+            setRunDate(location.state['run-date'])
+            setDriverId(location.state['driver-id'])
+        }
     }, [])
 
 
@@ -86,9 +101,10 @@ const RunDetailRevised: React.FC = () => {
                 {runTitle ? (
                     <SpecificRunBubble
                         runTitle={runTitle}
+                        runDate={runDate}
+                        driverId={driverId}
                         keyPoints={keyPoints}
                         keyCategories={keyCategories}
-                        driver={driver}
                         />
                 ) : (
                     <p className="text-lg text-gray-600">Run details not found.</p>
@@ -121,13 +137,19 @@ const RunDetailRevised: React.FC = () => {
                             </option>
                         </select>
                     </div>
-                    <LineChartTemplate 
+                    {/* <LineChartTemplate 
                         frequency={1}
                         categoryName={CATEGORIES.ENG_OIL_PRESSURE}
                         verticalLabel={verticalLabel}
                         horizontalLabel={horizontalLabel}
                         chartPoints={runDataPoints}
-                    />
+                    /> */}
+                        <ScatterChartTemplate
+                            frequency={1}
+                            categoryName={CATEGORIES.ENG_OIL_PRESSURE}
+                            verticalLabel={verticalLabel}
+                            horizontalLabel={horizontalLabel}
+                            chartPoints={runDataPoints}/>
                 </div>
             </div>
         </PageBase>

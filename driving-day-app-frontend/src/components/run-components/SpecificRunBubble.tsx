@@ -4,27 +4,24 @@ import { Driver } from "../../utils/DriverType";
 
 interface SpecificRunBubbleProps {
   runTitle: string,
-  // Implicily a JSON type
+  runDate: string,
+  driverId: string
+    // Implicily a JSON type
   keyPoints: any,
   keyCategories: string[],
-  driver: Driver,
 }
 
 export default function SpecificRunBubble({
   runTitle,
+  runDate,
+  driverId,
   keyPoints,
   keyCategories,
-  driver,
 }: SpecificRunBubbleProps) {
 
-    const [runDate, setRunDate] = useState<string>("2025-01-01");
-
-    const parseDate = () => {
-        setRunDate(runTitle.substring(0, 10));
-    }
 
     useEffect(() => {
-        parseDate()
+        // TODO: Pull driver
     }, [])
 
   return (
@@ -38,7 +35,7 @@ export default function SpecificRunBubble({
           <p>Title: {runTitle}</p>
         </span>
         <div className="text-sm text-gray-600">
-          <span className="mr-2">Driver: {driver.firstName} {driver.lastName}</span>
+          <span className="mr-2">Driver: {driverId}</span>
           <span>Date: {runDate}</span>
         </div>
       </div>

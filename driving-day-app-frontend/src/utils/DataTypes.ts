@@ -11,7 +11,7 @@ export type DataCategory = typeof CATEGORIES[keyof typeof CATEGORIES]
 // Prefixed with 'L' indicates lowest
 
 
-export interface ChartDataProps{
+export interface ReusableChartProps{
     // Frequency in terms of seconds: i.e. 1 = 1 second, 5 = every five seconds
     frequency: number,
     categoryName: string,

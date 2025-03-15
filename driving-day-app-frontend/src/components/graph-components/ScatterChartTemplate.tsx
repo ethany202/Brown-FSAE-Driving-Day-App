@@ -1,23 +1,16 @@
 import React, {useState, useEffect} from 'react';
-import { Line } from 'react-chartjs-2';
+import { Scatter } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
+  registerables
 } from 'chart.js';
 import { ReusableChartProps } from '../../utils/DataTypes';
 
 // Register necessary components from Chart.js
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend);
+ChartJS.register(...registerables);
 
 
-const LineChartTemplate: React.FC<ReusableChartProps> = ({
-    frequency,
+const ScatterChartTemplate: React.FC<ReusableChartProps> = ({
     categoryName,
     verticalLabel,
     horizontalLabel,
@@ -37,7 +30,7 @@ const LineChartTemplate: React.FC<ReusableChartProps> = ({
     const endInd = (sectionNum + 1) * pointsPerSect + 1;
 
     // Generates array of size "pointsPerSect"
-    setTimePoints(Array.from({length: pointsPerSect }, (v, i) => frequency * (i + (startInd + 1))))
+    setTimePoints(Array.from({length: pointsPerSect }, (v, i) => 1 * (i + (startInd + 1))))
     
     // Similar to python [n: m] syntax for array
     setReducedPoints(chartPoints.slice(startInd, endInd).map(kvPair => kvPair[categoryName]))
@@ -45,6 +38,7 @@ const LineChartTemplate: React.FC<ReusableChartProps> = ({
 
 
   // Configuration for the chart data
+  // TODO: Change styling
   const data = {
     labels: timePoints,
     datasets: [
@@ -90,9 +84,10 @@ const LineChartTemplate: React.FC<ReusableChartProps> = ({
 
   return (
     <div className="py-6">
-      <Line data={data} options={options} />
+      {/* <Line data={data} options={options} /> */}
+      <Scatter data={data} options={options}/>
     </div>
   )
 };
 
-export default LineChartTemplate;
+export default ScatterChartTemplate;

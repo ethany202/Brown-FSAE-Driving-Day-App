@@ -93,7 +93,7 @@ def get_all_drivers(filters=None):
         print(f"An error occurred while retrieving users: {e}")
         return []
 
-def upload_csv_to_firestore(csv_file_path):
+def upload_csv_to_firestore(csv_file_path, driver_id):
     """
     Uploads data from a CSV file to a Firestore subcollection within a document named after the CSV file.
 
@@ -118,7 +118,8 @@ def upload_csv_to_firestore(csv_file_path):
     main_doc_ref = db.collection(main_collection).document(main_document)
 
     main_doc_ref.set({
-        "run-date": file_name[0:10]
+        "run-date": file_name[0:10],
+        "driver-id": driver_id
     })
 
     subcollection_ref = main_doc_ref.collection(subcollection)

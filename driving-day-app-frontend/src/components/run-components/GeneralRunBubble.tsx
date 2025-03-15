@@ -3,24 +3,21 @@ import { Driver } from "../../utils/DriverType";
 
 interface GeneralRunBubbleProps {
   runTitle: string,
-  driver: Driver,
+  runDate: string,
+  driverId: string
   onClick?: () => void;
 }
 
 export default function GeneralRunBubble({
   runTitle,
-  driver,
+  runDate,
+  driverId,
   onClick,
 }: GeneralRunBubbleProps) {
 
-    const [runDate, setRunDate] = useState<string>("2025-01-01");
-    
-    const parseDate = () => {
-        setRunDate(runTitle.substring(0, 10));
-    }
 
     useEffect(() => {
-        parseDate()
+        // TODO: Replace with a fetch call to retrieve driver
     }, [])
 
     return (
@@ -30,23 +27,17 @@ export default function GeneralRunBubble({
             role="button"
             tabIndex={0}
             >
-        <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100 flex-col">
+        <div className="flex justify-between mb-4 pb-2 border-b border-gray-100 flex-col">
             <span className="text-lg font-bold">
                 <p>{runTitle}</p>
             </span>
-            <div className="text-sm text-gray-600">
-                <span className="mr-2">Driver: {driver.firstName} {driver.lastName}</span>
+            <div className="text-sm text-gray-600 flex flex-col">
+                <span className="mr-2">Driver: {driverId}</span>
                 <span>Date: {runDate}</span>
             </div>
         </div>
         {/**Replace with description of RUN "Test Coolant " */}
         <div className="flex flex-col">
-            {/* <div
-                className="flex justify-between items-center"
-            >
-                <span className="text-gray-600">Description</span>
-                <span className="font-medium">YAYAYA</span>
-            </div> */}
             <div>
                 <span className="text-gray-600">Desc: </span>
                 <span className="font-medium">Coolant Test</span>

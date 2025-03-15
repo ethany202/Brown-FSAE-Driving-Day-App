@@ -3,25 +3,22 @@ import GeneralRunBubble from "../../components/run-components/GeneralRunBubble";
 import PageBase from "../../components/base-component/PageBase";
 import { useNavigate } from "react-router-dom";
 import { getGeneralRunData } from "../../api/api";
-import { Driver } from "../../utils/DriverType";
 
 const RunsSummaryPage: React.FC = () => {
 
   const navigate = useNavigate();
-  const templateDriver : Driver = {
-    driverId: 'UNDEF',
-    firstName: 'UNDEF',
-    lastName: 'UNDEF',
-    height: -1,
-    weight: -1,
-    pedalBoxPos: -1
-  }
+  
   const [isLoading, setLoading] = useState<boolean>(true);
   // JSON array of general run data
   const [generalRuns, setGeneralRuns] = useState<any[]>([])
   
-  const handleRunClick = (runTitle: string) => {
-    navigate(`/runs/${runTitle}`);
+  const handleRunClick = (runTitle: string, runDate: string, driverId: string) => {
+    navigate(`/runs/${runTitle}`, {
+      state: {
+        "run-date": runDate,
+        "driver-id": driverId
+      }
+    });
   };
 
   const fetchGeneralRunData = async () => {
@@ -59,12 +56,15 @@ const RunsSummaryPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-min">
-          {generalRuns.map((generalRun) => (
+          {generalRuns.map((generalRun, index) => (
             <GeneralRunBubble
-              key={generalRun.id}
-              runTitle={generalRun.id}
-              driver={templateDriver}
-              onClick={() => handleRunClick(generalRun.id)}
+              key={index}
+              runTitle={generalRun['id']}
+              runDate={generalRun['run-date']}
+              driverId={generalRun['driver-id']}
+              onClick={() => 
+                handleRunClick(generalRun['id'], generalRun['run-date'], generalRun['driver-id'])
+              }
             />
           ))}
         </div>
