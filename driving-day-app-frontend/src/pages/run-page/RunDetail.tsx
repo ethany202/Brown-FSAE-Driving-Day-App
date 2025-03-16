@@ -73,6 +73,8 @@ const RunDetailRevised: React.FC = () => {
             horizontalLabel: horizontalLabel,
             chartPoints: runDataPoints
         })
+
+        console.log("UPATED???")
     }
 
     // TODO: Create fetch API call to obtain current driver based on ID
@@ -154,15 +156,15 @@ const RunDetailRevised: React.FC = () => {
                             </option>
                         </select>
                     </div>
-                    {/* <LineChartTemplate 
+                    <LineChartTemplate 
                         frequency={1}
                         categoryName={CATEGORIES.ENG_OIL_PRESSURE}
                         verticalLabel={verticalLabel}
                         horizontalLabel={horizontalLabel}
                         chartPoints={runDataPoints}
-                    /> */}
+                    />
                         {/* {...props} : Method of passing in props as an object*/}
-                        <ScatterChartTemplate {...chartData}/>
+                        {/* <ScatterChartTemplate {...chartData}/> */}
                 </div>
             </div>
         </PageBase>

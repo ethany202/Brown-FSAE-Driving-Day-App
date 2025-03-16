@@ -9,11 +9,12 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler
 } from 'chart.js';
 import { ReusableChartProps } from '../../utils/DataTypes';
 
 // Register necessary components from Chart.js
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend);
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend, Filler);
 
 
 const LineChartTemplate: React.FC<ReusableChartProps> = ({
