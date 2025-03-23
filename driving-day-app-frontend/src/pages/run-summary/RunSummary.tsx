@@ -26,7 +26,6 @@ const RunsSummaryPage: React.FC = () => {
       // TOOO: Detect filters
     })
     if (response.status === 200){
-      console.log(response.data)
       setGeneralRuns(response.data.recentRuns)
     }
 
