@@ -5,19 +5,30 @@ import SpecificRunBubble from '../../components/run-components/SpecificRunBubble
 import PageBase from '../../components/base-component/PageBase';
 import './ChartElements.css';
 import { getSpecificRunData } from '../../api/api';
-import { CATEGORIES, DataCategory, ReusableChartProps } from '../../utils/DataTypes';
+import { CATEGORIES, ReusableChartProps } from '../../utils/DataTypes';
 import { CHARTS, ChartCategory } from '../../utils/ChartTypes';
+
+const dataPageSize : number = 20
 
 const RunDetailRevised: React.FC = () => {
     
     const { chartMapping } = useContext(ChartMappingContext)
-    const {runTitle} = useParams()
+    const { runTitle } = useParams()
     const location = useLocation()
 
+    /**
+     * useState for Run Data metadata
+     */
     const [isLoading, setLoading] = useState<boolean>(true);
     const [runDate, setRunDate] = useState<string>("")
     const [driverId, setDriverId] = useState<string>("")
     
+    /**
+     * useState for Pagination
+     */
+    const [pageNumber, setPageNumber] = useState<number>(1)
+
+
     // Adapt this into DataTypes.ts
     const keyCategories = ["Highest Coolant Temperature"]
     /**
@@ -27,7 +38,6 @@ const RunDetailRevised: React.FC = () => {
     const [runDataPoints, setRunDataPoints] = useState<any[]>([])
     // JSON entries of most important points
     const [keyPoints, setKeyPoints] = useState<JSON>(JSON.parse("{}"))
-
     // States to store the currently-toggled column
     const [verticalLabel, setVerticalLabel] = useState<string>(CATEGORIES.ENG_OIL_PRESSURE)
     const [horizontalLabel, setHorizontalLabel] = useState<string>("Time")
