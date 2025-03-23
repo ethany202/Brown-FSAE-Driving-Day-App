@@ -28,11 +28,12 @@ Environment Variables Required:
     - UNIVERSE_DOMAIN
 """
 import firebase_admin
-from firebase_admin import credentials
+from firebase_admin import credentials, auth
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
 
 firebase_config = {
     "type": os.getenv("FIREBASE_TYPE"),

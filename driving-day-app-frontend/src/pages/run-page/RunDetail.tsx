@@ -1,23 +1,22 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
+import ChartMappingContext from '../../components/contexts/ChartMappingContext';
 import { useParams, useLocation } from 'react-router-dom';
 import SpecificRunBubble from '../../components/run-components/SpecificRunBubble';
-import LineChartTemplate from '../../components/graph-components/LineChartTemplate';
-import ScatterChartTemplate from '../../components/graph-components/ScatterChartTemplate';
 import PageBase from '../../components/base-component/PageBase';
 import './ChartElements.css';
 import { getSpecificRunData } from '../../api/api';
-import { CATEGORIES, ReusableChartProps } from '../../utils/DataTypes';
-
+import { CATEGORIES, DataCategory, ReusableChartProps } from '../../utils/DataTypes';
+import { CHARTS, ChartCategory } from '../../utils/ChartTypes';
 
 const RunDetailRevised: React.FC = () => {
     
+    const { chartMapping } = useContext(ChartMappingContext)
     const {runTitle} = useParams()
     const location = useLocation()
 
     const [isLoading, setLoading] = useState<boolean>(true);
     const [runDate, setRunDate] = useState<string>("")
     const [driverId, setDriverId] = useState<string>("")
-
     
     // Adapt this into DataTypes.ts
     const keyCategories = ["Highest Coolant Temperature"]
@@ -36,13 +35,9 @@ const RunDetailRevised: React.FC = () => {
     /**
      * useState variables for chart-data
      */
-    const [chartData, setChartData] = useState<ReusableChartProps>({
-        frequency: 1,
-        categoryName: "",
-        verticalLabel: "Metric Y",
-        horizontalLabel: "Metrix X (E.X. Time)",
-        chartPoints: [],
-    })
+    const chartCategories : ChartCategory[] = Object.values(CHARTS)
+    const [currChartInd, setCurrChartInd] = useState<number>(0)
+    const CurrentChart : React.FC<ReusableChartProps> = chartMapping[currChartInd]
 
     /**
      * Perform fetch call to pull specific run data
@@ -64,24 +59,7 @@ const RunDetailRevised: React.FC = () => {
         }
     }
 
-    const updateChartData = async () => {
-        // TODO: Update to whatever the user toggles
-        setChartData({
-            frequency: 1,
-            categoryName: CATEGORIES.ENG_OIL_PRESSURE,
-            verticalLabel: verticalLabel,
-            horizontalLabel: horizontalLabel,
-            chartPoints: runDataPoints
-        })
-
-        console.log("UPATED???")
-    }
-
-    // TODO: Create fetch API call to obtain current driver based on ID
     // TODO: Create fetch API call to obtain run meta-data by runTitle (called when necessary)
-
-
-
     
     useEffect(() => {
         // USE localStorage to cache in the future
@@ -98,9 +76,7 @@ const RunDetailRevised: React.FC = () => {
         }
 
         fetchSpecificRunData()
-        updateChartData()        
     }, [])
-
 
     if (isLoading) {
         return (
@@ -131,40 +107,45 @@ const RunDetailRevised: React.FC = () => {
 
                 <div className="pt-16">
                     <h1>Graphs</h1>
-                    <div className="flex">
-                        {/**
-                         * TODO: Load in ALL unique columns for this
-                         * 
-                         * 
-                         */}
-                        <select className="text-lg px-4 py-2 border border-gray-200 rounded-md text-blue-800 font-semibold text-1xl"
-                            onChange={(event) => setVerticalLabel(event.target.value)}
-                        >
-                            <option value={CATEGORIES.ENG_OIL_PRESSURE}>
-                                <section>{CATEGORIES.ENG_OIL_PRESSURE}</section>
-                            </option>
-                        </select>
+                    <div className='flex flex-col'>
+                        <div className="flex py-2">
+                            <section className='px-4 py-2'>Columns</section>
 
-                        <section className="px-4 py-2">
-                            vs 
-                        </section>
-                        <select className="text-lg px-4 py-2 border border-gray-200 rounded-md text-red-800 font-semibold text-1xl"
-                            // onChange={(event) => setHorizontalLabel(event.target.value)}
-                        >
-                            <option value="">
-                                <section>{"Time"}</section>
-                            </option>
-                        </select>
-                    </div>
-                    <LineChartTemplate 
+                            <select className="text-lg px-4 py-2 border border-gray-200 rounded-md text-blue-800 font-semibold text-1xl"
+                                onChange={(event) => setVerticalLabel(event.target.value)}
+                            >
+                                <option value={CATEGORIES.ENG_OIL_PRESSURE}> {CATEGORIES.ENG_OIL_PRESSURE} </option>
+                            </select>
+
+                            <section className="px-4 py-2"> vs </section>
+                            <select className="text-lg px-4 py-2 border border-gray-200 rounded-md text-red-800 font-semibold text-1xl"
+                                // onChange={(event) => setHorizontalLabel(event.target.value)}
+                            >
+                                <option value=""> {"Time"} </option>
+                            </select>
+                        </div>
+                        <div className='flex py-2'>
+                            <section className='px-4 py-2'>Chart Type</section>
+                            <select className="text-lg px-4 py-2 border border-gray-200 rounded-md text-purple-800 font-semibold text-1xl"
+                                onChange={(event) => setCurrChartInd(Number(event.target.value))}
+                            >
+                                {chartCategories.map((category, index) => {
+                                    return (
+                                        <option key={index} value={index}> {category} </option>
+                                    )
+                                })}
+                            </select>
+                        </div>
+                    </div>           
+
+                    <CurrentChart 
                         frequency={1}
-                        categoryName={CATEGORIES.ENG_OIL_PRESSURE}
+                        categoryName={verticalLabel}
                         verticalLabel={verticalLabel}
                         horizontalLabel={horizontalLabel}
                         chartPoints={runDataPoints}
-                    />
-                        {/* {...props} : Method of passing in props as an object*/}
-                        {/* <ScatterChartTemplate {...chartData}/> */}
+                    />      
+                    {/* {...props} : Method of passing in props as an object*/}
                 </div>
             </div>
         </PageBase>

@@ -1,10 +1,19 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "../../components/navbar-components/Navbar";
 import './Layout.css';
-import { createContext, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Driver } from "../../utils/DriverType";
 import { getAllDrivers } from "../../api/api";
 import AppDataContext from "../../components/contexts/AppDataContext";
+import ChartMappingContext from "../../components/contexts/ChartMappingContext";
+import LineChartTemplate from '../../components/graph-components/LineChartTemplate';
+import ScatterChartTemplate from '../../components/graph-components/ScatterChartTemplate';
+import { ReusableChartProps } from "../../utils/DataTypes";
+
+const chartMapping : { [key: number]: React.FC<ReusableChartProps> } = {
+    0 : LineChartTemplate,
+    1 : ScatterChartTemplate
+}
 
 export default function Layout() {
 
@@ -24,13 +33,18 @@ export default function Layout() {
 
     return (
         <div className="wrapper">
-            <AppDataContext.Provider value={{
-                drivers: drivers,
-                isLoading: isLoading
+            <ChartMappingContext.Provider value={{
+                chartMapping: chartMapping
             }}>
-                <Navbar />
-                <Outlet />
-            </AppDataContext.Provider>
+                <AppDataContext.Provider value={{
+                    drivers: drivers,
+                    isLoading: isLoading
+                }}>
+                    <Navbar />
+                    <Outlet />
+                </AppDataContext.Provider>
+            </ChartMappingContext.Provider>
+            
         </div>
 
     )

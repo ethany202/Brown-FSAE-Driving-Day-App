@@ -4,7 +4,6 @@ export const CATEGORIES = {
     COOL_TEMP: "Coolant Temperature",
     ENG_OIL_PRESSURE: "Engine Oil Pressure"
 } as const;
-
 export type DataCategory = typeof CATEGORIES[keyof typeof CATEGORIES]
 
 // Prefixed with 'H' indicates highest
@@ -19,4 +18,7 @@ export interface ReusableChartProps{
     horizontalLabel: string,
     chartPoints: any[],
 }
-  
+
+
+
+
