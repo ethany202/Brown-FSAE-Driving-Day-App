@@ -1,8 +1,8 @@
-import { ReusableChartProps } from '../../utils/DataTypes';
+import { ReusableChartProps, StandardChartProps } from '../../utils/DataTypes';
 import { createContext } from 'react';
 
 interface ChartContextType {
-    chartMapping: { [key: number]: React.FC<ReusableChartProps> },
+    chartMapping: { [key: number]: React.FC<StandardChartProps> },
     globalCategories: Set<string>,
     globalPageSize: number
 }

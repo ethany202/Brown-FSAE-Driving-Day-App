@@ -1,3 +1,5 @@
+import { ChartTypeRegistry } from "chart.js";
+
 export const CATEGORIES = {
     BR_PRESSURE_FRONT: "Brake Pressure Front",
     BR_PRESSURE_BACK: "Brake Pressure Back",
@@ -16,6 +18,16 @@ export interface ReusableChartProps{
     verticalLabel: string,
     horizontalLabel: string,
     chartPoints: any[],
+    pageNumber: number,
+    chartType: keyof ChartTypeRegistry
+}
+
+export interface StandardChartProps{
+    frequency: number,
+    verticalLabel: string,
+    horizontalLabel: string,
+    chartPoints: any[],
+    pageNumber: number
 }
 
 

@@ -5,7 +5,7 @@ import SpecificRunBubble from '../../components/run-components/SpecificRunBubble
 import PageBase from '../../components/base-component/PageBase';
 import './ChartElements.css';
 import { getSpecficiRunDataPaginated } from '../../api/api';
-import { CATEGORIES, ReusableChartProps } from '../../utils/DataTypes';
+import { CATEGORIES, ReusableChartProps, StandardChartProps } from '../../utils/DataTypes';
 import { CHARTS, ChartCategory } from '../../utils/ChartTypes';
 
 
@@ -38,7 +38,7 @@ const RunDetailRevised: React.FC = () => {
     // JSON entries of most important points
     const [keyPoints, setKeyPoints] = useState<JSON>(JSON.parse("{}"))
     // States to store the currently-toggled column
-    const [verticalLabel, setVerticalLabel] = useState<string>(CATEGORIES.ENG_OIL_PRESSURE)
+    const [verticalLabel, setVerticalLabel] = useState<string>("<Vertical Label>")
     const [horizontalLabel, setHorizontalLabel] = useState<string>("Time")
     
     const [previousDocId, setPreviousDocId] = useState<string>("")
@@ -48,7 +48,7 @@ const RunDetailRevised: React.FC = () => {
      */
     const chartCategories : ChartCategory[] = Object.values(CHARTS)
     const [currChartInd, setCurrChartInd] = useState<number>(0)
-    const CurrentChart : React.FC<ReusableChartProps> = chartMapping[currChartInd]
+    const CurrentChart : React.FC<StandardChartProps> = chartMapping[currChartInd]
 
     /**
      * useState variables for chart-columns
@@ -78,10 +78,15 @@ const RunDetailRevised: React.FC = () => {
 
         if(response.status === 200){
             if(response.data.runDataPoints.length > 0){
-                updateChartColumns(Object.keys(response.data.runDataPoints[0]))
-                setPreviousDocId(response.data.runDataPoints[response.data.runDataPoints.length-1]['id'])
-                setRunDataPoints(response.data.runDataPoints)
+                const pulledRunData : any[] = response.data.runDataPoints
+                const pulledColumns : string[] = Object.keys(pulledRunData[0]) 
+
+                updateChartColumns(pulledColumns)
+                setPreviousDocId(pulledRunData[pulledRunData.length-1]['id'])
+                setRunDataPoints(pulledRunData)
                 setKeyPoints(response.data.keyPoints)
+
+                setVerticalLabel(pulledColumns[0])
             }            
             setLoading(false)
         }
@@ -108,9 +113,6 @@ const RunDetailRevised: React.FC = () => {
         fetchSpecificRunDataPaginated()
     }, [])
 
-    useEffect(() => {
-        console.log(verticalLabel)
-    }, [verticalLabel])
 
     if (isLoading) {
         return (
@@ -148,7 +150,6 @@ const RunDetailRevised: React.FC = () => {
                             <select className="text-lg px-4 py-2 border border-gray-200 rounded-md text-blue-800 font-semibold text-1xl"
                                 onChange={(event) =>  {setVerticalLabel(event.target.value)}}
                             >
-                                {/* <option value={CATEGORIES.ENG_OIL_PRESSURE}> {CATEGORIES.ENG_OIL_PRESSURE} </option> */}
                                 {chartColumns.map((validColumn, index) => {
                                     return (
                                         <option key={index} value={validColumn}>{validColumn}</option>
@@ -183,6 +184,7 @@ const RunDetailRevised: React.FC = () => {
                         verticalLabel={verticalLabel}
                         horizontalLabel={horizontalLabel}
                         chartPoints={runDataPoints}
+                        pageNumber={pageNumber}
                     />      
                     {/* {...props} : Method of passing in props as an object*/}
                 </div>

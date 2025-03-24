@@ -8,9 +8,9 @@ import AppDataContext from "../../components/contexts/AppDataContext";
 import ChartContext from "../../components/contexts/ChartContext";
 import LineChartTemplate from '../../components/graph-components/LineChartTemplate';
 import ScatterChartTemplate from '../../components/graph-components/ScatterChartTemplate';
-import { ReusableChartProps, CATEGORIES } from "../../utils/DataTypes";
+import { CATEGORIES, StandardChartProps } from "../../utils/DataTypes";
 
-const chartMapping : { [key: number]: React.FC<ReusableChartProps> } = {
+const chartMapping : { [key: number]: React.FC<StandardChartProps> } = {
     0 : LineChartTemplate,
     1 : ScatterChartTemplate
 }
