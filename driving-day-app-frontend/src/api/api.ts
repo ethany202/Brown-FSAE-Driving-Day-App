@@ -139,3 +139,22 @@ export const getSpecificRunData = async (runFilter: {
   return await getRequest(path, params);
 };
 
+/**
+ * 
+ */
+export const getSpecficiRunDataPaginated = async (runFilter: {
+  runTitle: string,
+  pageSize: number
+  previousDocId: string,
+}) => {
+  const path = "specific-run-data-paginated";
+
+  const params = new URLSearchParams({
+    runTitle: runFilter.runTitle,
+    pageSize: runFilter.pageSize.toString(),
+    previousDocId: runFilter.previousDocId,
+  });
+
+  return await getRequest(path, params)
+};
+

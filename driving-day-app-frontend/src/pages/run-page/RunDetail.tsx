@@ -4,11 +4,11 @@ import { useParams, useLocation } from 'react-router-dom';
 import SpecificRunBubble from '../../components/run-components/SpecificRunBubble';
 import PageBase from '../../components/base-component/PageBase';
 import './ChartElements.css';
-import { getSpecificRunData } from '../../api/api';
+import { getSpecificRunData, getSpecficiRunDataPaginated } from '../../api/api';
 import { CATEGORIES, ReusableChartProps } from '../../utils/DataTypes';
 import { CHARTS, ChartCategory } from '../../utils/ChartTypes';
 
-const dataPageSize : number = 20
+const globalPageSize : number = 20
 
 const RunDetailRevised: React.FC = () => {
     
@@ -42,6 +42,8 @@ const RunDetailRevised: React.FC = () => {
     const [verticalLabel, setVerticalLabel] = useState<string>(CATEGORIES.ENG_OIL_PRESSURE)
     const [horizontalLabel, setHorizontalLabel] = useState<string>("Time")
     
+    const [previousDocId, setPreviousDocId] = useState<string>("")
+
     /**
      * useState variables for chart-data
      */
@@ -49,25 +51,25 @@ const RunDetailRevised: React.FC = () => {
     const [currChartInd, setCurrChartInd] = useState<number>(0)
     const CurrentChart : React.FC<ReusableChartProps> = chartMapping[currChartInd]
 
+
     /**
-     * Perform fetch call to pull specific run data
+     * Perform fetch call to pull specific run data, but paginated (only specific rows are pulled, when toggled)
      */
-    const fetchSpecificRunData = async () => {
-        const response = await getSpecificRunData({
+    const fetchSpecificRunDataPaginated = async () => {
+        const response = await getSpecficiRunDataPaginated({
             runTitle: runTitle || "sample_data",
-            categories: [
-                // CATEGORIES.BR_PRESSURE_FRONT, 
-                // CATEGORIES.BR_PRESSURE_FRONT, 
-                CATEGORIES.COOL_TEMP, 
-                CATEGORIES.ENG_OIL_PRESSURE
-            ]
+            pageSize: globalPageSize,
+            previousDocId: previousDocId
         })
-        if (response.status === 200) {
+
+        if(response.status === 200){
+            setPreviousDocId(response.data.runDataPoints[response.data.runDataPoints.length-1]['id'])
             setRunDataPoints(response.data.runDataPoints)
             setKeyPoints(response.data.keyPoints)
             setLoading(false)
         }
     }
+
 
     // TODO: Create fetch API call to obtain run meta-data by runTitle (called when necessary)
     
@@ -85,7 +87,7 @@ const RunDetailRevised: React.FC = () => {
             setDriverId(location.state['driver-id'])
         }
 
-        fetchSpecificRunData()
+        fetchSpecificRunDataPaginated()
     }, [])
 
     if (isLoading) {
@@ -119,7 +121,7 @@ const RunDetailRevised: React.FC = () => {
                     <h1>Graphs</h1>
                     <div className='flex flex-col'>
                         <div className="flex py-2">
-                            <section className='px-4 py-2'>Columns</section>
+                            <section className='px-4 py-2'>Columns:</section>
 
                             <select className="text-lg px-4 py-2 border border-gray-200 rounded-md text-blue-800 font-semibold text-1xl"
                                 onChange={(event) => setVerticalLabel(event.target.value)}
@@ -135,7 +137,7 @@ const RunDetailRevised: React.FC = () => {
                             </select>
                         </div>
                         <div className='flex py-2'>
-                            <section className='px-4 py-2'>Chart Type</section>
+                            <section className='px-4 py-2'>Chart Type:</section>
                             <select className="text-lg px-4 py-2 border border-gray-200 rounded-md text-purple-800 font-semibold text-1xl"
                                 onChange={(event) => setCurrChartInd(Number(event.target.value))}
                             >
