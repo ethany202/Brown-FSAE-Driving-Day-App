@@ -178,8 +178,13 @@ async def get_specific_run_data_paginated_call(request):
             run_title = request.GET.get('runTitle')
             page_size = request.GET.get('pageSize')
             previous_doc_id = request.GET.get('previousDocId')
+            categories = request.GET.get('categories')
 
-            data = await sync_to_async(get_specific_run_data_paginated)(run_title, page_size, previous_doc_id)
+            categories_list = []
+            if len(categories) > 0:
+                categories_list = categories.strip().split(",")
+
+            data = await sync_to_async(get_specific_run_data_paginated)(run_title, page_size, previous_doc_id, categories_list)
             key_points = {
                 "Highest Coolant Temperature": "-100"
             }

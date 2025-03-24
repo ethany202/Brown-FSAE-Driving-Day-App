@@ -13,7 +13,6 @@ export type DataCategory = typeof CATEGORIES[keyof typeof CATEGORIES]
 export interface ReusableChartProps{
     // Frequency in terms of seconds: i.e. 1 = 1 second, 5 = every five seconds
     frequency: number,
-    categoryName: string,
     verticalLabel: string,
     horizontalLabel: string,
     chartPoints: any[],

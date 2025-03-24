@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -12,6 +12,7 @@ import {
   Filler
 } from 'chart.js';
 import { ReusableChartProps } from '../../utils/DataTypes';
+import ChartContext from '../../components/contexts/ChartContext';
 
 // Register necessary components from Chart.js
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend, Filler);
@@ -19,11 +20,12 @@ ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, T
 
 const LineChartTemplate: React.FC<ReusableChartProps> = ({
     frequency,
-    categoryName,
     verticalLabel,
     horizontalLabel,
     chartPoints,
 }) => {
+
+  const { globalPageSize } = useContext(ChartContext)
 
   // Create array of first 20 points (similar to pagination)
   const [reducedPoints, setReducedPoints] = useState<number[]>()
@@ -31,18 +33,17 @@ const LineChartTemplate: React.FC<ReusableChartProps> = ({
 
   const [sectionNum, setSectionNum] = useState<number>(0)
 
-  const pointsPerSect = 20
 
   useEffect(() => {
-    const startInd = sectionNum * pointsPerSect;
-    const endInd = (sectionNum + 1) * pointsPerSect + 1;
+
+    const startInd = sectionNum * globalPageSize;
 
     // Generates array of size "pointsPerSect"
-    setTimePoints(Array.from({length: pointsPerSect }, (v, i) => frequency * (i + (startInd + 1))))
+    setTimePoints(Array.from({length: globalPageSize }, (v, i) => frequency * (i + (startInd + 1))))
     
-    // Similar to python [n: m] syntax for array
-    setReducedPoints(chartPoints.slice(startInd, endInd).map(kvPair => kvPair[categoryName]))
-  }, [sectionNum])
+    setReducedPoints(chartPoints.map(kvPair => kvPair[verticalLabel]))
+  }, [verticalLabel])
+
 
 
   // Configuration for the chart data

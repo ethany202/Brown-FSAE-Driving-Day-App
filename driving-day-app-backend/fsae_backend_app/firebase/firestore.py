@@ -203,7 +203,7 @@ def upload_csv_columns_as_documents(csv_file_path):
         print(f"An error occurred while uploading CSV to Firestore: {e}")
 
 
-def get_specific_run_data(run_title, categories_list):
+def get_specific_run_data(run_title, categories_list=[]):
     try:
         # Access the 'ecu-data' collection and the 'sample_test' document
         document_query = db.collection('ecu-data')\
@@ -231,13 +231,17 @@ def get_specific_run_data(run_title, categories_list):
         return None 
 
 
-def get_specific_run_data_paginated(run_title, page_size, previous_doc_id=None):
+def get_specific_run_data_paginated(run_title, page_size, previous_doc_id=None, categories_list=[]):
     try:
         document_query = db.collection('ecu-data')\
             .document(run_title)\
                 .collection('data')\
                     .limit(int(page_size))
         
+        if len(categories_list) > 0:
+            categories_formatted = [f'`{c}`' for c in categories_list]
+            document_query = document_query.select(categories_formatted)
+
         if previous_doc_id and len(previous_doc_id) > 0:
             previous_doc_query = document_query.document(previous_doc_id)
             document_query = document_query.start_at(previous_doc_query)

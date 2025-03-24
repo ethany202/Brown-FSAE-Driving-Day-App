@@ -5,15 +5,25 @@ import { useState, useEffect } from "react";
 import { Driver } from "../../utils/DriverType";
 import { getAllDrivers } from "../../api/api";
 import AppDataContext from "../../components/contexts/AppDataContext";
-import ChartMappingContext from "../../components/contexts/ChartMappingContext";
+import ChartContext from "../../components/contexts/ChartContext";
 import LineChartTemplate from '../../components/graph-components/LineChartTemplate';
 import ScatterChartTemplate from '../../components/graph-components/ScatterChartTemplate';
-import { ReusableChartProps } from "../../utils/DataTypes";
+import { ReusableChartProps, CATEGORIES } from "../../utils/DataTypes";
 
 const chartMapping : { [key: number]: React.FC<ReusableChartProps> } = {
     0 : LineChartTemplate,
     1 : ScatterChartTemplate
 }
+
+const globalCategories : Set<string> = new Set([
+    CATEGORIES.BR_PRESSURE_BACK,
+    CATEGORIES.BR_PRESSURE_FRONT,
+    CATEGORIES.COOL_TEMP,
+    CATEGORIES.ENG_OIL_PRESSURE
+])
+
+const globalPageSize : number = 20
+
 
 export default function Layout() {
 
@@ -33,8 +43,10 @@ export default function Layout() {
 
     return (
         <div className="wrapper">
-            <ChartMappingContext.Provider value={{
-                chartMapping: chartMapping
+            <ChartContext.Provider value={{
+                chartMapping: chartMapping,
+                globalCategories: globalCategories,
+                globalPageSize: globalPageSize
             }}>
                 <AppDataContext.Provider value={{
                     drivers: drivers,
@@ -43,7 +55,7 @@ export default function Layout() {
                     <Navbar />
                     <Outlet />
                 </AppDataContext.Provider>
-            </ChartMappingContext.Provider>
+            </ChartContext.Provider>
             
         </div>
 

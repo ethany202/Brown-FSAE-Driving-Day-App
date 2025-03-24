@@ -1,18 +1,17 @@
 import React, {useState, useEffect, useContext} from 'react'
-import ChartMappingContext from '../../components/contexts/ChartMappingContext';
+import ChartContext from '../../components/contexts/ChartContext';
 import { useParams, useLocation } from 'react-router-dom';
 import SpecificRunBubble from '../../components/run-components/SpecificRunBubble';
 import PageBase from '../../components/base-component/PageBase';
 import './ChartElements.css';
-import { getSpecificRunData, getSpecficiRunDataPaginated } from '../../api/api';
+import { getSpecficiRunDataPaginated } from '../../api/api';
 import { CATEGORIES, ReusableChartProps } from '../../utils/DataTypes';
 import { CHARTS, ChartCategory } from '../../utils/ChartTypes';
 
-const globalPageSize : number = 20
 
 const RunDetailRevised: React.FC = () => {
     
-    const { chartMapping } = useContext(ChartMappingContext)
+    const { chartMapping, globalCategories, globalPageSize } = useContext(ChartContext)
     const { runTitle } = useParams()
     const location = useLocation()
 
@@ -51,6 +50,15 @@ const RunDetailRevised: React.FC = () => {
     const [currChartInd, setCurrChartInd] = useState<number>(0)
     const CurrentChart : React.FC<ReusableChartProps> = chartMapping[currChartInd]
 
+    /**
+     * useState variables for chart-columns
+     */
+    const [chartColumns, setChartColumns] = useState<string[]>([])
+
+
+    const updateChartColumns = (allColumns : string[]) => {
+        setChartColumns(allColumns.filter((col) => globalCategories.has(col)))
+    }
 
     /**
      * Perform fetch call to pull specific run data, but paginated (only specific rows are pulled, when toggled)
@@ -59,19 +67,29 @@ const RunDetailRevised: React.FC = () => {
         const response = await getSpecficiRunDataPaginated({
             runTitle: runTitle || "sample_data",
             pageSize: globalPageSize,
-            previousDocId: previousDocId
+            previousDocId: previousDocId,
+            categories: [
+                CATEGORIES.BR_PRESSURE_BACK,
+                CATEGORIES.BR_PRESSURE_FRONT,
+                CATEGORIES.COOL_TEMP,
+                CATEGORIES.ENG_OIL_PRESSURE
+            ]
         })
 
         if(response.status === 200){
-            setPreviousDocId(response.data.runDataPoints[response.data.runDataPoints.length-1]['id'])
-            setRunDataPoints(response.data.runDataPoints)
-            setKeyPoints(response.data.keyPoints)
+            if(response.data.runDataPoints.length > 0){
+                updateChartColumns(Object.keys(response.data.runDataPoints[0]))
+                setPreviousDocId(response.data.runDataPoints[response.data.runDataPoints.length-1]['id'])
+                setRunDataPoints(response.data.runDataPoints)
+                setKeyPoints(response.data.keyPoints)
+            }            
             setLoading(false)
         }
     }
 
 
     // TODO: Create fetch API call to obtain run meta-data by runTitle (called when necessary)
+    // TODO: Create button to change page number
     
     useEffect(() => {
         // USE localStorage to cache in the future
@@ -89,6 +107,10 @@ const RunDetailRevised: React.FC = () => {
 
         fetchSpecificRunDataPaginated()
     }, [])
+
+    useEffect(() => {
+        console.log(verticalLabel)
+    }, [verticalLabel])
 
     if (isLoading) {
         return (
@@ -124,9 +146,15 @@ const RunDetailRevised: React.FC = () => {
                             <section className='px-4 py-2'>Columns:</section>
 
                             <select className="text-lg px-4 py-2 border border-gray-200 rounded-md text-blue-800 font-semibold text-1xl"
-                                onChange={(event) => setVerticalLabel(event.target.value)}
+                                onChange={(event) =>  {setVerticalLabel(event.target.value)}}
                             >
-                                <option value={CATEGORIES.ENG_OIL_PRESSURE}> {CATEGORIES.ENG_OIL_PRESSURE} </option>
+                                {/* <option value={CATEGORIES.ENG_OIL_PRESSURE}> {CATEGORIES.ENG_OIL_PRESSURE} </option> */}
+                                {chartColumns.map((validColumn, index) => {
+                                    return (
+                                        <option key={index} value={validColumn}>{validColumn}</option>
+                                    )
+                                })}
+
                             </select>
 
                             <section className="px-4 py-2"> vs </section>
@@ -152,7 +180,6 @@ const RunDetailRevised: React.FC = () => {
 
                     <CurrentChart 
                         frequency={1}
-                        categoryName={verticalLabel}
                         verticalLabel={verticalLabel}
                         horizontalLabel={horizontalLabel}
                         chartPoints={runDataPoints}

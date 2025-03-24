@@ -9,9 +9,10 @@ import { ReusableChartProps } from '../../utils/DataTypes';
 // Register necessary components from Chart.js
 ChartJS.register(...registerables);
 
+// TODO: Make components reusable
 
 const ScatterChartTemplate: React.FC<ReusableChartProps> = ({
-    categoryName,
+    frequency,
     verticalLabel,
     horizontalLabel,
     chartPoints,
@@ -27,14 +28,13 @@ const ScatterChartTemplate: React.FC<ReusableChartProps> = ({
 
   useEffect(() => {
     const startInd = sectionNum * pointsPerSect;
-    const endInd = (sectionNum + 1) * pointsPerSect + 1;
 
     // Generates array of size "pointsPerSect"
     setTimePoints(Array.from({length: pointsPerSect }, (v, i) => 1 * (i + (startInd + 1))))
     
     // Similar to python [n: m] syntax for array
-    setReducedPoints(chartPoints.slice(startInd, endInd).map(kvPair => kvPair[categoryName]))
-  }, [sectionNum])
+    setReducedPoints(chartPoints.map(kvPair => kvPair[verticalLabel]))
+  }, [verticalLabel])
 
 
   // Configuration for the chart data
