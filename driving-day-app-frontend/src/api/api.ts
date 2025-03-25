@@ -144,17 +144,22 @@ export const getSpecificRunData = async (runFilter: {
  */
 export const getSpecficiRunDataPaginated = async (runFilter: {
   runTitle: string,
-  pageSize: number
-  previousDocId: string,
+  pageSize: number,
+  startAfterDoc?: string,
+  endBeforeDoc?: string
   categories?: DataCategory[]
 }) => {
   const path = "specific-run-data-paginated";
+
+  const startAfterDoc = runFilter.startAfterDoc || ""
+  const endBeforeDoc = runFilter.endBeforeDoc || ""
 
   const categoriesFiltered = runFilter.categories || []
   const params = new URLSearchParams({
     runTitle: runFilter.runTitle,
     pageSize: runFilter.pageSize.toString(),
-    previousDocId: runFilter.previousDocId,
+    startAfterDoc: startAfterDoc,
+    endBeforeDoc: endBeforeDoc,
     categories: categoriesFiltered.toString()
   });
 

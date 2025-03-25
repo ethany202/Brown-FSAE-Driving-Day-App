@@ -8,7 +8,6 @@ import ReusableChartTemplate from './ReusableChartTemplate';
 // TODO: Implement page BUTTONS
 
 const ScatterChartTemplate: React.FC<StandardChartProps> = ({
-    frequency,
     verticalLabel,
     horizontalLabel,
     chartPoints,
@@ -17,7 +16,6 @@ const ScatterChartTemplate: React.FC<StandardChartProps> = ({
 
   return (
     <ReusableChartTemplate
-      frequency={frequency}
       verticalLabel={verticalLabel}
       horizontalLabel={horizontalLabel}
       chartPoints={chartPoints}

@@ -4,7 +4,6 @@ import ReusableChartTemplate from './ReusableChartTemplate';
 
 
 const LineChartTemplate: React.FC<StandardChartProps> = ({
-    frequency,
     verticalLabel,
     horizontalLabel,
     chartPoints,
@@ -14,7 +13,6 @@ const LineChartTemplate: React.FC<StandardChartProps> = ({
 
   return (
     <ReusableChartTemplate
-      frequency={frequency}
       verticalLabel={verticalLabel}
       horizontalLabel={horizontalLabel}
       chartPoints={chartPoints}

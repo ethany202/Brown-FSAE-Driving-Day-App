@@ -7,6 +7,7 @@ import './ChartElements.css';
 import { getSpecficiRunDataPaginated } from '../../api/api';
 import { CATEGORIES, ReusableChartProps, StandardChartProps } from '../../utils/DataTypes';
 import { CHARTS, ChartCategory } from '../../utils/ChartTypes';
+import Pagination from '../../components/pagination-component/Pagination';
 
 
 const RunDetailRevised: React.FC = () => {
@@ -19,6 +20,7 @@ const RunDetailRevised: React.FC = () => {
      * useState for Run Data metadata
      */
     const [isLoading, setLoading] = useState<boolean>(true);
+    const [isUpdating, setUpdating] = useState<boolean>(false);
     const [runDate, setRunDate] = useState<string>("")
     const [driverId, setDriverId] = useState<string>("")
     
@@ -33,15 +35,12 @@ const RunDetailRevised: React.FC = () => {
     /**
      * useState variables for run-data
      */
-    // Array of JSON entries
     const [runDataPoints, setRunDataPoints] = useState<any[]>([])
-    // JSON entries of most important points
     const [keyPoints, setKeyPoints] = useState<JSON>(JSON.parse("{}"))
     // States to store the currently-toggled column
-    const [verticalLabel, setVerticalLabel] = useState<string>("<Vertical Label>")
+    const [verticalLabel, setVerticalLabel] = useState<string>("")
     const [horizontalLabel, setHorizontalLabel] = useState<string>("Time")
     
-    const [previousDocId, setPreviousDocId] = useState<string>("")
 
     /**
      * useState variables for chart-data
@@ -60,14 +59,41 @@ const RunDetailRevised: React.FC = () => {
         setChartColumns(allColumns.filter((col) => globalCategories.has(col)))
     }
 
+    
+    const updatePageNumber = (newPageNumber : number) => {
+        let currLastDoc : string = ""
+        if(runDataPoints.length > 0){
+            currLastDoc = runDataPoints[runDataPoints.length-1]['id']
+        }
+
+        if(newPageNumber < pageNumber){
+            const updatedFirstDoc : number = Number(currLastDoc.substring(5)) - (2*globalPageSize)
+            if(updatedFirstDoc > 0){
+                const startAfterDoc : string =  `data_${updatedFirstDoc.toString().padStart(6, "0")}`                    
+                fetchSpecificRunDataPaginated(startAfterDoc, "")
+            }
+            else{
+                fetchSpecificRunDataPaginated("", "")
+            }
+        }
+        else{
+            fetchSpecificRunDataPaginated(currLastDoc, "")
+        }
+
+        setPageNumber(newPageNumber)
+    }
+
     /**
      * Perform fetch call to pull specific run data, but paginated (only specific rows are pulled, when toggled)
      */
-    const fetchSpecificRunDataPaginated = async () => {
+    const fetchSpecificRunDataPaginated = async (startAfterDoc : string, endBeforeDoc: string) => {
+        setUpdating(true)
+        
         const response = await getSpecficiRunDataPaginated({
             runTitle: runTitle || "sample_data",
             pageSize: globalPageSize,
-            previousDocId: previousDocId,
+            startAfterDoc: startAfterDoc,
+            endBeforeDoc: endBeforeDoc,
             categories: [
                 CATEGORIES.BR_PRESSURE_BACK,
                 CATEGORIES.BR_PRESSURE_FRONT,
@@ -82,20 +108,22 @@ const RunDetailRevised: React.FC = () => {
                 const pulledColumns : string[] = Object.keys(pulledRunData[0]) 
 
                 updateChartColumns(pulledColumns)
-                setPreviousDocId(pulledRunData[pulledRunData.length-1]['id'])
                 setRunDataPoints(pulledRunData)
                 setKeyPoints(response.data.keyPoints)
 
-                setVerticalLabel(pulledColumns[0])
-            }            
+                if(verticalLabel.length === 0)
+                    setVerticalLabel(pulledColumns[0])
+            }
+            
             setLoading(false)
+            setUpdating(false)
         }
     }
-
 
     // TODO: Create fetch API call to obtain run meta-data by runTitle (called when necessary)
     // TODO: Create button to change page number
     
+
     useEffect(() => {
         // USE localStorage to cache in the future
         // Flush data out after 1 week or browser reaches max memory
@@ -110,9 +138,8 @@ const RunDetailRevised: React.FC = () => {
             setDriverId(location.state['driver-id'])
         }
 
-        fetchSpecificRunDataPaginated()
+        fetchSpecificRunDataPaginated("", "")
     }, [])
-
 
     if (isLoading) {
         return (
@@ -180,13 +207,29 @@ const RunDetailRevised: React.FC = () => {
                     </div>           
 
                     <CurrentChart 
-                        frequency={1}
                         verticalLabel={verticalLabel}
                         horizontalLabel={horizontalLabel}
                         chartPoints={runDataPoints}
                         pageNumber={pageNumber}
                     />      
                     {/* {...props} : Method of passing in props as an object*/}
+
+                    {/** TODO: Create component to pull NEXT PAGE */}
+                    {(!isUpdating) && 
+                        <Pagination
+                            pageSize={globalPageSize}
+                            pageNumber={pageNumber}
+                            pageQuantity={runDataPoints.length}
+                            updatePageNumber={updatePageNumber}
+                            />
+                    }
+                    {/* <Pagination
+                        pageSize={globalPageSize}
+                        pageNumber={pageNumber}
+                        pageQuantity={runDataPoints.length}
+                        updatePageNumber={updatePageNumber}
+                        />
+                     */}
                 </div>
             </div>
         </PageBase>

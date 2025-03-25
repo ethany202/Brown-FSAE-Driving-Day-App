@@ -145,7 +145,7 @@ def upload_csv_to_firestore(csv_file_path, driver_id):
                     print(f"Stopping processing at row {row_number}.")
                     break
                 
-                doc_id = f'data_{document_counter:06}'
+                doc_id = f'data_{(document_counter // frequency):06}'
                 subcollection_ref.document(doc_id).set(row)
 
                 document_counter += 1
@@ -208,7 +208,7 @@ def get_specific_run_data(run_title, categories_list=[]):
         # Access the 'ecu-data' collection and the 'sample_test' document
         document_query = db.collection('ecu-data')\
             .document(run_title)\
-                .collection('data')
+            .collection('data')
                     
         if len(categories_list) > 0:
             categories_formatted = [f'`{c}`' for c in categories_list]
@@ -231,23 +231,39 @@ def get_specific_run_data(run_title, categories_list=[]):
         return None 
 
 
-def get_specific_run_data_paginated(run_title, page_size, previous_doc_id=None, categories_list=[]):
+def get_specific_run_data_paginated(run_title, page_size, start_after_doc="", end_before_doc="", categories_list=[]):
     try:
         document_query = db.collection('ecu-data')\
             .document(run_title)\
-                .collection('data')\
-                    .limit(int(page_size))
+            .collection('data')
         
         if len(categories_list) > 0:
             categories_formatted = [f'`{c}`' for c in categories_list]
             document_query = document_query.select(categories_formatted)
 
-        if previous_doc_id and len(previous_doc_id) > 0:
-            previous_doc_query = document_query.document(previous_doc_id)
-            document_query = document_query.start_at(previous_doc_query)
+        if len(start_after_doc) > 0:
+            previous_doc_snapshot = db.collection('ecu-data')\
+                .document(run_title)\
+                .collection('data')\
+                .document(start_after_doc)\
+                .get()
 
-        document_data = document_query.stream()
-        
+            document_query = document_query.start_after(previous_doc_snapshot)
+
+        elif len(end_before_doc) > 0:
+            last_doc_snapshot = db.collection('ecu-data')\
+                .document(run_title)\
+                .collection('data')\
+                .document(end_before_doc)\
+                .get()
+
+            document_query = document_query.end_before(last_doc_snapshot)
+
+
+        document_data = document_query\
+            .order_by('__name__')\
+            .limit(int(page_size)).stream()
+
         data_list = []
         for doc in document_data:
             # Append the document data along with the document ID
@@ -278,7 +294,7 @@ def get_general_run_data(filter_limit=10, filtered_date=None, filtered_driver=No
         # Access the 'ecu-data' collection and the 'sample_test' document
         filtered_docs_query = db.collection('ecu-data')\
             .order_by('`run-date`', direction=firestore.Query.DESCENDING)\
-                .limit(filter_limit)
+            .limit(filter_limit)
 
         filtered_docs = filtered_docs_query.stream()
 

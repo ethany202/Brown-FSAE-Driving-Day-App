@@ -20,7 +20,6 @@ ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, T
 
 
 const ReusableChartTemplate: React.FC<ReusableChartProps> = ({
-    frequency,
     verticalLabel,
     horizontalLabel,
     chartPoints,
@@ -34,16 +33,21 @@ const ReusableChartTemplate: React.FC<ReusableChartProps> = ({
     const [reducedPoints, setReducedPoints] = useState<number[]>()
     const [timePoints, setTimePoints] = useState<number[]>()
 
-    useEffect(() => {
+    // useEffect(() => {
+    //     setReducedPoints(chartPoints.map(kvPair => kvPair[verticalLabel]))
+    // }, [verticalLabel])
 
+    useEffect(() => {
         const startInd = (pageNumber - 1) * globalPageSize;
 
         // Generates array of size "pointsPerSect"
-        setTimePoints(Array.from({length: globalPageSize }, (v, i) => frequency * (i + (startInd + 1))))
+        setTimePoints(Array.from({length: globalPageSize }, (v, i) => i + startInd))
         
         setReducedPoints(chartPoints.map(kvPair => kvPair[verticalLabel]))
-    }, [verticalLabel, pageNumber])
 
+        console.log(verticalLabel)
+
+    }, [verticalLabel, pageNumber, chartPoints])
 
 
     // Configuration for the chart data
