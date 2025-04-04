@@ -4,7 +4,7 @@ import { useParams, useLocation } from 'react-router-dom';
 import SpecificRunBubble from '../../components/run-components/SpecificRunBubble';
 import PageBase from '../../components/base-components/PageBase';
 import './ChartElements.css';
-import { getSpecficiRunDataPaginated } from '../../api/api';
+import { getSpecificRunDataPaginated } from '../../api/api';
 import { CATEGORIES, ReusableChartProps, StandardChartProps } from '../../utils/DataTypes';
 import { CHARTS, ChartCategory } from '../../utils/ChartTypes';
 import Pagination from '../../components/pagination-components/Pagination';
@@ -94,7 +94,7 @@ const RunDetailPage: React.FC = () => {
     const fetchSpecificRunDataPaginated = async (startAfterDoc : string, endBeforeDoc: string) => {
         setUpdating(true)
         
-        const response = await getSpecficiRunDataPaginated({
+        const response = await getSpecificRunDataPaginated({
             runTitle: runTitle || "sample_data",
             pageSize: globalPageSize,
             startAfterDoc: startAfterDoc,

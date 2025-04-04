@@ -5,7 +5,7 @@ import { DataCategory } from "../utils/DataTypes";
 const api = axios.create({
   baseURL: `${process.env.REACT_APP_BACKEND_URL}/api/`,
   timeout: 10000,
-  withCredentials: false
+  withCredentials: false,
 });
 
 // TODO: Configure POST request to use API token to obtain content/register
@@ -22,7 +22,7 @@ export const postRequest = async (path: string, content: any) => {
   } catch (error) {
     console.error(error);
     const axiosError = error as AxiosError;
-    return { status: axiosError.status }
+    return { status: axiosError.status };
   }
 };
 
@@ -37,46 +37,66 @@ export const postDriverProfile = async (userData: {
   return await postRequest(path, userData);
 };
 
-
 export const postFiles = async (formData: FormData) => {
-  const path = 'upload-files/';
+  const path = "upload-files/";
   try {
-    const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/${path}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
+    const response = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/api/${path}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       }
-    });
+    );
     return response;
   } catch (error) {
-    console.error('Error uploading file:', error);
+    console.error("Error uploading file:", error);
     const axiosError = error as AxiosError;
-    return { status: axiosError.status, data: undefined }
+    return { status: axiosError.status, data: undefined };
   }
-}
+};
+
+export const postIssue = async (issueData: {
+  driver: string;
+  date: string;
+  synopsis: string;
+  subsystems: string[];
+  description: string;
+}) => {
+  const path = "add-issue/";
+  return await postRequest(path, issueData);
+};
 
 /**
- * 
+ *
  * @param path: Corresponds to the relative backend path to which the GET request is sent
  * @param searchParams: Corresponds to a selection of GET Request Parameters
  * @returns: A JSON object representing the result of making the GET Request
  */
-export const getRequest = async (path: string, searchParams: URLSearchParams) => {
+export const getRequest = async (
+  path: string,
+  searchParams: URLSearchParams
+) => {
   try {
     const response = await api.get(`${path}?${searchParams.toString()}`);
     return response;
   } catch (error) {
     console.error(error);
     const axiosError = error as AxiosError;
-    return { status: axiosError.status, data: undefined }
+    return { status: axiosError.status, data: undefined };
   }
 };
 
 export const getAllDrivers = async () => {
   const path = "all-drivers";
-  return await getRequest(path, new URLSearchParams({
-    height: "-1",
-    weight: "-1"
-  }))
+  return await getRequest(
+    path,
+    new URLSearchParams({
+      height: "-1",
+      weight: "-1",
+    })
+  );
 };
 
 export const getDriversFiltered = async (filters: {
@@ -85,56 +105,54 @@ export const getDriversFiltered = async (filters: {
 }) => {
   const path = "all-drivers";
 
-  const heightFilter = filters.height || -1
-  const weightFilter = filters.weight || -1
+  const heightFilter = filters.height || -1;
+  const weightFilter = filters.weight || -1;
   const searchParams = new URLSearchParams({
     height: heightFilter.toString(),
-    weight: weightFilter.toString()
-  })
+    weight: weightFilter.toString(),
+  });
 
   return await getRequest(path, searchParams);
-}
-
+};
 
 /**
- * 
+ *
  * @param runFilter: JSON object containing filters for:
  *                      -> driverId, runDate, etc.
  * @returns: JSON object of the most-recent runs, in simplified form
  */
 export const getGeneralRunData = async (runFilter: {
-  runDate?: Date,
-  driverId?: string
+  runDate?: Date;
+  driverId?: string;
 }) => {
   const path = "general-run-data";
-  
-  
+
   const runDateFilter = runFilter.runDate || new Date(0);
   const driverIdFilter = runFilter.driverId || "";
 
   const params = new URLSearchParams({
     runDate: runDateFilter.toDateString(),
-    driverId: driverIdFilter.toString()
-  })
+    driverId: driverIdFilter.toString(),
+  });
 
   return await getRequest(path, params);
-}
+};
 
 /**
- * 
+ *
  * @param runFilter: JSON containing the run title
  * @returns: JSON object representing the specific run data being pulleds
  */
 export const getSpecificRunData = async (runFilter: {
-  runTitle: string,
-  categories?: DataCategory[]
+  runTitle: string;
+  categories?: DataCategory[];
 }) => {
   const path = "specific-run-data";
 
-  const categoriesFiltered = runFilter.categories || []
+  const categoriesFiltered = runFilter.categories || [];
   const params = new URLSearchParams({
     runTitle: runFilter.runTitle.toString(),
-    categories: categoriesFiltered.toString()
+    categories: categoriesFiltered.toString(),
   });
   return await getRequest(path, params);
 };
@@ -142,7 +160,7 @@ export const getSpecificRunData = async (runFilter: {
 /**
  * 
  */
-export const getSpecficiRunDataPaginated = async (runFilter: {
+export const getSpecificRunDataPaginated = async (runFilter: {
   runTitle: string,
   pageSize: number,
   startAfterDoc?: string,
@@ -169,3 +187,38 @@ export const getSpecficiRunDataPaginated = async (runFilter: {
   return await getRequest(path, params)
 };
 
+export const getAllIssues = async (filters?: {
+  driver?: string;
+  subsystem?: string;
+}) => {
+  const path = "all-issues";
+  const searchParams = new URLSearchParams();
+
+  if (filters) {
+    if (filters.driver) searchParams.append("driver", filters.driver);
+    if (filters.subsystem) searchParams.append("subsystem", filters.subsystem);
+  }
+
+  return await getRequest(path, searchParams);
+};
+
+export const updateIssue = async (
+  issueId: string,
+  issueData: {
+    driver?: string;
+    date?: string;
+    synopsis?: string;
+    subsystems?: string[];
+    description?: string;
+  }
+) => {
+  const path = `update-issue/${issueId}/`;
+  try {
+    const response = await api.put(path, issueData);
+    return response;
+  } catch (error) {
+    console.error(error);
+    const axiosError = error as AxiosError;
+    return { status: axiosError.status };
+  }
+};

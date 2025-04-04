@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "./Modal";
+import { updateIssue } from "../../api/api";
 
 interface Issue {
-  id: number;
+  id: string;
   driver: string;
   date: string;
   synopsis: string;
@@ -14,7 +15,7 @@ interface IssueModalProps {
   issue: Issue;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (issue: Issue) => void;
+  onSave: () => void;
 }
 
 export default function IssueModal({
@@ -24,8 +25,10 @@ export default function IssueModal({
   onSave,
 }: IssueModalProps) {
   const [editMode, setEditMode] = useState(false);
-  const [editedIssue, setEditedIssue] = useState(issue);
+  const [editedIssue, setEditedIssue] = useState<Issue>(issue);
   const [isSubsystemDropdownOpen, setIsSubsystemDropdownOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const availableSubsystems = [
     "System 1",
@@ -39,6 +42,10 @@ export default function IssueModal({
     "System 9",
     "System 10",
   ];
+
+  useEffect(() => {
+    setEditedIssue(issue);
+  }, [issue]);
 
   const handleSubsystemToggle = (subsystem: string) => {
     setEditedIssue((prevIssue) => {
@@ -56,27 +63,44 @@ export default function IssueModal({
     });
   };
 
-  React.useEffect(() => {
-    setEditedIssue(issue);
-  }, [issue]);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await updateIssue(editedIssue.id, {
+        driver: editedIssue.driver,
+        date: editedIssue.date,
+        synopsis: editedIssue.synopsis,
+        subsystems: editedIssue.subsystems,
+        description: editedIssue.description,
+      });
+      if (response.status !== 200) {
+        throw new Error("Failed to update issue");
+      }
+      setEditMode(false);
+      onSave(); // Trigger parent refresh
+    } catch (err) {
+      setError("Failed to update issue. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={() => {
         setEditMode(false);
+        setEditedIssue(issue);
         onClose();
       }}
     >
       <div className="p-6">
         {editMode ? (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onSave(editedIssue);
-              setEditMode(false);
-            }}
-          >
+          <form onSubmit={handleSubmit}>
+            {error && <p className="text-red-500 mb-4">{error}</p>}
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -87,13 +111,10 @@ export default function IssueModal({
                     type="text"
                     value={editedIssue.driver}
                     onChange={(e) =>
-                      setEditedIssue({
-                        ...editedIssue,
-                        driver: e.target.value,
-                      })
+                      setEditedIssue({ ...editedIssue, driver: e.target.value })
                     }
                     className="w-full border p-2 rounded"
-                    placeholder="Driver"
+                    disabled={isLoading}
                   />
                 </div>
                 <div>
@@ -102,12 +123,10 @@ export default function IssueModal({
                     type="date"
                     value={editedIssue.date}
                     onChange={(e) =>
-                      setEditedIssue({
-                        ...editedIssue,
-                        date: e.target.value,
-                      })
+                      setEditedIssue({ ...editedIssue, date: e.target.value })
                     }
                     className="w-full border p-2 rounded"
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -120,13 +139,10 @@ export default function IssueModal({
                   type="text"
                   value={editedIssue.synopsis}
                   onChange={(e) =>
-                    setEditedIssue({
-                      ...editedIssue,
-                      synopsis: e.target.value,
-                    })
+                    setEditedIssue({ ...editedIssue, synopsis: e.target.value })
                   }
                   className="w-full border p-2 rounded"
-                  placeholder="Synopsis"
+                  disabled={isLoading}
                 />
               </div>
 
@@ -141,6 +157,7 @@ export default function IssueModal({
                       setIsSubsystemDropdownOpen(!isSubsystemDropdownOpen)
                     }
                     className="w-full border rounded p-2 text-left flex justify-between items-center"
+                    disabled={isLoading}
                   >
                     <span>
                       {editedIssue.subsystems.length > 0
@@ -163,6 +180,7 @@ export default function IssueModal({
                             checked={editedIssue.subsystems.includes(subsystem)}
                             onChange={() => {}}
                             className="mr-2"
+                            disabled={isLoading}
                           />
                           {subsystem}
                         </div>
@@ -182,6 +200,7 @@ export default function IssueModal({
                         type="button"
                         className="ml-1.5 text-blue-800 hover:text-blue-900"
                         onClick={() => handleSubsystemToggle(subsystem)}
+                        disabled={isLoading}
                       >
                         ×
                       </button>
@@ -203,7 +222,7 @@ export default function IssueModal({
                     })
                   }
                   className="w-full border p-2 rounded h-32"
-                  placeholder="Description"
+                  disabled={isLoading}
                 />
               </div>
 
@@ -215,14 +234,16 @@ export default function IssueModal({
                     setEditedIssue(issue);
                   }}
                   className="px-4 py-2 border rounded"
+                  disabled={isLoading}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded"
+                  className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-blue-300"
+                  disabled={isLoading}
                 >
-                  Save
+                  {isLoading ? "Saving..." : "Save"}
                 </button>
               </div>
             </div>
