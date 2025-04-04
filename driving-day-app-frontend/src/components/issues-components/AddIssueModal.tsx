@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import Modal from "./Modal";
+import { postIssue } from "../../api/api";
 
 interface AddIssueModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (issue: Omit<Issue, "id">) => void;
+  onSave: () => void;
   nextIssueNumber: number;
 }
 
 interface Issue {
-  id: number;
+  id: string;
   driver: string;
   date: string;
   synopsis: string;
@@ -30,6 +31,8 @@ export default function AddIssueModal({
     subsystems: [],
     description: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const availableSubsystems = [
     "System 1",
@@ -62,22 +65,37 @@ export default function AddIssueModal({
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(issue);
-    setIssue({
-      driver: "",
-      date: "",
-      synopsis: "",
-      subsystems: [],
-      description: "",
-    });
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await postIssue(issue);
+      if (response.status !== 201) {
+        throw new Error("Failed to create issue");
+      }
+      setIssue({
+        driver: "",
+        date: "",
+        synopsis: "",
+        subsystems: [],
+        description: "",
+      });
+      onSave();
+      onClose();
+    } catch (err) {
+      setError("Failed to create issue. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="p-6">
         <h2 className="text-xl font-bold mb-4">Issue #{nextIssueNumber}</h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -87,6 +105,7 @@ export default function AddIssueModal({
                 value={issue.driver}
                 onChange={(e) => setIssue({ ...issue, driver: e.target.value })}
                 className="w-full border rounded p-2"
+                disabled={isLoading}
               />
             </div>
             <div>
@@ -96,6 +115,7 @@ export default function AddIssueModal({
                 value={issue.date}
                 onChange={(e) => setIssue({ ...issue, date: e.target.value })}
                 className="w-full border rounded p-2"
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -107,6 +127,7 @@ export default function AddIssueModal({
               value={issue.synopsis}
               onChange={(e) => setIssue({ ...issue, synopsis: e.target.value })}
               className="w-full border rounded p-2"
+              disabled={isLoading}
             />
           </div>
 
@@ -117,6 +138,7 @@ export default function AddIssueModal({
                 type="button"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="w-full border rounded p-2 text-left flex justify-between items-center"
+                disabled={isLoading}
               >
                 <span>
                   {issue.subsystems.length > 0
@@ -139,6 +161,7 @@ export default function AddIssueModal({
                         checked={issue.subsystems.includes(subsystem)}
                         onChange={() => {}}
                         className="mr-2"
+                        disabled={isLoading}
                       />
                       {subsystem}
                     </div>
@@ -158,6 +181,7 @@ export default function AddIssueModal({
                     type="button"
                     className="ml-1.5 text-blue-800 hover:text-blue-900"
                     onClick={() => handleSubsystemToggle(subsystem)}
+                    disabled={isLoading}
                   >
                     ×
                   </button>
@@ -176,6 +200,7 @@ export default function AddIssueModal({
                 setIssue({ ...issue, description: e.target.value })
               }
               className="w-full border rounded p-2 h-32"
+              disabled={isLoading}
             />
           </div>
 
@@ -184,14 +209,16 @@ export default function AddIssueModal({
               type="button"
               onClick={onClose}
               className="px-4 py-2 border rounded"
+              disabled={isLoading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded"
+              className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-blue-300"
+              disabled={isLoading}
             >
-              Save
+              {isLoading ? "Saving..." : "Save"}
             </button>
           </div>
         </form>
