@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
-import { Chart, Line, Scatter } from 'react-chartjs-2';
+import { Chart } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   LineElement,
@@ -13,7 +13,6 @@ import {
 } from 'chart.js';
 import { ReusableChartProps } from '../../utils/DataTypes';
 import ChartContext from '../../components/contexts/ChartContext';
-import { TypedChartComponent } from 'react-chartjs-2/dist/types';
 
 // Register necessary components from Chart.js
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend, Filler);
@@ -41,11 +40,8 @@ const ReusableChartTemplate: React.FC<ReusableChartProps> = ({
         const startInd = (pageNumber - 1) * globalPageSize;
 
         // Generates array of size "pointsPerSect"
-        setTimePoints(Array.from({length: globalPageSize }, (v, i) => i + startInd))
-        
+        setTimePoints(Array.from({length: globalPageSize }, (v, i) => i + startInd))        
         setReducedPoints(chartPoints.map(kvPair => kvPair[verticalLabel]))
-
-        console.log(verticalLabel)
 
     }, [verticalLabel, pageNumber, chartPoints])
 

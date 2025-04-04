@@ -99,12 +99,7 @@ const RunDetailPage: React.FC = () => {
             pageSize: globalPageSize,
             startAfterDoc: startAfterDoc,
             endBeforeDoc: endBeforeDoc,
-            categories: [
-                CATEGORIES.BR_PRESSURE_BACK,
-                CATEGORIES.BR_PRESSURE_FRONT,
-                CATEGORIES.COOL_TEMP,
-                CATEGORIES.ENG_OIL_PRESSURE
-            ]
+            categories: globalCategories
         })
 
         if(response.status === 200){
