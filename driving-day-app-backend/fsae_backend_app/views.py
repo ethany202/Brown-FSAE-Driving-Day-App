@@ -114,7 +114,7 @@ async def upload_files_call(request):
 
             # Upload to S3
             # Obtain Image URLs:
-            await sync_to_async(process_and_upload_inputted_ld_file)(driver_id, run_date, run_title, data_file)
+            await sync_to_async(process_and_upload_inputted_ld_file)(data_file, run_date, run_title, driver_id)
             return JsonResponse({"message": "Successfully uploaded LD data to database!"}, status=200)
         except Exception as e:
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)

@@ -11,7 +11,7 @@ from datetime import datetime
 
 db = firestore.client()
 
-def process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_file):
+def process_and_upload_inputted_ld_file(data_file, run_date, run_title, driver_id):
     '''
         Process LD file that is inputted by the user
     '''
@@ -33,10 +33,10 @@ def process_and_upload_inputted_ld_file(driver_id, run_date, run_title, data_fil
             destination_file.write(file_content)
         
         # await asyncio.to_thread()
-        process_and_upload_ld_files()
+        process_and_upload_ld_files(driver_id)
 
 
-def process_and_upload_ld_files():
+def process_and_upload_ld_files(driver_id):
     '''
         Process LD (Logical Data) files in the data directory, convert them to CSV format, and upload the CSV files to Firestore.
 
@@ -64,7 +64,7 @@ def process_and_upload_ld_files():
                 print(f"Data saved to {csv_filename}")
 
                 # Uploading CSV to Firebase
-                upload_csv_to_firestore(csv_filename)
+                upload_csv_to_firestore(csv_filename, driver_id)
                 print(f"Data from {csv_filename} uploaded to Firestore")
                 
 
@@ -80,5 +80,3 @@ def process_and_upload_ld_files():
     except Exception as e:
         print(e)
 
-if __name__ == '__main__':
-    process_and_upload_ld_files()

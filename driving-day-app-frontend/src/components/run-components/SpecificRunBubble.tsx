@@ -1,40 +1,32 @@
 import React, {useState, useEffect} from "react";
-import './RunBubble.css';
 import { Driver } from "../../utils/DriverType";
 
-// interface Metric {
-//   label: string;
-//   value: string;
-// }
 
 interface SpecificRunBubbleProps {
   runTitle: string,
-  // Implicily a JSON type
+  runDate: string,
+  driverId: string
+    // Implicily a JSON type
   keyPoints: any,
   keyCategories: string[],
-  driver: Driver,
 }
 
 export default function SpecificRunBubble({
   runTitle,
+  runDate,
+  driverId,
   keyPoints,
   keyCategories,
-  driver,
 }: SpecificRunBubbleProps) {
 
-    const [runDate, setRunDate] = useState<string>("2025-01-01");
-
-    const parseDate = () => {
-        setRunDate(runTitle.substring(0, 10));
-    }
 
     useEffect(() => {
-        parseDate()
+        // TODO: Pull driver
     }, [])
 
   return (
     <div
-      className="font-face bg-white rounded-lg border border-gray-200 p-4 cursor-pointer transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+      className="font-face bg-white rounded-lg border border-gray-200 p-4 focus:outline-none"
       role="button"
       tabIndex={0}
     >
@@ -43,7 +35,7 @@ export default function SpecificRunBubble({
           <p>Title: {runTitle}</p>
         </span>
         <div className="text-sm text-gray-600">
-          <span className="mr-2">Driver: {driver.firstName} {driver.lastName}</span>
+          <span className="mr-2">Driver: {driverId}</span>
           <span>Date: {runDate}</span>
         </div>
       </div>

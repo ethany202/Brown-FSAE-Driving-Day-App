@@ -80,7 +80,7 @@ export default function UploadComponent() {
             <div className="flex justify-center flex-col items-center">
                 <div className="grid grid-cols-2 w-full justify-center items-center">
                     <div className="flex flex-col justify-center items-center">
-                        <div className="w-10/12 py-4 justify-center">
+                        <div className="w-11/12 py-4 justify-center">
                             <div className="text-center p-2">
                                 <p>Upload CSV or LD File</p>
                             </div>
@@ -92,7 +92,7 @@ export default function UploadComponent() {
                                 server={null} />
                         </div>
 
-                        <div className="w-10/12 py-4 justify-center">
+                        <div className="w-11/12 py-4 justify-center">
                             <div className="text-center p-2">
                                 <p>Upload Media Files</p>
                             </div>
@@ -109,55 +109,45 @@ export default function UploadComponent() {
                     </div>
 
                     <div className="upload-metadata flex flex-col items-center w-full">
-
-                        <p>
-                            <input
-                                value={runTitle}
-                                className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                                placeholder='Enter run title...'
-                                onKeyDown={(event) => {
-                                    if (event.key === " ") {
-                                        event.preventDefault()
-                                        setRunTitle(runTitle + "-")
-                                    }
-                                }}
-                                onChange={(event) => setRunTitle(event.target.value.toLocaleLowerCase())}>
-                            </input>
-                        </p>
+                        <input
+                            value={runTitle}
+                            placeholder='Enter run title...'
+                            onKeyDown={(event) => {
+                                if (event.key === " ") {
+                                    event.preventDefault()
+                                    setRunTitle(runTitle + "-")
+                                }
+                            }}
+                            onChange={(event) => setRunTitle(event.target.value.toLocaleLowerCase())}>
+                        </input>
 
                         <DatePicker
                             className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                             selected={runDate}
                             onChange={(date) => setRunDate(date)}
                         />
-                        <p>
-                            <select className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent" onChange={(event) => setDriverId(event.target.value)}>
-                                <option value="">
-                                    Select Driver
-                                </option>
-
-                                {drivers && drivers.map(currentDriver => {
-                                    return (
-                                        <option
-                                            value={currentDriver.driverId}
-                                            className="driver-option"
-                                            key={currentDriver.driverId}>
-                                            {currentDriver.firstName} {currentDriver.lastName}
-                                        </option>
-                                    )
-                                })}
-                            </select>
-                        </p>
+                        <select onChange={(event) => setDriverId(event.target.value)}>
+                            {drivers && drivers.map(currentDriver => {
+                                return (
+                                    <option
+                                        value={currentDriver.driverId}
+                                        className="driver-option"
+                                        key={currentDriver.driverId}>
+                                        {currentDriver.firstName} {currentDriver.lastName}
+                                    </option>
+                                )
+                            })}
+                        </select>
                     </div>
                 </div>
 
 
                 <div className="flex justify-center py-10">
                     {uploading
-                        ? <button disabled={true} className="disabled-upload-button opacity-70">
+                        ? <button disabled={true} className="disabled-upload-button opacity-70 bg-blue-600">
                             <p>Uploading...</p>
                         </button>
-                        : <button onClick={submitUpload} className="upload-button">
+                        : <button onClick={submitUpload} className="upload-button bg-blue-500">
                             <p>Upload Data</p>
                         </button>
                     }

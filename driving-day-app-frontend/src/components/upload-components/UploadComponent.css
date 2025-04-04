@@ -12,13 +12,8 @@
 }
 
 
-.driver-option {
-    color: #24a0ed;
-}
-
 .disabled-upload-button,
 .upload-button {
-    background-color: #24a0ed;
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
@@ -26,6 +21,5 @@
 }
 
 .upload-button:hover {
-    animation: fadeIn 0.5s;
     opacity: 0.75;
 }

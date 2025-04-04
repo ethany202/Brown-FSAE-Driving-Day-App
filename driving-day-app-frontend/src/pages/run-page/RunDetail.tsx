@@ -1,37 +1,47 @@
-import React, {useState, useEffect} from 'react'
-import { useNavigate, useParams } from 'react-router-dom';
+import React, {useState, useEffect, useContext} from 'react'
+import ChartMappingContext from '../../components/contexts/ChartMappingContext';
+import { useParams, useLocation } from 'react-router-dom';
 import SpecificRunBubble from '../../components/run-components/SpecificRunBubble';
-import LineChartTemplate from '../../components/run-components/LineChartTemplate';
+import PageBase from '../../components/base-component/PageBase';
 import './ChartElements.css';
 import { getSpecificRunData } from '../../api/api';
-import { CATEGORIES } from '../../utils/DataTypes';
-import { Driver } from '../../utils/DriverType';
-
+import { CATEGORIES, DataCategory, ReusableChartProps } from '../../utils/DataTypes';
+import { CHARTS, ChartCategory } from '../../utils/ChartTypes';
 
 const RunDetailRevised: React.FC = () => {
     
+    const { chartMapping } = useContext(ChartMappingContext)
     const {runTitle} = useParams()
-    const navigate = useNavigate()
-
-
-    // Adapt this into DataTypes.ts
-    const keyCategories = ["Highest Coolant Temperature"]
+    const location = useLocation()
 
     const [isLoading, setLoading] = useState<boolean>(true);
-    const [driver, setDriver] = useState<Driver>({
-        driverId: 'UNDEF',
-        firstName: 'UNDEF',
-        lastName: 'UNDEF',
-        height: -1,
-        weight: -1,
-        pedalBoxPos: -1
-    })
+    const [runDate, setRunDate] = useState<string>("")
+    const [driverId, setDriverId] = useState<string>("")
+    
+    // Adapt this into DataTypes.ts
+    const keyCategories = ["Highest Coolant Temperature"]
+    /**
+     * useState variables for run-data
+     */
     // Array of JSON entries
     const [runDataPoints, setRunDataPoints] = useState<any[]>([])
     // JSON entries of most important points
     const [keyPoints, setKeyPoints] = useState<JSON>(JSON.parse("{}"))
-    
 
+    // States to store the currently-toggled column
+    const [verticalLabel, setVerticalLabel] = useState<string>(CATEGORIES.ENG_OIL_PRESSURE)
+    const [horizontalLabel, setHorizontalLabel] = useState<string>("Time")
+    
+    /**
+     * useState variables for chart-data
+     */
+    const chartCategories : ChartCategory[] = Object.values(CHARTS)
+    const [currChartInd, setCurrChartInd] = useState<number>(0)
+    const CurrentChart : React.FC<ReusableChartProps> = chartMapping[currChartInd]
+
+    /**
+     * Perform fetch call to pull specific run data
+     */
     const fetchSpecificRunData = async () => {
         const response = await getSpecificRunData({
             runTitle: runTitle || "sample_data",
@@ -47,10 +57,9 @@ const RunDetailRevised: React.FC = () => {
             setKeyPoints(response.data.keyPoints)
             setLoading(false)
         }
-
-        // Update driver too
     }
 
+    // TODO: Create fetch API call to obtain run meta-data by runTitle (called when necessary)
     
     useEffect(() => {
         // USE localStorage to cache in the future
@@ -61,51 +70,85 @@ const RunDetailRevised: React.FC = () => {
          *      expiry: <1 Week date time>
          *      value: JSON.stringify(<content>)
          */
+        if(location.state){
+            setRunDate(location.state['run-date'])
+            setDriverId(location.state['driver-id'])
+        }
+
         fetchSpecificRunData()
     }, [])
 
-
     if (isLoading) {
         return (
-            <div className='page-content-main'>
+            <PageBase>
                 <div className="flex items-center justify-center h-64">
                     Loading run data...
                 </div>
-            </div>    
+            </PageBase>    
         );
     }
 
     return (
-        <div className="page-content-main">
-
-        <div className="w-full p-8">
+        <PageBase>
             <div className="run-detail-chart">
-                <h1 className="mb-6 text-2xl font-semibold">{`"${runTitle}" Details`}</h1>
+                <h1>{`"${runTitle}" Details`}</h1>
 
                 {runTitle ? (
                     <SpecificRunBubble
                         runTitle={runTitle}
+                        runDate={runDate}
+                        driverId={driverId}
                         keyPoints={keyPoints}
                         keyCategories={keyCategories}
-                        driver={driver}
                         />
                 ) : (
                     <p className="text-lg text-gray-600">Run details not found.</p>
                 )}
 
-                <div className="py-8">
-                    <LineChartTemplate 
+                <div className="pt-16">
+                    <h1>Graphs</h1>
+                    <div className='flex flex-col'>
+                        <div className="flex py-2">
+                            <section className='px-4 py-2'>Columns</section>
+
+                            <select className="text-lg px-4 py-2 border border-gray-200 rounded-md text-blue-800 font-semibold text-1xl"
+                                onChange={(event) => setVerticalLabel(event.target.value)}
+                            >
+                                <option value={CATEGORIES.ENG_OIL_PRESSURE}> {CATEGORIES.ENG_OIL_PRESSURE} </option>
+                            </select>
+
+                            <section className="px-4 py-2"> vs </section>
+                            <select className="text-lg px-4 py-2 border border-gray-200 rounded-md text-red-800 font-semibold text-1xl"
+                                // onChange={(event) => setHorizontalLabel(event.target.value)}
+                            >
+                                <option value=""> {"Time"} </option>
+                            </select>
+                        </div>
+                        <div className='flex py-2'>
+                            <section className='px-4 py-2'>Chart Type</section>
+                            <select className="text-lg px-4 py-2 border border-gray-200 rounded-md text-purple-800 font-semibold text-1xl"
+                                onChange={(event) => setCurrChartInd(Number(event.target.value))}
+                            >
+                                {chartCategories.map((category, index) => {
+                                    return (
+                                        <option key={index} value={index}> {category} </option>
+                                    )
+                                })}
+                            </select>
+                        </div>
+                    </div>           
+
+                    <CurrentChart 
                         frequency={1}
-                        categoryName={CATEGORIES.ENG_OIL_PRESSURE}
-                        verticalLabel={"Engine Oil Pressure (kPa)"}
-                        horizontalLabel={"Time (s)"}
+                        categoryName={verticalLabel}
+                        verticalLabel={verticalLabel}
+                        horizontalLabel={horizontalLabel}
                         chartPoints={runDataPoints}
-                    />
-                </div>
-                
+                    />      
+                    {/* {...props} : Method of passing in props as an object*/}
                 </div>
             </div>
-        </div>
+        </PageBase>
     );
 
 };
