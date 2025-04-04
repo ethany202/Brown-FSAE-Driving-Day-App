@@ -2,15 +2,20 @@ import React, {useState, useEffect, useContext} from 'react'
 import ChartContext from '../../components/contexts/ChartContext';
 import { useParams, useLocation } from 'react-router-dom';
 import SpecificRunBubble from '../../components/run-components/SpecificRunBubble';
-import PageBase from '../../components/base-component/PageBase';
+import PageBase from '../../components/base-components/PageBase';
 import './ChartElements.css';
 import { getSpecficiRunDataPaginated } from '../../api/api';
 import { CATEGORIES, ReusableChartProps, StandardChartProps } from '../../utils/DataTypes';
 import { CHARTS, ChartCategory } from '../../utils/ChartTypes';
-import Pagination from '../../components/pagination-component/Pagination';
+import Pagination from '../../components/pagination-components/Pagination';
 
-
-const RunDetailRevised: React.FC = () => {
+/**
+ * 
+ * @returns A React component that displays relevant details for a specific run, such as:
+ *      - Graphs of <ColumnData> vs <Time>
+ *      - Associated driver
+ */
+const RunDetailPage: React.FC = () => {
     
     const { chartMapping, globalCategories, globalPageSize } = useContext(ChartContext)
     const { runTitle } = useParams()
@@ -237,4 +242,4 @@ const RunDetailRevised: React.FC = () => {
 
 };
 
-export default RunDetailRevised;
+export default RunDetailPage;

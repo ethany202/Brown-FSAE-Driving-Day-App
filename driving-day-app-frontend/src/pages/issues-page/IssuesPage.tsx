@@ -1,8 +1,8 @@
 import React from "react";
 import IssueTable from "../../components/issues-components/IssuesTable";
-import PageBase from "../../components/base-component/PageBase";
+import PageBase from "../../components/base-components/PageBase";
 
-const Issues: React.FC = () => {
+const IssuesPage: React.FC = () => {
   return (
     <PageBase>
         <h1 className="mb-6 text-2xl font-semibold">Issues</h1>
@@ -11,4 +11,4 @@ const Issues: React.FC = () => {
   );
 };
 
-export default Issues;
+export default IssuesPage;

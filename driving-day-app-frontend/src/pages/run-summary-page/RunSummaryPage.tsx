@@ -1,10 +1,14 @@
 import React, {useState, useEffect} from "react";
 import GeneralRunBubble from "../../components/run-components/GeneralRunBubble";
-import PageBase from "../../components/base-component/PageBase";
+import PageBase from "../../components/base-components/PageBase";
 import { useNavigate } from "react-router-dom";
 import { getGeneralRunData } from "../../api/api";
 
-const RunsSummaryPage: React.FC = () => {
+/**
+ * 
+ * @returns A React component
+ */
+const RunSummaryPage: React.FC = () => {
 
   const navigate = useNavigate();
   
@@ -13,7 +17,7 @@ const RunsSummaryPage: React.FC = () => {
   const [generalRuns, setGeneralRuns] = useState<any[]>([])
   
   const handleRunClick = (runTitle: string, runDate: string, driverId: string) => {
-    navigate(`/runs/${runTitle}`, {
+    navigate(`/run/${runTitle}`, {
       state: {
         "run-date": runDate,
         "driver-id": driverId
@@ -71,4 +75,4 @@ const RunsSummaryPage: React.FC = () => {
   );
 };
 
-export default RunsSummaryPage;
+export default RunSummaryPage;

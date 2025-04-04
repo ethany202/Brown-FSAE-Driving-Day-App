@@ -12,8 +12,6 @@ import csv
 import os
 from .firebase import firebase_app
 from firebase_admin import firestore
-from django.core.paginator import Paginator
-from asgiref.sync import sync_to_async
 
 db = firestore.client()
 # Declares the MAX number of entries to read into Firebase

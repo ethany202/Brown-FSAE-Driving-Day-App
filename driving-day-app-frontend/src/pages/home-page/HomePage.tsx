@@ -1,7 +1,7 @@
 import React from 'react';
-import PageBase from '../../components/base-component/PageBase';
+import PageBase from '../../components/base-components/PageBase';
 
-const Home: React.FC = () => {
+const HomePage: React.FC = () => {
 
     return (
         <PageBase>
@@ -11,4 +11,4 @@ const Home: React.FC = () => {
     );
 };
 
-export default Home;
+export default HomePage;

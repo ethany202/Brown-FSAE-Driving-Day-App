@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import UploadComponent from "../../components/upload-components/UploadComponent";
-import PageBase from "../../components/base-component/PageBase";
+import PageBase from "../../components/base-components/PageBase";
 
-export default function UploadFiles({ }) {
+export default function UploadFilesPage({ }) {
 
     return (
         <PageBase>
