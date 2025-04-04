@@ -9,5 +9,6 @@ urlpatterns = [
     # GET Requests (indicated by NO /)
     path('all-drivers', get_all_drivers_call, name='all-drivers'),
     path('general-run-data', get_general_run_data_call, name='general-run-data'),
-    path('specific-run-data', get_specific_run_data_call, name='specific-run-data')
+    path('specific-run-data', get_specific_run_data_call, name='specific-run-data'),
+    path('specific-run-data-paginated', get_specific_run_data_paginated_call, name='specific-run-data-paginated')
 ]

@@ -1,3 +1,5 @@
+import { ChartTypeRegistry } from "chart.js";
+
 export const CATEGORIES = {
     BR_PRESSURE_FRONT: "Brake Pressure Front",
     BR_PRESSURE_BACK: "Brake Pressure Back",
@@ -12,11 +14,18 @@ export type DataCategory = typeof CATEGORIES[keyof typeof CATEGORIES]
 
 export interface ReusableChartProps{
     // Frequency in terms of seconds: i.e. 1 = 1 second, 5 = every five seconds
-    frequency: number,
-    categoryName: string,
     verticalLabel: string,
     horizontalLabel: string,
     chartPoints: any[],
+    pageNumber: number,
+    chartType: keyof ChartTypeRegistry
+}
+
+export interface StandardChartProps{
+    verticalLabel: string,
+    horizontalLabel: string,
+    chartPoints: any[],
+    pageNumber: number
 }
 
 

@@ -139,3 +139,33 @@ export const getSpecificRunData = async (runFilter: {
   return await getRequest(path, params);
 };
 
+/**
+ * 
+ */
+export const getSpecficiRunDataPaginated = async (runFilter: {
+  runTitle: string,
+  pageSize: number,
+  startAfterDoc?: string,
+  endBeforeDoc?: string
+  categories?: Set<string>
+}) => {
+  const path = "specific-run-data-paginated";
+
+  const startAfterDoc = runFilter.startAfterDoc || ""
+  const endBeforeDoc = runFilter.endBeforeDoc || ""
+
+  let categoriesFiltered : string[] = []
+  if(runFilter.categories){
+    categoriesFiltered = Array.from(runFilter.categories)
+  }
+  const params = new URLSearchParams({
+    runTitle: runFilter.runTitle,
+    pageSize: runFilter.pageSize.toString(),
+    startAfterDoc: startAfterDoc,
+    endBeforeDoc: endBeforeDoc,
+    categories: categoriesFiltered.toString()
+  });
+
+  return await getRequest(path, params)
+};
+

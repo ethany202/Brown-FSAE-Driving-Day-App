@@ -1,6 +1,6 @@
 import React from "react";
 import DriversList from "../../components/driver-components/DriversList";
-import PageBase from "../../components/base-component/PageBase";
+import PageBase from "../../components/base-components/PageBase";
 
 export default function DriversPage() {
 

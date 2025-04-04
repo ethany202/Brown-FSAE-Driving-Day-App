@@ -2,14 +2,14 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import RunsSummary from "./pages/run-summary/RunSummary";
-import RunDetail from "./pages/run-page/RunDetail";
+import RunSummaryPage from "./pages/run-summary-page/RunSummaryPage";
+import RunDetailPage from "./pages/run-detail-page/RunDetailPage";
 import Layout from "./pages/layout/Layout";
 import DriversPage from "./pages/drivers-page/DriversPage";
-import UploadFiles from "./pages/upload-page/UploadFiles";
-import Home from "./pages/home-page/Home";
+import UploadFilesPage from "./pages/upload-page/UploadFilesPage";
+import HomePage from "./pages/home-page/HomePage";
 import DevPage from "./pages/dev-page/DevPage";
-import Issues from "./pages/issues-page/Issues";
+import IssuesPage from "./pages/issues-page/IssuesPage";
 
 /**
  * Creates an object that handles routing for all webpages:
@@ -18,22 +18,19 @@ import Issues from "./pages/issues-page/Issues";
 const router = createBrowserRouter([
   {
     path: "/",
-
-    // TODO: Replace all elements with the desired webpage element
     element: <Layout />,
     children: [
       {
         path: "/home",
-        element: <Home />,
+        element: <HomePage />,
       },
       {
         path: "/run-data",
-        element: <RunsSummary />,
+        element: <RunSummaryPage />,
       },
-      //TODO: Temporary path
       {
-        path: "/runs/:runTitle",
-        element: <RunDetail />,
+        path: "/run/:runTitle",
+        element: <RunDetailPage />,
       },
       {
         path: "/drivers",
@@ -45,11 +42,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/upload-files",
-        element: <UploadFiles />,
+        element: <UploadFilesPage />,
       },
       {
         path: "/issues",
-        element: <Issues />,
+        element: <IssuesPage />,
       },
     ],
   },

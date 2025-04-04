@@ -1,0 +1,11 @@
+.page-button {
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    margin: 0 0.4rem;
+}
+
+.page-button:hover {
+    opacity: 0.75;
+}

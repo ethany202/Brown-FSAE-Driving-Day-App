@@ -153,12 +153,14 @@ async def get_general_run_data_call(request):
 async def get_specific_run_data_call(request):
     if request.method == 'GET':
         try:
-            document_name = request.GET.get('runTitle')
+            run_title = request.GET.get('runTitle')
             categories = request.GET.get('categories')
 
-            categories_list = categories.strip().split(",")
+            categories_list = []
+            if len(categories) > 0:
+                categories_list = categories.strip().split(",")
 
-            data = await sync_to_async(get_specific_document_data)(document_name, categories_list)
+            data = await sync_to_async(get_specific_run_data)(run_title, categories_list)
             key_points = {
                 "Highest Coolant Temperature": "-100"
             }
@@ -169,3 +171,27 @@ async def get_specific_run_data_call(request):
     
     return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
 
+
+async def get_specific_run_data_paginated_call(request):
+    if request.method == 'GET':
+        try:
+            run_title = request.GET.get('runTitle')
+            page_size = request.GET.get('pageSize')
+            start_after_doc = request.GET.get('startAfterDoc')
+            end_before_doc = request.GET.get('endBeforeDoc')
+            categories = request.GET.get('categories')
+
+            categories_list = []
+            if len(categories) > 0:
+                categories_list = categories.strip().split(",")
+
+            data = await sync_to_async(get_specific_run_data_paginated)(run_title, page_size, start_after_doc, end_before_doc, categories_list)
+            key_points = {
+                "Highest Coolant Temperature": "-100"
+            }
+
+            return JsonResponse({"runDataPoints": data, "keyPoints": key_points}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
+    
+    return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
