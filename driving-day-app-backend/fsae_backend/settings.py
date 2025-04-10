@@ -29,7 +29,7 @@ DATA_DIR = BASE_DIR / 'fsae_backend_app' / 'ld_parser' / 'data'
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '54.226.224.13', 'brown-fsae-backend.space']
 
@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    # 'django.contrib.staticfiles',
     'fsae_backend_app',
     'rest_framework',
     'channels'
