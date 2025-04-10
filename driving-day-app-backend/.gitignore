@@ -73,3 +73,5 @@ fsae_backend_app/firebase/serviceAccountKey.json
 # Ignore all .ld files
 *.ld
 .vercel
+
+*.pem
