@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'brownfsae.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '54.226.224.13', 'brown-fsae-backend.space']
 
 # Application definition
 
@@ -42,21 +42,21 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    # 'django.contrib.staticfiles',  # Removed static files app
+    # 'django.contrib.staticfiles',
     'fsae_backend_app',
     'rest_framework',
     'channels'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'fsae_backend.urls'
@@ -77,17 +77,20 @@ TEMPLATES = [
     },
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "https://brown-fsae.vercel.app"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://brown-fsae.vercel.app"
 ]
 
-CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 WSGI_APPLICATION = 'fsae_backend.wsgi.application'
 ASGI_APPLICATION = 'fsae_backend.asgi.application'
@@ -135,3 +138,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SECURE_HSTS_SECONDS = 31536000  # 1 year in seconds
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # apply HSTS to all subdomains
+SECURE_HSTS_PRELOAD = True  # if you want to request inclusion in the HSTS preload list
+SECURE_SSL_REDIRECT = True
