@@ -1,13 +1,16 @@
 
-`sudo systemctl restart gunicorn`
-sudo systemctl reload nginx
+reloading gunicorn 
 
-sudo systemctl status gunicorn
+`sudo systemctl restart gunicorn`
+
+`sudo systemctl reload nginx`
+
+`sudo systemctl status gunicorn`
 
 renewing cert
 
-sudo certbot renew
+`sudo certbot renew`
 
+checking nginx
 
-
-sudo cat /etc/nginx/sites-available/yourproject
+`sudo cat /etc/nginx/sites-available/yourproject`
