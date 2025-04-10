@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'brownfsae.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '54.226.224.13']
 
 # Application definition
 
@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    # 'django.contrib.staticfiles',  # Removed static files app
+    'django.contrib.staticfiles',
     'fsae_backend_app',
     'rest_framework',
     'channels'
