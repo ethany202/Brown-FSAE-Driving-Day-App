@@ -9,6 +9,9 @@ urlpatterns = [
     
     # PUT Requests
     path('update-issue/<str:issue_id>/', update_issue_call, name='update-issue'),
+    
+    # DELETE Requests
+    path('delete-issue/<str:issue_id>/', delete_issue_call, name='delete-issue'),
 
     # GET Requests (indicated by NO /)
     path('all-drivers', get_all_drivers_call, name='all-drivers'),

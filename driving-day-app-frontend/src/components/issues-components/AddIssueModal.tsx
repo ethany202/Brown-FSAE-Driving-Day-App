@@ -16,6 +16,8 @@ interface Issue {
   synopsis: string;
   subsystems: string[];
   description: string;
+  priority: string;
+  status: string;
 }
 
 export default function AddIssueModal({
@@ -30,22 +32,33 @@ export default function AddIssueModal({
     synopsis: "",
     subsystems: [],
     description: "",
+    priority: "LOW",
+    status: "OPEN",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const availableSubsystems = [
-    "System 1",
-    "System 2",
-    "System 3",
-    "System 4",
-    "System 5",
-    "System 6",
-    "System 7",
-    "System 8",
-    "System 9",
-    "System 10",
+    "BRK",
+    "CHAS",
+    "COOL",
+    "DASH",
+    "DRV",
+    "DRIVER GEAR",
+    "ELE",
+    "ENGN",
+    "ERGO",
+    "EXH",
+    "FEUL",
+    "INT",
+    "PDL",
+    "STR",
+    "SUS",
+    "SHFT",
   ];
+
+  const priorityLevels = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
+  const statusOptions = ["OPEN", "IN PROGRESS", "CLOSED"];
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -81,11 +94,13 @@ export default function AddIssueModal({
         synopsis: "",
         subsystems: [],
         description: "",
+        priority: "LOW",
+        status: "OPEN",
       });
       onSave();
       onClose();
     } catch (err) {
-      setError("Failed to create issue. Please try again.");
+      setError("Error adding issue, make sure all fields are filled.");
     } finally {
       setIsLoading(false);
     }
@@ -129,6 +144,43 @@ export default function AddIssueModal({
               className="w-full border rounded p-2"
               disabled={isLoading}
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Priority Level
+              </label>
+              <select
+                value={issue.priority}
+                onChange={(e) =>
+                  setIssue({ ...issue, priority: e.target.value })
+                }
+                className="w-full border rounded p-2"
+                disabled={isLoading}
+              >
+                {priorityLevels.map((level) => (
+                  <option key={level} value={level}>
+                    {level}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Status</label>
+              <select
+                value={issue.status}
+                onChange={(e) => setIssue({ ...issue, status: e.target.value })}
+                className="w-full border rounded p-2"
+                disabled={isLoading}
+              >
+                {statusOptions.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div>

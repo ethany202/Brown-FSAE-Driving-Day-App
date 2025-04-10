@@ -324,6 +324,8 @@ def add_issue(data):
             'synopsis': data['synopsis'],
             'subsystems': data['subsystems'],
             'description': data['description'],
+            'priority': data.get('priority', 'Medium'),
+            'status': data.get('status', 'Open'),
             'created_at': firestore.SERVER_TIMESTAMP
         }
 
@@ -343,6 +345,16 @@ def add_issue(data):
         return None
     
 def get_all_issues(filters=None):
+    """
+    Retrieves all issues from the 'issues' collection with optional filtering, including priority and status.
+
+    Args:
+        filters (dict, optional): Dictionary of filter conditions (e.g., driver, subsystem, priority, status).
+
+    Returns:
+        list: List of dictionaries containing issue data, including priority and status.
+        None: If an error occurs.
+    """
     try:
         main_db = db.collection('issues')
         query = main_db.order_by('created_at', direction=firestore.Query.DESCENDING)
@@ -351,6 +363,10 @@ def get_all_issues(filters=None):
         if filters:
             if 'driver' in filters and filters['driver']:
                 query = query.where('driver', '==', filters['driver'])
+            if 'priority' in filters and filters['priority']:
+                query = query.where('priority', '==', filters['priority'])
+            if 'status' in filters and filters['status']:
+                query = query.where('status', '==', filters['status'])
         
         docs = query.stream()
         
@@ -384,6 +400,8 @@ def update_issue(issue_id: str, data: dict):
             'synopsis': data.get('synopsis'),
             'subsystems': data.get('subsystems'),
             'description': data.get('description'),
+            'priority': data.get('priority'),
+            'status': data.get('status'),
             'updated_at': firestore.SERVER_TIMESTAMP
         }
         issue_data = {k: v for k, v in issue_data.items() if v is not None}
@@ -404,4 +422,27 @@ def update_issue(issue_id: str, data: dict):
         return None
     except Exception as e:
         print(f"An unexpected error occurred while updating issue: {e}")
+        return None
+
+def delete_issue(issue_id: str):
+    try:
+        if not issue_id:
+            raise ValueError("Issue ID must be provided.")
+
+        main_db = db.collection('issues')
+        doc_ref = main_db.document(issue_id)
+        
+        if not doc_ref.get().exists:
+            print(f"Issue with ID {issue_id} not found.")
+            return None
+        
+        doc_ref.delete()
+        print(f"Issue {issue_id} deleted successfully")
+        return {"issue_id": issue_id}
+
+    except ValueError as ve:
+        print(f"ValueError: {ve}")
+        return None
+    except Exception as e:
+        print(f"An unexpected error occurred while deleting issue: {e}")
         return None

@@ -10,6 +10,8 @@ interface Issue {
   synopsis: string;
   subsystems: string[];
   description: string;
+  priority?: string;
+  status?: string;
 }
 
 export default function IssueTable() {
@@ -51,6 +53,36 @@ export default function IssueTable() {
     fetchIssues();
   };
 
+  const getPriorityColor = (priority: string | undefined) => {
+    const priorityLower = priority?.toLowerCase() || "unknown";
+    switch (priorityLower) {
+      case "low":
+        return "bg-green-100 text-green-800";
+      case "medium":
+        return "bg-yellow-600 text-white";
+      case "high":
+        return "bg-red-100 text-red-800";
+      case "critical":
+        return "bg-red-800 text-white";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusColor = (status: string | undefined) => {
+    const statusLower = status?.toLowerCase() || "unknown";
+    switch (statusLower) {
+      case "closed":
+        return "bg-green-100 text-green-800";
+      case "in progress":
+        return "bg-yellow-600 text-white";
+      case "open":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
   return (
     <div>
       {error && <p className="text-red-500 mb-4">{error}</p>}
@@ -59,10 +91,12 @@ export default function IssueTable() {
         <table className="w-full font-face table-fixed">
           <colgroup>
             <col style={{ width: "10%" }} />
+            <col style={{ width: "10%" }} />
+            <col style={{ width: "10%" }} />
             <col style={{ width: "15%" }} />
+            <col style={{ width: "10%" }} />
+            <col style={{ width: "8%" }} />
             <col style={{ width: "15%" }} />
-            <col style={{ width: "35%" }} />
-            <col style={{ width: "25%" }} />
           </colgroup>
           <thead>
             <tr className="border-b border-gray-100">
@@ -72,9 +106,11 @@ export default function IssueTable() {
               <th className="px-6 py-4 text-left font-medium">Driver</th>
               <th className="px-6 py-4 text-left font-medium">Date</th>
               <th className="px-6 py-4 text-left font-medium">Synopsis</th>
+              <th className="px-6 py-4 text-left font-medium">Subsystems</th>
+              <th className="px-6 py-4 text-left font-medium">Priority</th>
               <th className="px-6 py-4 text-left font-medium">
                 <div className="flex items-center justify-between">
-                  <span>Subsystems</span>
+                  <span>Status</span>
                   <button
                     onClick={() => setIsAddModalOpen(true)}
                     className="ml-4 bg-blue-500 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 focus:outline-none"
@@ -126,11 +162,29 @@ export default function IssueTable() {
                     )}
                   </div>
                 </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`text-xs font-medium px-2.5 py-0.5 rounded ${getPriorityColor(
+                      issue.priority
+                    )}`}
+                  >
+                    {issue.priority || "Unknown"}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`text-xs font-medium px-2.5 py-0.5 rounded ${getStatusColor(
+                      issue.status
+                    )}`}
+                  >
+                    {issue.status || "Unknown"}
+                  </span>
+                </td>
               </tr>
             ))}
             {issues.length === 0 && !isLoading && (
               <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                   No issues found. Click "Add Issue" to create one.
                 </td>
               </tr>

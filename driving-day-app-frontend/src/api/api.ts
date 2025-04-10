@@ -158,33 +158,33 @@ export const getSpecificRunData = async (runFilter: {
 };
 
 /**
- * 
+ *
  */
 export const getSpecificRunDataPaginated = async (runFilter: {
-  runTitle: string,
-  pageSize: number,
-  startAfterDoc?: string,
-  endBeforeDoc?: string
-  categories?: Set<string>
+  runTitle: string;
+  pageSize: number;
+  startAfterDoc?: string;
+  endBeforeDoc?: string;
+  categories?: Set<string>;
 }) => {
   const path = "specific-run-data-paginated";
 
-  const startAfterDoc = runFilter.startAfterDoc || ""
-  const endBeforeDoc = runFilter.endBeforeDoc || ""
+  const startAfterDoc = runFilter.startAfterDoc || "";
+  const endBeforeDoc = runFilter.endBeforeDoc || "";
 
-  let categoriesFiltered : string[] = []
-  if(runFilter.categories){
-    categoriesFiltered = Array.from(runFilter.categories)
+  let categoriesFiltered: string[] = [];
+  if (runFilter.categories) {
+    categoriesFiltered = Array.from(runFilter.categories);
   }
   const params = new URLSearchParams({
     runTitle: runFilter.runTitle,
     pageSize: runFilter.pageSize.toString(),
     startAfterDoc: startAfterDoc,
     endBeforeDoc: endBeforeDoc,
-    categories: categoriesFiltered.toString()
+    categories: categoriesFiltered.toString(),
   });
 
-  return await getRequest(path, params)
+  return await getRequest(path, params);
 };
 
 export const getAllIssues = async (filters?: {
@@ -210,11 +210,25 @@ export const updateIssue = async (
     synopsis?: string;
     subsystems?: string[];
     description?: string;
+    priority?: string;
+    status?: string;
   }
 ) => {
   const path = `update-issue/${issueId}/`;
   try {
     const response = await api.put(path, issueData);
+    return response;
+  } catch (error) {
+    console.error(error);
+    const axiosError = error as AxiosError;
+    return { status: axiosError.status };
+  }
+};
+
+export const deleteIssue = async (issueId: string) => {
+  const path = `delete-issue/${issueId}/`;
+  try {
+    const response = await api.delete(path);
     return response;
   } catch (error) {
     console.error(error);
