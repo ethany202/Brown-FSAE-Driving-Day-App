@@ -29,7 +29,7 @@ DATA_DIR = BASE_DIR / 'fsae_backend_app' / 'ld_parser' / 'data'
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '54.226.224.13', 'brown-fsae-backend.space']
 
@@ -78,6 +78,7 @@ TEMPLATES = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
@@ -88,9 +89,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "https://brown-fsae.vercel.app"
 ]
-
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
 
 WSGI_APPLICATION = 'fsae_backend.wsgi.application'
 ASGI_APPLICATION = 'fsae_backend.asgi.application'
@@ -139,7 +137,15 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SECURE_HSTS_SECONDS = 31536000  # 1 year in seconds
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # apply HSTS to all subdomains
-SECURE_HSTS_PRELOAD = True  # if you want to request inclusion in the HSTS preload list
-SECURE_SSL_REDIRECT = True
+if DEBUG:
+    SECURE_SSL_REDIRECT = False
+    SECURE_HSTS_SECONDS = 0
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+else:
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True

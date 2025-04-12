@@ -3,6 +3,7 @@ from .ld_parser.main import process_and_upload_inputted_ld_file
 import json
 from .firebase.firestore import *
 from asgiref.sync import sync_to_async
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 def homepage(request):
     return JsonResponse({
@@ -10,6 +11,10 @@ def homepage(request):
         "status": "success"
     })
 
+
+@ensure_csrf_cookie
+def get_csrf_token(request):
+    return JsonResponse({"detail": "CSRF cookie set"})
 
 async def add_driver_call(request):
     """
@@ -272,3 +277,38 @@ async def update_issue_call(request, issue_id):
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
         
     return JsonResponse({"error": "Invalid request method. Use PUT."}, status=400)
+
+async def delete_issue_call(request, issue_id):
+    """
+    Handles deleting an issue via a DELETE request.
+
+    This endpoint deletes an existing issue from the database based on the provided issue_id.
+    It expects a DELETE request and returns a success message upon completion.
+
+    Args:
+        issue_id (str): The ID of the issue to delete.
+
+    Methods:
+    - DELETE: Deletes the issue with the specified ID.
+
+    Returns:
+    - JSON response with a success message if deletion is successful (status 200).
+    - JSON response with an error message if the request method is not DELETE (status 400)
+      or if an error occurs during deletion (status 500).
+    """
+    if request.method == 'DELETE':
+        try:
+            result = await sync_to_async(delete_issue)(issue_id)
+            
+            if result is None:
+                return JsonResponse({"error": "Failed to delete issue or issue not found"}, status=404)
+                
+            return JsonResponse({
+                "message": "Issue deleted successfully!",
+                "issue_id": issue_id
+            }, status=200)
+            
+        except Exception as e:
+            return JsonResponse({"error": f"An unexpected error occurred: {str(e)}"}, status=500)
+        
+    return JsonResponse({"error": "Invalid request method. Use DELETE."}, status=400)

@@ -5,8 +5,33 @@ import { DataCategory } from "../utils/DataTypes";
 const api = axios.create({
   baseURL: `${process.env.REACT_APP_BACKEND_URL}/api/`,
   timeout: 10000,
-  withCredentials: false,
+  withCredentials: true,
 });
+
+function getCookie(name: string): string | null {
+  const cookieValue = document.cookie
+    .split(";")
+    .map(cookie => cookie.trim())
+    .find(cookie => cookie.startsWith(name + "="));
+  return cookieValue ? decodeURIComponent(cookieValue.split("=")[1]) : null;
+}
+
+api.interceptors.request.use(
+  (config) => {
+    // Attempt to retrieve the CSRF token from the cookies
+    const csrftoken = getCookie("csrftoken");
+
+    if (csrftoken) {
+      // Attach the CSRF token to the header of the request
+      config.headers["X-CSRFToken"] = csrftoken;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // TODO: Configure POST request to use API token to obtain content/register
 /**
@@ -88,6 +113,12 @@ export const getRequest = async (
   }
 };
 
+export const getCSRFToken = async () => {
+  const path = "get-csrf-token";
+  const searchParams = new URLSearchParams();
+  return await getRequest(path, searchParams);
+};
+
 export const getAllDrivers = async () => {
   const path = "all-drivers";
   return await getRequest(
@@ -158,33 +189,33 @@ export const getSpecificRunData = async (runFilter: {
 };
 
 /**
- * 
+ *
  */
 export const getSpecificRunDataPaginated = async (runFilter: {
-  runTitle: string,
-  pageSize: number,
-  startAfterDoc?: string,
-  endBeforeDoc?: string
-  categories?: Set<string>
+  runTitle: string;
+  pageSize: number;
+  startAfterDoc?: string;
+  endBeforeDoc?: string;
+  categories?: Set<string>;
 }) => {
   const path = "specific-run-data-paginated";
 
-  const startAfterDoc = runFilter.startAfterDoc || ""
-  const endBeforeDoc = runFilter.endBeforeDoc || ""
+  const startAfterDoc = runFilter.startAfterDoc || "";
+  const endBeforeDoc = runFilter.endBeforeDoc || "";
 
-  let categoriesFiltered : string[] = []
-  if(runFilter.categories){
-    categoriesFiltered = Array.from(runFilter.categories)
+  let categoriesFiltered: string[] = [];
+  if (runFilter.categories) {
+    categoriesFiltered = Array.from(runFilter.categories);
   }
   const params = new URLSearchParams({
     runTitle: runFilter.runTitle,
     pageSize: runFilter.pageSize.toString(),
     startAfterDoc: startAfterDoc,
     endBeforeDoc: endBeforeDoc,
-    categories: categoriesFiltered.toString()
+    categories: categoriesFiltered.toString(),
   });
 
-  return await getRequest(path, params)
+  return await getRequest(path, params);
 };
 
 export const getAllIssues = async (filters?: {
@@ -210,11 +241,25 @@ export const updateIssue = async (
     synopsis?: string;
     subsystems?: string[];
     description?: string;
+    priority?: string;
+    status?: string;
   }
 ) => {
   const path = `update-issue/${issueId}/`;
   try {
     const response = await api.put(path, issueData);
+    return response;
+  } catch (error) {
+    console.error(error);
+    const axiosError = error as AxiosError;
+    return { status: axiosError.status };
+  }
+};
+
+export const deleteIssue = async (issueId: string) => {
+  const path = `delete-issue/${issueId}/`;
+  try {
+    const response = await api.delete(path);
     return response;
   } catch (error) {
     console.error(error);
