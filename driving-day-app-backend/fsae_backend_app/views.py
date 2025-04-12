@@ -3,6 +3,7 @@ from .ld_parser.main import process_and_upload_inputted_ld_file
 import json
 from .firebase.firestore import *
 from asgiref.sync import sync_to_async
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 def homepage(request):
     return JsonResponse({
@@ -10,6 +11,10 @@ def homepage(request):
         "status": "success"
     })
 
+
+@ensure_csrf_cookie
+def get_csrf_token(request):
+    return JsonResponse({"detail": "CSRF cookie set"})
 
 async def add_driver_call(request):
     """
