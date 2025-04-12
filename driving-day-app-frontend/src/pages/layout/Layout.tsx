@@ -3,12 +3,13 @@ import Navbar from "../../components/navbar-components/Navbar";
 import './Layout.css';
 import { useState, useEffect } from "react";
 import { Driver } from "../../utils/DriverType";
-import { getAllDrivers, getCSRFToken } from "../../api/api";
+import { api, getAllDrivers, getCSRFToken } from "../../api/api";
 import AppDataContext from "../../components/contexts/AppDataContext";
 import ChartContext from "../../components/contexts/ChartContext";
 import LineChartTemplate from '../../components/graph-components/LineChartTemplate';
 import ScatterChartTemplate from '../../components/graph-components/ScatterChartTemplate';
 import { CATEGORIES, StandardChartProps } from "../../utils/DataTypes";
+import axios from "axios";
 
 const chartMapping: { [key: number]: React.FC<StandardChartProps> } = {
     0: LineChartTemplate,
@@ -27,14 +28,29 @@ const globalPageSize: number = 20
 
 export default function Layout() {
     useEffect(() => {
-        getCSRFToken()
-            .then(token => {
-                console.log("CSRF token fetched:", token);
-            })
-            .catch(error => {
-                console.error("Error fetching CSRF token:", error);
-            });
+        const fetchCSRFToken = async () => {
+            try {
+                const response = await fetch(
+                    `${process.env.REACT_APP_BACKEND_URL}/api/get-csrf-token`,
+                    { credentials: "include" }
+                );
+                const data = await response.json();
+                const csrfToken = data.csrfToken;
+
+                if (csrfToken) {
+                    api.defaults.headers.common["X-CSRFToken"] = csrfToken; // ✅ use your instance
+                    console.log("✅ Set CSRF token on api instance:", csrfToken);
+                } else {
+                    console.error("❌ CSRF token missing in response");
+                }
+            } catch (error) {
+                console.error("❌ Failed to fetch CSRF token:", error);
+            }
+        };
+
+        fetchCSRFToken();
     }, []);
+
     const [drivers, setDrivers] = useState<Driver[]>([])
     const [isLoading, setLoading] = useState<boolean>(true)
 
