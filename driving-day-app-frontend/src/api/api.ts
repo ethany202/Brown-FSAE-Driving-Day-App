@@ -2,40 +2,11 @@ import axios, { Axios } from "axios";
 import { AxiosError } from "axios";
 import { DataCategory } from "../utils/DataTypes";
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: `${process.env.REACT_APP_BACKEND_URL}/api/`,
   timeout: 10000,
   withCredentials: true,
 });
-
-function getCookie(name: string): string | null {
-  const cookieMatch = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith(name + "="));
-  return cookieMatch ? decodeURIComponent(cookieMatch.split("=")[1]) : null;
-}
-
-
-api.interceptors.request.use(
-  (config) => {
-    // Attempt to retrieve the CSRF token from the cookies
-    console.log("📦 Cookies visible:", document.cookie);
-
-    const csrftoken = getCookie("csrftoken");
-    console.log("🔐 CSRF from cookie:", csrftoken);
-
-    if (csrftoken) {
-      // Attach the CSRF token to the header of the request
-      config.headers["X-CSRFToken"] = csrftoken;
-      console.log("Added csrf token to header")
-    }
-
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
 // TODO: Configure POST request to use API token to obtain content/register
 /**
