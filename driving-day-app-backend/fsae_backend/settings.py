@@ -82,12 +82,14 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://brown-fsae.vercel.app"
+    "https://brown-fsae.vercel.app",
+    "https://brown-fsae-austinliu05-austinliu05s-projects.vercel.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
-    "https://brown-fsae.vercel.app"
+    "https://brown-fsae.vercel.app",
+    "https://brown-fsae-austinliu05-austinliu05s-projects.vercel.app",
 ]
 
 WSGI_APPLICATION = 'fsae_backend.wsgi.application'
