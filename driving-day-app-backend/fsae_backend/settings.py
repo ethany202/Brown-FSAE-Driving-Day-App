@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+from corsheaders.defaults import default_headers
 
 load_dotenv()
 
@@ -79,11 +80,16 @@ TEMPLATES = [
 
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_SAMESITE = 'None'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://brown-fsae.vercel.app",
     "https://brown-fsae-austinliu05-austinliu05s-projects.vercel.app",
+]
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "X-CSRFToken",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -145,9 +151,9 @@ if DEBUG:
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
 else:
+    SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    SECURE_SSL_REDIRECT = True
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True

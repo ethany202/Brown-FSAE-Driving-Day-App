@@ -4,6 +4,12 @@ import json
 from .firebase.firestore import *
 from asgiref.sync import sync_to_async
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.http import require_GET
+
+@require_GET
+@ensure_csrf_cookie
+def get_csrf_token(request):
+    return JsonResponse({"detail": "CSRF cookie set"})
 
 def homepage(request):
     return JsonResponse({
@@ -11,10 +17,6 @@ def homepage(request):
         "status": "success"
     })
 
-
-@ensure_csrf_cookie
-def get_csrf_token(request):
-    return JsonResponse({"detail": "CSRF cookie set"})
 
 async def add_driver_call(request):
     """
