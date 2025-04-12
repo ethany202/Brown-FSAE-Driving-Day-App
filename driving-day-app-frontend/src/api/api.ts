@@ -9,21 +9,25 @@ const api = axios.create({
 });
 
 function getCookie(name: string): string | null {
-  const cookieValue = document.cookie
-    .split(";")
-    .map(cookie => cookie.trim())
-    .find(cookie => cookie.startsWith(name + "="));
-  return cookieValue ? decodeURIComponent(cookieValue.split("=")[1]) : null;
+  const cookieMatch = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(name + "="));
+  return cookieMatch ? decodeURIComponent(cookieMatch.split("=")[1]) : null;
 }
+
 
 api.interceptors.request.use(
   (config) => {
     // Attempt to retrieve the CSRF token from the cookies
+    console.log("📦 Cookies visible:", document.cookie);
+
     const csrftoken = getCookie("csrftoken");
+    console.log("🔐 CSRF from cookie:", csrftoken);
 
     if (csrftoken) {
       // Attach the CSRF token to the header of the request
       config.headers["X-CSRFToken"] = csrftoken;
+      console.log("Added csrf token to header")
     }
 
     return config;

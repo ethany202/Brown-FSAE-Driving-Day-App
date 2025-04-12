@@ -27,14 +27,14 @@ const globalPageSize: number = 20
 
 export default function Layout() {
     useEffect(() => {
-        getCSRFToken()
-            .then(token => {
-                console.log("CSRF token fetched:", token);
-            })
-            .catch(error => {
-                console.error("Error fetching CSRF token:", error);
-            });
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/api/get-csrf-token`, {
+            credentials: "include", // 🔥 this is absolutely required
+        }).then(() => {
+            console.log("✅ CSRF cookie requested");
+            console.log("📦 Cookies now:", document.cookie);
+        });
     }, []);
+
     const [drivers, setDrivers] = useState<Driver[]>([])
     const [isLoading, setLoading] = useState<boolean>(true)
 
