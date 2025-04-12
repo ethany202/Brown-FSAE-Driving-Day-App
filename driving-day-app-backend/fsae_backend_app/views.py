@@ -5,11 +5,12 @@ from .firebase.firestore import *
 from asgiref.sync import sync_to_async
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_GET
+from django.middleware.csrf import get_token
 
 @require_GET
-@ensure_csrf_cookie
 def get_csrf_token(request):
-    return JsonResponse({"detail": "CSRF cookie set"})
+    token = get_token(request)
+    return JsonResponse({"csrfToken": token})
 
 def homepage(request):
     return JsonResponse({
