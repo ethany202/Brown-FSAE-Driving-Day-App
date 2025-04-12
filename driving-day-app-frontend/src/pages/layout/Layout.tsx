@@ -3,30 +3,38 @@ import Navbar from "../../components/navbar-components/Navbar";
 import './Layout.css';
 import { useState, useEffect } from "react";
 import { Driver } from "../../utils/DriverType";
-import { getAllDrivers } from "../../api/api";
+import { getAllDrivers, getCSRFToken } from "../../api/api";
 import AppDataContext from "../../components/contexts/AppDataContext";
 import ChartContext from "../../components/contexts/ChartContext";
 import LineChartTemplate from '../../components/graph-components/LineChartTemplate';
 import ScatterChartTemplate from '../../components/graph-components/ScatterChartTemplate';
 import { CATEGORIES, StandardChartProps } from "../../utils/DataTypes";
 
-const chartMapping : { [key: number]: React.FC<StandardChartProps> } = {
-    0 : LineChartTemplate,
-    1 : ScatterChartTemplate
+const chartMapping: { [key: number]: React.FC<StandardChartProps> } = {
+    0: LineChartTemplate,
+    1: ScatterChartTemplate
 }
 
-const globalCategories : Set<string> = new Set([
+const globalCategories: Set<string> = new Set([
     CATEGORIES.BR_PRESSURE_BACK,
     CATEGORIES.BR_PRESSURE_FRONT,
     CATEGORIES.COOL_TEMP,
     CATEGORIES.ENG_OIL_PRESSURE
 ])
 
-const globalPageSize : number = 20
+const globalPageSize: number = 20
 
 
 export default function Layout() {
-
+    useEffect(() => {
+        getCSRFToken()
+            .then(token => {
+                console.log("CSRF token fetched:", token);
+            })
+            .catch(error => {
+                console.error("Error fetching CSRF token:", error);
+            });
+    }, []);
     const [drivers, setDrivers] = useState<Driver[]>([])
     const [isLoading, setLoading] = useState<boolean>(true)
 
@@ -56,7 +64,7 @@ export default function Layout() {
                     <Outlet />
                 </AppDataContext.Provider>
             </ChartContext.Provider>
-            
+
         </div>
 
     )
