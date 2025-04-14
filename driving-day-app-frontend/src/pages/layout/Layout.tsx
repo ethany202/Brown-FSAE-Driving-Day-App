@@ -39,7 +39,7 @@ export default function Layout() {
 
                 if (csrfToken) {
                     api.defaults.headers.common["X-CSRFToken"] = csrfToken; // ✅ use your instance
-                    console.log("✅ Set CSRF token on api instance:", csrfToken);
+                    //console.log("✅ Set CSRF token on api instance:", csrfToken);
                 } else {
                     console.error("❌ CSRF token missing in response");
                 }
