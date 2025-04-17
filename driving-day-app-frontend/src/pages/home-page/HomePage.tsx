@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PageBase from '../../components/base-components/PageBase';
 
 const HomePage: React.FC = () => {
-
     return (
         <PageBase>
             <h1>Home</h1>

@@ -1,21 +1,13 @@
 import React, {useState, useEffect, useContext} from 'react';
 import { Chart } from 'react-chartjs-2';
 import {
-  Chart as ChartJS,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
+  Chart as ChartJS, registerables
 } from 'chart.js';
 import { ReusableChartProps } from '../../utils/DataTypes';
 import ChartContext from '../../components/contexts/ChartContext';
 
 // Register necessary components from Chart.js
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend, Filler);
+ChartJS.register(...registerables);
 
 
 const ReusableChartTemplate: React.FC<ReusableChartProps> = ({

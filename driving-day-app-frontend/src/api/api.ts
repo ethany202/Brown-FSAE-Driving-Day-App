@@ -2,10 +2,10 @@ import axios, { Axios } from "axios";
 import { AxiosError } from "axios";
 import { DataCategory } from "../utils/DataTypes";
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: `${process.env.REACT_APP_BACKEND_URL}/api/`,
   timeout: 10000,
-  withCredentials: false,
+  withCredentials: true,
 });
 
 // TODO: Configure POST request to use API token to obtain content/register
@@ -89,6 +89,12 @@ export const getRequest = async (
     const axiosError = error as AxiosError;
     return { status: axiosError.status, data: undefined };
   }
+};
+
+export const getCSRFToken = async () => {
+  const path = "get-csrf-token";
+  const searchParams = new URLSearchParams();
+  return await getRequest(path, searchParams);
 };
 
 export const getAllDrivers = async () => {
