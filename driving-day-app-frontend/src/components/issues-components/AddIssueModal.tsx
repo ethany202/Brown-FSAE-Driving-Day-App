@@ -10,7 +10,8 @@ interface AddIssueModalProps {
 }
 
 interface Issue {
-  id: string;
+  id?: string;
+  issue_number: number;
   driver: string;
   date: string;
   synopsis: string;
@@ -26,17 +27,19 @@ export default function AddIssueModal({
   onSave,
   nextIssueNumber,
 }: AddIssueModalProps) {
-  const [issue, setIssue] = useState<Omit<Issue, "id">>({
+  const [issue, setIssue] = useState<Issue>({
+    issue_number: nextIssueNumber,
     driver: "",
-    date: "",
+    date: new Date().toISOString().split("T")[0],
     synopsis: "",
     subsystems: [],
     description: "",
-    priority: "LOW",
-    status: "OPEN",
+    priority: "Low",
+    status: "Open",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const availableSubsystems = [
     "BRK",
@@ -57,10 +60,8 @@ export default function AddIssueModal({
     "SHFT",
   ];
 
-  const priorityLevels = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
-  const statusOptions = ["OPEN", "IN PROGRESS", "CLOSED"];
-
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const priorityLevels = ["Low", "Medium", "High", "Critical"];
+  const statusOptions = ["Open", "In Progress", "Closed"];
 
   const handleSubsystemToggle = (subsystem: string) => {
     setIssue((prevIssue) => {
@@ -83,24 +84,48 @@ export default function AddIssueModal({
     setIsLoading(true);
     setError(null);
 
+    if (!issue.driver || !issue.date || !issue.synopsis || !issue.description) {
+      setError("Please fill in all required fields.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (issue.issue_number < 1) {
+      setError("Issue number must be a positive integer.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const response = await postIssue(issue);
+      const response = await postIssue({
+        issue_number: issue.issue_number,
+        driver: issue.driver,
+        date: issue.date,
+        synopsis: issue.synopsis,
+        subsystems: issue.subsystems,
+        description: issue.description,
+        priority: issue.priority,
+        status: issue.status,
+      });
+
       if (response.status !== 201) {
         throw new Error("Failed to create issue");
       }
+
       setIssue({
+        issue_number: nextIssueNumber + 1,
         driver: "",
-        date: "",
+        date: new Date().toISOString().split("T")[0],
         synopsis: "",
         subsystems: [],
         description: "",
-        priority: "LOW",
-        status: "OPEN",
+        priority: "Low",
+        status: "Open",
       });
       onSave();
       onClose();
-    } catch (err) {
-      setError("Error adding issue, make sure all fields are filled.");
+    } catch (err: any) {
+      setError(err.message || "Error adding issue. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -109,12 +134,32 @@ export default function AddIssueModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="p-6">
-        <h2 className="text-xl font-bold mb-4">Issue #{nextIssueNumber}</h2>
+        <h2 className="text-xl font-bold mb-4">Add New Issue</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Issue Number
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={issue.issue_number}
+              onChange={(e) =>
+                setIssue({
+                  ...issue,
+                  issue_number: parseInt(e.target.value),
+                })
+              }
+              className="w-full border rounded p-2"
+              disabled={isLoading}
+            />
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Driver</label>
+              <label className="block text-sm font-medium mb-1">
+                Directly Responsible Individuals
+              </label>
               <input
                 type="text"
                 value={issue.driver}
@@ -134,7 +179,6 @@ export default function AddIssueModal({
               />
             </div>
           </div>
-
           <div>
             <label className="block text-sm font-medium mb-1">Synopsis</label>
             <input
@@ -145,7 +189,6 @@ export default function AddIssueModal({
               disabled={isLoading}
             />
           </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">
@@ -182,7 +225,6 @@ export default function AddIssueModal({
               </select>
             </div>
           </div>
-
           <div>
             <label className="block text-sm font-medium mb-1">Subsystems</label>
             <div className="relative">
@@ -199,7 +241,6 @@ export default function AddIssueModal({
                 </span>
                 <span>{isDropdownOpen ? "▲" : "▼"}</span>
               </button>
-
               {isDropdownOpen && (
                 <div className="absolute z-10 mt-1 w-full bg-white border rounded shadow-lg max-h-60 overflow-y-auto">
                   {availableSubsystems.map((subsystem) => (
@@ -221,7 +262,6 @@ export default function AddIssueModal({
                 </div>
               )}
             </div>
-
             <div className="flex gap-2 flex-wrap mt-2">
               {issue.subsystems.map((subsystem) => (
                 <span
@@ -241,7 +281,6 @@ export default function AddIssueModal({
               ))}
             </div>
           </div>
-
           <div>
             <label className="block text-sm font-medium mb-1">
               Description
@@ -255,7 +294,6 @@ export default function AddIssueModal({
               disabled={isLoading}
             />
           </div>
-
           <div className="flex justify-end gap-2">
             <button
               type="button"

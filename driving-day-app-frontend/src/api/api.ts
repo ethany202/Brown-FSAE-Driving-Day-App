@@ -58,11 +58,14 @@ export const postFiles = async (formData: FormData) => {
 };
 
 export const postIssue = async (issueData: {
+  issue_number: number;
   driver: string;
   date: string;
   synopsis: string;
   subsystems: string[];
   description: string;
+  priority?: string;
+  status?: string;
 }) => {
   const path = "add-issue/";
   return await postRequest(path, issueData);
@@ -205,6 +208,7 @@ export const getAllIssues = async (filters?: {
 export const updateIssue = async (
   issueId: string,
   issueData: {
+    issue_number?: number;
     driver?: string;
     date?: string;
     synopsis?: string;

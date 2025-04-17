@@ -53,7 +53,6 @@ def add_driver(data):
     except ValueError as ve:
         print(f"ValueError: {ve}")
         return None
-
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
         return None
@@ -308,17 +307,58 @@ def get_general_run_data(filter_limit=10, filtered_date=None, filtered_driver=No
         print(f"An unexpected error occurred: {e}")
         return None
 
+def check_issue_number_unique(issue_number, exclude_issue_id=None):
+    """
+    Checks if the issue_number is unique in the 'issues' collection.
+    Excludes the issue with exclude_issue_id from the check (used during updates).
+    """
+    try:
+        query = db.collection('issues').where('issue_number', '==', issue_number)
+        docs = query.stream()
+        for doc in docs:
+            if exclude_issue_id is None or doc.id != exclude_issue_id:
+                return False
+        return True
+    except Exception as e:
+        print(f"Error checking issue number uniqueness: {e}")
+        return False
+
+def get_next_issue_number():
+    """
+    Retrieves the next available issue number by finding the highest existing number.
+    """
+    try:
+        query = db.collection('issues').order_by('issue_number', direction=firestore.Query.DESCENDING).limit(1)
+        docs = query.stream()
+        max_number = 0
+        for doc in docs:
+            issue_data = doc.to_dict()
+            max_number = max(max_number, issue_data.get('issue_number', 0))
+        return max_number + 1
+    except Exception as e:
+        print(f"Error retrieving next issue number: {e}")
+        return 1
+
 def add_issue(data):
+    """
+    Adds an issue document to the 'issues' collection in Firestore with an issue_number.
+    """
     try:
         if not isinstance(data, dict):
             raise ValueError("Input must be a dictionary.")
-
         required_fields = ['driver', 'date', 'synopsis', 'subsystems', 'description']
         for field in required_fields:
             if field not in data or not data[field]:
                 raise ValueError(f"Missing or empty required field: {field}")
-
+        issue_number = data.get('issue_number')
+        if issue_number is None:
+            issue_number = get_next_issue_number()
+        else:
+            issue_number = int(issue_number)
+            if not check_issue_number_unique(issue_number):
+                raise ValueError(f"Issue number {issue_number} is already in use.")
         issue_data = {
+            'issue_number': issue_number,
             'driver': data['driver'],
             'date': data['date'],
             'synopsis': data['synopsis'],
@@ -328,18 +368,14 @@ def add_issue(data):
             'status': data.get('status', 'Open'),
             'created_at': firestore.SERVER_TIMESTAMP
         }
-
         main_db = db.collection('issues')
         doc_ref = main_db.document()
         doc_ref.set(issue_data)
-
-        print(f"Issue '{data['synopsis']}' added with ID: {doc_ref.id}")
-        return {"issue_id": doc_ref.id}
-
+        print(f"Issue '{data['synopsis']}' added with ID: {doc_ref.id} and number: {issue_number}")
+        return {"issue_id": doc_ref.id, "issue_number": issue_number}
     except ValueError as ve:
         print(f"ValueError: {ve}")
         return None
-
     except Exception as e:
         print(f"An unexpected error occurred while adding issue: {e}")
         return None
@@ -388,6 +424,9 @@ def get_all_issues(filters=None):
         return None
     
 def update_issue(issue_id: str, data: dict):
+    """
+    Updates an issue document in the 'issues' collection.
+    """
     try:
         if not isinstance(data, dict):
             raise ValueError("Input must be a dictionary.")
@@ -404,6 +443,11 @@ def update_issue(issue_id: str, data: dict):
             'status': data.get('status'),
             'updated_at': firestore.SERVER_TIMESTAMP
         }
+        if 'issue_number' in data:
+            issue_number = int(data['issue_number'])
+            if not check_issue_number_unique(issue_number, exclude_issue_id=issue_id):
+                raise ValueError(f"Issue number {issue_number} is already in use.")
+            issue_data['issue_number'] = issue_number
         issue_data = {k: v for k, v in issue_data.items() if v is not None}
 
         main_db = db.collection('issues')
@@ -412,7 +456,7 @@ def update_issue(issue_id: str, data: dict):
         # Check if document exists
         if not doc_ref.get().exists:
             raise ValueError(f"Issue with ID {issue_id} not found.")
-        
+
         doc_ref.update(issue_data)
         print(f"Issue {issue_id} updated successfully")
         return {"issue_id": issue_id}

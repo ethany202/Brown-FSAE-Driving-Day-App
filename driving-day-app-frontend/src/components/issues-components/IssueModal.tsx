@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Modal from "./Modal";
-import { updateIssue, deleteIssue } from "../../api/api";
+import { deleteIssue, updateIssue } from "../../api/api";
 
 interface Issue {
   id: string;
+  issue_number: number;
   driver: string;
   date: string;
   synopsis: string;
@@ -15,6 +16,7 @@ interface Issue {
 
 interface IssueModalProps {
   issue: Issue;
+  issueNumber: number;
   isOpen: boolean;
   onClose: () => void;
   onSave: () => void;
@@ -22,6 +24,7 @@ interface IssueModalProps {
 
 export default function IssueModal({
   issue,
+  issueNumber,
   isOpen,
   onClose,
   onSave,
@@ -31,7 +34,7 @@ export default function IssueModal({
   const [isSubsystemDropdownOpen, setIsSubsystemDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // Added for delete confirmation
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const availableSubsystems = [
     "BRK",
@@ -112,6 +115,7 @@ export default function IssueModal({
 
     try {
       const response = await updateIssue(editedIssue.id, {
+        issue_number: editedIssue.issue_number,
         driver: editedIssue.driver,
         date: editedIssue.date,
         synopsis: editedIssue.synopsis,
@@ -125,8 +129,8 @@ export default function IssueModal({
       }
       setEditMode(false);
       onSave();
-    } catch (err) {
-      setError("Failed to update issue. Please try again.");
+    } catch (err: any) {
+      setError(err.message || "Failed to update issue. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -147,7 +151,7 @@ export default function IssueModal({
       setError("Failed to delete issue. Please try again.");
     } finally {
       setIsLoading(false);
-      setShowDeleteConfirm(false); // Close confirmation dialog
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -157,7 +161,7 @@ export default function IssueModal({
       onClose={() => {
         setEditMode(false);
         setEditedIssue(issue);
-        setShowDeleteConfirm(false); // Reset confirmation state
+        setShowDeleteConfirm(false);
         onClose();
       }}
     >
@@ -190,10 +194,28 @@ export default function IssueModal({
               <form onSubmit={handleSubmit}>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
                 <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Issue Number
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={editedIssue.issue_number}
+                      onChange={(e) =>
+                        setEditedIssue({
+                          ...editedIssue,
+                          issue_number: parseInt(e.target.value),
+                        })
+                      }
+                      className="w-full border p-2 rounded"
+                      disabled={isLoading}
+                    />
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium mb-1">
-                        Driver
+                        Directly Responsible Individuals
                       </label>
                       <input
                         type="text"
@@ -226,7 +248,6 @@ export default function IssueModal({
                       />
                     </div>
                   </div>
-
                   <div>
                     <label className="block text-sm font-medium mb-1">
                       Synopsis
@@ -244,7 +265,6 @@ export default function IssueModal({
                       disabled={isLoading}
                     />
                   </div>
-
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium mb-1">
@@ -291,7 +311,6 @@ export default function IssueModal({
                       </select>
                     </div>
                   </div>
-
                   <div>
                     <label className="block text-sm font-medium mb-1">
                       Subsystems
@@ -312,7 +331,6 @@ export default function IssueModal({
                         </span>
                         <span>{isSubsystemDropdownOpen ? "▲" : "▼"}</span>
                       </button>
-
                       {isSubsystemDropdownOpen && (
                         <div className="absolute z-10 mt-1 w-full bg-white border rounded shadow-lg max-h-60 overflow-y-auto">
                           {availableSubsystems.map((subsystem) => (
@@ -336,7 +354,6 @@ export default function IssueModal({
                         </div>
                       )}
                     </div>
-
                     <div className="flex gap-2 flex-wrap mt-2">
                       {editedIssue.subsystems.map((subsystem) => (
                         <span
@@ -356,7 +373,6 @@ export default function IssueModal({
                       ))}
                     </div>
                   </div>
-
                   <div>
                     <label className="block text-sm font-medium mb-1">
                       Description
@@ -373,7 +389,6 @@ export default function IssueModal({
                       disabled={isLoading}
                     />
                   </div>
-
                   <div className="flex justify-end gap-2">
                     <button
                       type="button"
@@ -388,7 +403,7 @@ export default function IssueModal({
                     </button>
                     <button
                       type="button"
-                      onClick={() => setShowDeleteConfirm(true)} // Show confirmation dialog
+                      onClick={() => setShowDeleteConfirm(true)}
                       className="px-4 py-2 bg-red-500 text-white rounded disabled:bg-red-300"
                       disabled={isLoading}
                     >
@@ -409,11 +424,12 @@ export default function IssueModal({
         ) : (
           <div>
             <div className="flex justify-between mb-4">
-              <h2 className="text-xl font-bold">Issue #{issue.id}</h2>
+              <h2 className="text-xl font-bold">Issue #{issueNumber}</h2>
             </div>
             <div className="space-y-4">
               <p className="break-words">
-                <strong>Driver:</strong> {issue.driver}
+                <strong>Directly Responsible Individuals:</strong>{" "}
+                {issue.driver}
               </p>
               <p>
                 <strong>Date:</strong> {issue.date}

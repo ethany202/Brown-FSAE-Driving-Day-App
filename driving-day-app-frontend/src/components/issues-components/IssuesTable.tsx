@@ -5,6 +5,7 @@ import { getAllIssues } from "../../api/api";
 
 interface Issue {
   id: string;
+  issue_number: number;
   driver: string;
   date: string;
   synopsis: string;
@@ -17,6 +18,9 @@ interface Issue {
 export default function IssueTable() {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
+  const [selectedIssueNumber, setSelectedIssueNumber] = useState<number | null>(
+    null
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +45,12 @@ export default function IssueTable() {
           (issue: Issue) => issue.id === selectedIssue.id
         );
         setSelectedIssue(updatedSelected || null);
+        const index = updatedIssues.findIndex(
+          (issue: Issue) => issue.id === selectedIssue.id
+        );
+        setSelectedIssueNumber(
+          index !== -1 ? updatedSelected.issue_number : null
+        );
       }
     } catch (err) {
       setError("Failed to load issues. Please try again.");
@@ -103,7 +113,9 @@ export default function IssueTable() {
               <th className="px-6 py-4 text-left font-medium text-lg">
                 Issue #
               </th>
-              <th className="px-6 py-4 text-left font-medium">Driver</th>
+              <th className="px-6 py-4 text-left font-medium">
+                Directly Responsible Individuals
+              </th>
               <th className="px-6 py-4 text-left font-medium">Date</th>
               <th className="px-6 py-4 text-left font-medium">Synopsis</th>
               <th className="px-6 py-4 text-left font-medium">Subsystems</th>
@@ -122,19 +134,24 @@ export default function IssueTable() {
             </tr>
           </thead>
           <tbody>
-            {issues.map((issue, index) => (
+            {issues.map((issue) => (
               <tr
                 key={issue.id}
                 onClick={() => {
                   setSelectedIssue(issue);
+                  setSelectedIssueNumber(issue.issue_number);
                   setIsModalOpen(true);
                 }}
                 className={`cursor-pointer transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${
-                  index !== issues.length - 1 ? "border-b border-gray-100" : ""
+                  issues.indexOf(issue) !== issues.length - 1
+                    ? "border-b border-gray-100"
+                    : ""
                 }`}
                 tabIndex={0}
               >
-                <td className="px-6 py-4 text-lg font-medium">{index + 1}</td>
+                <td className="px-6 py-4 text-lg font-medium">
+                  {issue.issue_number}
+                </td>
                 <td className="px-6 py-4 text-gray-600">
                   <div className="break-words">{issue.driver}</div>
                 </td>
@@ -196,6 +213,7 @@ export default function IssueTable() {
       {selectedIssue && (
         <IssueModal
           issue={selectedIssue}
+          issueNumber={selectedIssueNumber ?? 0}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSave={handleSave}
@@ -206,7 +224,11 @@ export default function IssueTable() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSave={handleSave}
-        nextIssueNumber={issues.length + 1}
+        nextIssueNumber={
+          issues.length > 0
+            ? Math.max(...issues.map((i) => i.issue_number)) + 1
+            : 1
+        }
       />
     </div>
   );

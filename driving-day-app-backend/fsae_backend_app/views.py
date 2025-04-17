@@ -211,7 +211,8 @@ async def add_issue_call(request):
                 
             return JsonResponse({
                 "message": "Issue created successfully!",
-                "issue_id": result["issue_id"]
+                "issue_id": result["issue_id"],
+                "issue_number": result["issue_number"]
             }, status=201)
             
         except Exception as e:
@@ -255,6 +256,9 @@ async def get_all_issues_call(request):
 
 
 async def update_issue_call(request, issue_id):
+    """
+    Handles updating an issue via a PUT request.
+    """
     if request.method == 'PUT':
         try:
             data = json.loads(request.body.decode('utf-8'))
