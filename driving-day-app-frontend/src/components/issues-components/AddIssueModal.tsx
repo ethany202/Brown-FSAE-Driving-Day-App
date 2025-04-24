@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Modal from "./Modal";
-import { postIssue } from "../../api/api";
+import { postFiles, postIssue } from "../../api/api";
 
 interface AddIssueModalProps {
   isOpen: boolean;
@@ -18,6 +18,7 @@ interface Issue {
   description: string;
   priority: string;
   status: string;
+  image?: string;
 }
 
 export default function AddIssueModal({
@@ -26,9 +27,10 @@ export default function AddIssueModal({
   onSave,
   nextIssueNumber,
 }: AddIssueModalProps) {
+  const today = new Date().toISOString().split("T")[0];
   const [issue, setIssue] = useState<Omit<Issue, "id">>({
     driver: "",
-    date: "",
+    date: today,
     synopsis: "",
     subsystems: [],
     description: "",
@@ -61,6 +63,7 @@ export default function AddIssueModal({
   const statusOptions = ["OPEN", "IN PROGRESS", "CLOSED"];
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
 
   const handleSubsystemToggle = (subsystem: string) => {
     setIssue((prevIssue) => {
@@ -84,6 +87,17 @@ export default function AddIssueModal({
     setError(null);
 
     try {
+      if (image){
+        const formData = new FormData();
+        const issueId = `${issue.driver}-${issue.date}`.replace(/\s+/g, "_");
+        formData.append("file", image);
+        formData.append("issue_id", issueId);
+        const response = await postFiles(formData);
+        if (response.status !== 201) {
+          throw new Error("Failed to upload image");
+        }
+      }
+
       const response = await postIssue(issue);
       if (response.status !== 201) {
         throw new Error("Failed to create issue");
@@ -96,6 +110,7 @@ export default function AddIssueModal({
         description: "",
         priority: "LOW",
         status: "OPEN",
+        image: undefined,
       });
       onSave();
       onClose();
@@ -211,7 +226,7 @@ export default function AddIssueModal({
                       <input
                         type="checkbox"
                         checked={issue.subsystems.includes(subsystem)}
-                        onChange={() => {}}
+                        onChange={() => { }}
                         className="mr-2"
                         disabled={isLoading}
                       />
@@ -255,7 +270,16 @@ export default function AddIssueModal({
               disabled={isLoading}
             />
           </div>
-
+          <div>
+            <label className="block text-sm font-medium mb-1">Upload Image (optional)</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files?.[0] || null)}
+              className="w-full border rounded p-2"
+              disabled={isLoading}
+            />
+          </div>
           <div className="flex justify-end gap-2">
             <button
               type="button"
