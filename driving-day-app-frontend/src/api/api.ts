@@ -37,7 +37,7 @@ export const postDriverProfile = async (userData: {
   return await postRequest(path, userData);
 };
 
-export const postFiles = async (formData: FormData, type?: string) => {
+export const postFiles = async (formData: FormData) => {
   const path = "upload-files/";
   try {
     const response = await axios.post(
@@ -52,6 +52,26 @@ export const postFiles = async (formData: FormData, type?: string) => {
     return response;
   } catch (error) {
     console.error("Error uploading file:", error);
+    const axiosError = error as AxiosError;
+    return { status: axiosError.status, data: undefined };
+  }
+};
+
+export const postS3Image = async (formData: FormData, id: string) => {
+  const path = `upload-s3-image/${id}`;
+  try {
+    const response = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/api/${path}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error uploading image:", error);
     const axiosError = error as AxiosError;
     return { status: axiosError.status, data: undefined };
   }

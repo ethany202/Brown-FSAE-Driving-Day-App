@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Modal from "./Modal";
-import { postFiles, postIssue } from "../../api/api";
+import { postFiles, postIssue, postS3Image } from "../../api/api";
 
 interface AddIssueModalProps {
   isOpen: boolean;
@@ -87,20 +87,19 @@ export default function AddIssueModal({
     setError(null);
 
     try {
-      if (image){
-        const formData = new FormData();
-        const issueId = `${issue.driver}-${issue.date}`.replace(/\s+/g, "_");
-        formData.append("file", image);
-        formData.append("issue_id", issueId);
-        const response = await postFiles(formData, issueId);
-        if (response.status !== 201) {
-          throw new Error("Failed to upload image");
-        }
-      }
-
       const response = await postIssue(issue);
       if (response.status !== 201) {
         throw new Error("Failed to create issue");
+      }
+      if (image){
+        const formData = new FormData();
+        const issueId = response.id;
+        formData.append("file", image);
+        formData.append("issue_id", issueId);
+        const response = await postS3Image(formData, issueId);
+        if (response.status !== 201) {
+          throw new Error("Failed to upload image");
+        }
       }
       setIssue({
         driver: "",
