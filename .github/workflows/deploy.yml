@@ -1,0 +1,25 @@
+name: Deploying to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}           # EC2 instance public DNS/IP address
+          username: ${{ secrets.EC2_USER }}         # EC2 username (e.g., ubuntu)
+          key: ${{ secrets.EC2_SSH_KEY }}           # Private SSH key
+          port: 22
+          script: |
+            cd /home/ubuntu/Brown-FSAE-Driving-Day-App 
+            git pull origin main
+            sudo systemctl restart gunicorn
