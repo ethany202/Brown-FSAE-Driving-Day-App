@@ -281,6 +281,7 @@ async def update_issue_call(request, issue_id):
         
     return JsonResponse({"error": "Invalid request method. Use PUT."}, status=400)
 
+
 async def delete_issue_call(request, issue_id):
     """
     Handles deleting an issue via a DELETE request.
