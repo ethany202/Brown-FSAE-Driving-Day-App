@@ -92,7 +92,7 @@ export default function AddIssueModal({
         const issueId = `${issue.driver}-${issue.date}`.replace(/\s+/g, "_");
         formData.append("file", image);
         formData.append("issue_id", issueId);
-        const response = await postFiles(formData);
+        const response = await postFiles(formData, issueId);
         if (response.status !== 201) {
           throw new Error("Failed to upload image");
         }

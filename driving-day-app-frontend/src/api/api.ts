@@ -37,7 +37,7 @@ export const postDriverProfile = async (userData: {
   return await postRequest(path, userData);
 };
 
-export const postFiles = async (formData: FormData) => {
+export const postFiles = async (formData: FormData, type?: string) => {
   const path = "upload-files/";
   try {
     const response = await axios.post(
