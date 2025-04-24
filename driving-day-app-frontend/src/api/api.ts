@@ -58,7 +58,7 @@ export const postFiles = async (formData: FormData) => {
 };
 
 export const postS3Image = async (formData: FormData, id: string) => {
-  const path = `upload-s3-image/${id}`;
+  const path = `upload-s3-image/`;
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/api/${path}`,

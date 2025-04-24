@@ -91,16 +91,18 @@ export default function AddIssueModal({
       if (response.status !== 201) {
         throw new Error("Failed to create issue");
       }
-      if (image){
+
+      if (image && response && "data" in response) {
         const formData = new FormData();
-        const issueId = response.id;
+        const issueId = response.data.issue_id;
         formData.append("file", image);
         formData.append("issue_id", issueId);
-        const response = await postS3Image(formData, issueId);
-        if (response.status !== 201) {
+        const imageResponse = await postS3Image(formData);
+        if (imageResponse.status !== 201) {
           throw new Error("Failed to upload image");
         }
       }
+
       setIssue({
         driver: "",
         date: "",
