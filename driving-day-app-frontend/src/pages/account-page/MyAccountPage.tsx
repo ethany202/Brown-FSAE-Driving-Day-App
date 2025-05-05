@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {  User, signInWithEmailAndPassword } from 'firebase/auth';
+import {  GoogleAuthProvider, User, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../api/firebaseConfig';
 import PageBase from '../../components/base-components/PageBase';
 import { SpecificDriverProfile } from '../../components/driver-components/SpecificDriverProfile';
@@ -45,8 +45,9 @@ const MyAccountPage : React.FC = () => {
   const handleGoogleLogin = async () => {
     try {
       console.log(user)
-      // const provider = new GoogleAuthProvider();
-      const result = await signInWithEmailAndPassword(auth, "ethan.ye0312@gmail.com", "TemporaryPass");
+      const provider = new GoogleAuthProvider();
+      // const result = await signInWithEmailAndPassword(auth, "random_email@gmail.com", "TemporaryPass");
+      const result = await signInWithPopup(auth, provider);
       console.log('Login successful', result.user.email);
     } catch (error: any) {
       if (error.code !== 'auth/popup-closed-by-user') {
@@ -72,7 +73,8 @@ const MyAccountPage : React.FC = () => {
       <h1>My Account</h1>
       {isLoggedIn 
         ? (
-          <>          
+          <>     
+            {/** If signed in, should be able to edit profile data */}     
             <SpecificDriverProfile driver={tempDriver}/>
             <button
               onClick={handleLogout}
@@ -98,50 +100,23 @@ const MyAccountPage : React.FC = () => {
           </div>
         )
       }
-    </PageBase>
 
-    // <div className="page-content-main">
-    //   <div className="flex justify-center py-16">
-    //     <h1>My Account</h1>
-    //   </div>
-    //   <div className='text-center'>
-    //     {!isLoggedIn ? (
-    //       <>
-    //         <h1 className="mb-4">Login</h1>
-    //         <button
-    //           onClick={handleGoogleLogin}
-    //           className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg shadow hover:bg-gray-50 flex items-center justify-center gap-2 mx-auto"
-    //         >
-    //           <img 
-    //             src="https://www.google.com/favicon.ico" 
-    //             alt="Google" 
-    //             className="w-5 h-5" 
-    //           />
-    //           Sign in with Google
-    //         </button>
-    //       </>
-    //     ) : (
-    //       <div>
-    //         <h2>Welcome!</h2>
-    //         <p>{user?.displayName || user?.email}</p>
-    //         {user?.photoURL && (
-    //           <img 
-    //             src={user.photoURL} 
-    //             alt="Profile" 
-    //             className="w-10 h-10 rounded-full mx-auto my-2"
-    //             referrerPolicy="no-referrer"
-    //           />
-    //         )}
-    //         <button
-    //           onClick={handleLogout}
-    //           className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-    //         >
-    //           Logout
-    //         </button>
-    //       </div>
-    //     )}
-    //   </div>
-    // </div>
+      <div className='flex flex-col items-center justify-center w-full'>
+        <div className='grid grid-cols-2'>
+          {/** Section for issues linked to drive */}
+
+          <div>
+            My Issues
+          </div>
+
+          {/** Section for linked runs */}
+
+          <div>
+            My Runs
+          </div>
+        </div>
+      </div>
+    </PageBase>
   );
 }
 
