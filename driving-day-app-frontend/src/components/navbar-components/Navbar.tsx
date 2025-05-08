@@ -1,9 +1,13 @@
-import React from "react";
+import React, {useContext} from "react";
 import { Link } from "react-router-dom";
 import logo from "../../assets/images/image.png";
 import "./Navbar.css";
+import AppDataContext from "../contexts/AppDataContext";
 
 const Navbar = () => {
+
+  const { currUserId } = useContext(AppDataContext)
+
   return (
     <div className="navbar-wrapper" style={{ backgroundColor: "#786C6C" }}>
       <div className="">
@@ -33,19 +37,25 @@ const Navbar = () => {
           </Link>
         </li>
         <li>
-          <Link to="/my-account" className="navbar-link">
-            My Account
-          </Link>
-        </li>
-        <li>
           <Link to="/issues" className="navbar-link">
             Issues
           </Link>
         </li>
+        <li>
+          <Link to="/my-account" className="navbar-link">
+            My Account
+          </Link>
+        </li>
       </ul>
-      {/* <div className="">
-        <Link to="/logout" className="logout">Logout</Link>
-      </div> */}
+      {currUserId && 
+      <div className="px-4 absolute bottom-4">
+        <button
+          className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+        >
+          Logout
+        </button>
+      </div>     
+      }
     </div>
   );
 };
