@@ -3,10 +3,21 @@ import { Link } from "react-router-dom";
 import logo from "../../assets/images/image.png";
 import "./Navbar.css";
 import AppDataContext from "../contexts/AppDataContext";
+import { handleGoogleLogout } from "../../controllers/AuthController";
 
 const Navbar = () => {
 
-  const { currUserId } = useContext(AppDataContext)
+  const { currUserId, setCurrUserId } = useContext(AppDataContext);
+
+  const performLogout = async () => {
+    try{
+      handleGoogleLogout();
+      setCurrUserId(null);
+    }
+    catch(error){
+      console.error(error);
+    }
+  }
 
   return (
     <div className="navbar-wrapper" style={{ backgroundColor: "#786C6C" }}>
@@ -51,6 +62,7 @@ const Navbar = () => {
       <div className="px-4 absolute bottom-4">
         <button
           className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          onClick={performLogout}
         >
           Logout
         </button>

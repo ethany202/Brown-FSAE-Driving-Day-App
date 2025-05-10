@@ -262,6 +262,8 @@ async def get_all_issues_call(request):
     return JsonResponse({"error": "Invalid request method. Use GET."}, status=400)
 
 
+
+
 async def update_issue_call(request, issue_id):
     if request.method == 'PUT':
         try:

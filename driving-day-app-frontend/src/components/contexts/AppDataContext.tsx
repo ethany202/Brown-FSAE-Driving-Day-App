@@ -3,12 +3,13 @@ import { Driver } from "../../utils/DriverType";
 
 interface AppDataContextType {
     currUserId: string | null,
+    setCurrUserId: React.Dispatch<React.SetStateAction<string | null>>,
     drivers: Driver[],
     isLoading: boolean
 }
 
 const AppDataContext = createContext<AppDataContextType>(
-    { currUserId: null, drivers: [], isLoading: true }
+    { currUserId: null, setCurrUserId: (newUserId) => {},  drivers: [], isLoading: true }
 )
 
 export default AppDataContext;

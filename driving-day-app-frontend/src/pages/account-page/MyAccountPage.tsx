@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import {  GoogleAuthProvider, User, signInWithPopup, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../api/firebaseConfig';
+import React, { useState, useEffect, useContext } from 'react';
 import PageBase from '../../components/base-components/PageBase';
 import { SpecificDriverProfile } from '../../components/driver-components/SpecificDriverProfile';
 import { Driver } from '../../utils/DriverType';
 import './MyAccountPage.css';
+import AppDataContext from "../../components/contexts/AppDataContext";
+import { handleGoogleLogin } from '../../controllers/AuthController';
 
 const MyAccountPage : React.FC = () => {
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const {currUserId, setCurrUserId} = useContext(AppDataContext)
 
   const tempDriver : Driver = {
     driverId:"undefined",
@@ -20,53 +19,15 @@ const MyAccountPage : React.FC = () => {
     pedalBoxPos: 3
   }
 
-  // useEffect(() => {
-    
-
-  //   const unsubscribe = auth.onAuthStateChanged((user) => {
-  //     if (user) {
-  //       console.log("CURRENT USER: ", user.email)
-  //       setIsLoggedIn(true);
-  //       setUser(user); 
-  //     } else {
-  //       setIsLoggedIn(false);
-  //       setUser(null);
-  //     }
-  //   });
-
-  //   return () => unsubscribe();
-  // }, []);
-
-  // useEffect(() => {
-  //   auth.onAuthStateChanged((user) => {
-  //     console.log(user)
-  //   })
-  // }, [user])
-
-  const handleGoogleLogin = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      // console.log('Login successful', result.user.email);
-      if(result.user){
-        setUser(result.user);
-        setIsLoggedIn(true);
-      }
-    } catch (error: any) {
-      if (error.code !== 'auth/popup-closed-by-user') {
-        console.error('Login failed:', error);
-      }
+  const performLogin = async () => {
+    try{
+      const email = await handleGoogleLogin();
+      setCurrUserId(email);
     }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      console.log('Logout successful');
-    } catch (error) {
-      console.error('Logout failed:', error);
+    catch(error){
+      console.error(error)
     }
-  };
+  }
 
   return (
     <PageBase style={{
@@ -74,7 +35,7 @@ const MyAccountPage : React.FC = () => {
       overflow: 'hidden'
     }}>
       <h1>My Account</h1>
-      {isLoggedIn 
+      {currUserId 
         ? (
           <>     
             {/** If signed in, should be able to edit profile data */}     
@@ -90,7 +51,7 @@ const MyAccountPage : React.FC = () => {
         : (
             <div className="flex flex-col items-center justify-center h-full">
               <button
-                onClick={handleGoogleLogin}
+                onClick={performLogin}
                 className="flex px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg shadow hover:bg-gray-50 flex items-center justify-center gap-2 mx-auto"
               >
                 <img 
