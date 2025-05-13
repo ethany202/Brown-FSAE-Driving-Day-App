@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import IssueModal from "./IssueModal";
 import AddIssueModal from "./AddIssueModal";
+import DropdownFilter from "../filter-components/DropdownFilter";
+import FiltersBase from "../base-components/FiltersBase";
 import { getAllIssues } from "../../api/api";
 
 interface Issue {
@@ -22,9 +24,16 @@ export default function IssueTable() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // TODO: Create useState hook for ALL necessary values
+
   useEffect(() => {
     fetchIssues();
   }, []);
+
+  // TODO: Implement GET request to pull all authorized users from database (drivers)
+  const fetchAllDrivers = async () => {
+
+  }
 
   const fetchIssues = async () => {
     setIsLoading(true);
@@ -84,9 +93,36 @@ export default function IssueTable() {
   };
 
   return (
-    <div>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      {isLoading && <p>Loading issues...</p>}
+    <>
+      {/* {error && <p className="text-red-500 mb-4">{error}</p>}
+      {isLoading && <p>Loading issues...</p>} */}
+
+      <FiltersBase>
+        <DropdownFilter 
+          filterCategory="Person"
+          allFilterOptions={["Op1", "Op2"]}
+          setFilterOption={(newOp) => {}}
+          />
+        
+        <DropdownFilter 
+          filterCategory="Subsystem"
+          allFilterOptions={["All", "SUS", "FUEL"]}
+          setFilterOption={(newOp) => {}}
+          />
+
+        <DropdownFilter 
+          filterCategory="Priority"
+          allFilterOptions={["All", "Low", "Medium", "High"]}
+          setFilterOption={(newOp) => {}}
+          />
+
+        <DropdownFilter 
+          filterCategory="Status"
+          allFilterOptions={["All", "In Prog."]}
+          setFilterOption={(newOp) => {}}
+          />          
+      </FiltersBase>
+
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <table className="w-full font-face table-fixed">
           <colgroup>
@@ -115,7 +151,7 @@ export default function IssueTable() {
                     onClick={() => setIsAddModalOpen(true)}
                     className="ml-4 bg-blue-500 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 focus:outline-none"
                   >
-                    Add Issue
+                    Add
                   </button>
                 </div>
               </th>
@@ -208,6 +244,6 @@ export default function IssueTable() {
         onSave={handleSave}
         nextIssueNumber={issues.length + 1}
       />
-    </div>
+    </>
   );
 }
