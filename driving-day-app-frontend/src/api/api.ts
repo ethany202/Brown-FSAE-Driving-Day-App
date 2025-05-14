@@ -60,8 +60,8 @@ export const postFiles = async (formData: FormData) => {
 export const postS3Image = async (formData: FormData, id: string) => {
   const path = `upload-s3-image/`;
   try {
-    const response = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/api/${path}`,
+    const response = await api.post(
+      path,
       formData,
       {
         headers: {
@@ -106,12 +106,6 @@ export const getRequest = async (
     const axiosError = error as AxiosError;
     return { status: axiosError.status, data: undefined };
   }
-};
-
-export const getCSRFToken = async () => {
-  const path = "get-csrf-token";
-  const searchParams = new URLSearchParams();
-  return await getRequest(path, searchParams);
 };
 
 export const getAllDrivers = async () => {

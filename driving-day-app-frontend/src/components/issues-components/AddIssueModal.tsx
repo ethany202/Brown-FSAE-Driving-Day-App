@@ -18,7 +18,6 @@ interface Issue {
   description: string;
   priority: string;
   status: string;
-  image?: string;
 }
 
 export default function AddIssueModal({
@@ -97,7 +96,7 @@ export default function AddIssueModal({
         const issueId = response.data.issue_id;
         formData.append("file", image);
         formData.append("issue_id", issueId);
-        const imageResponse = await postS3Image(formData);
+        const imageResponse = await postS3Image(formData, issueId);
         if (imageResponse.status !== 201) {
           throw new Error("Failed to upload image");
         }
@@ -111,7 +110,6 @@ export default function AddIssueModal({
         description: "",
         priority: "LOW",
         status: "OPEN",
-        image: undefined,
       });
       onSave();
       onClose();

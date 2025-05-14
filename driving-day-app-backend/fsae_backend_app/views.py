@@ -8,6 +8,7 @@ from django.views.decorators.http import require_GET
 from django.middleware.csrf import get_token
 from .utils import upload_to_s3
 
+@ensure_csrf_cookie
 @require_GET
 def get_csrf_token(request):
     token = get_token(request)
@@ -18,7 +19,6 @@ def homepage(request):
         "message": "Welcome to the FSAE Backend!",
         "status": "success"
     })
-
 
 async def add_driver_call(request):
     """
