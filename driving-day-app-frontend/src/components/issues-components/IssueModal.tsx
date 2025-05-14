@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "./Modal";
 import { updateIssue, deleteIssue } from "../../api/api";
+import { availableSubsystems, priorityLevels, statusOptions } from "../../constants/IssuesConstants";
 
 interface Issue {
   id: string;
@@ -33,27 +34,27 @@ export default function IssueModal({
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // Added for delete confirmation
 
-  const availableSubsystems = [
-    "BRK",
-    "CHAS",
-    "COOL",
-    "DASH",
-    "DRV",
-    "DRIVER GEAR",
-    "ELE",
-    "ENGN",
-    "ERGO",
-    "EXH",
-    "FEUL",
-    "INT",
-    "PDL",
-    "STR",
-    "SUS",
-    "SHFT",
-  ];
+  // const availableSubsystems = [
+  //   "BRK",
+  //   "CHAS",
+  //   "COOL",
+  //   "DASH",
+  //   "DRV",
+  //   "DRIVER GEAR",
+  //   "ELE",
+  //   "ENGN",
+  //   "ERGO",
+  //   "EXH",
+  //   "FEUL",
+  //   "INT",
+  //   "PDL",
+  //   "STR",
+  //   "SUS",
+  //   "SHFT",
+  // ];
 
-  const priorityLevels = ["Low", "Medium", "High", "Critical"];
-  const statusOptions = ["Open", "In Progress", "Closed"];
+  // const priorityLevels = ["Low", "Medium", "High", "Critical"];
+  // const statusOptions = ["Open", "In Progress", "Closed"];
 
   useEffect(() => {
     setEditedIssue(issue);

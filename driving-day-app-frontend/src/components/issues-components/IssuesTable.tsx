@@ -4,6 +4,7 @@ import AddIssueModal from "./AddIssueModal";
 import DropdownFilter from "../filter-components/DropdownFilter";
 import FiltersBase from "../base-components/FiltersBase";
 import { getAllIssues } from "../../api/api";
+import { availableSubsystems, priorityLevels, statusOptions } from "../../constants/IssuesConstants";
 
 interface Issue {
   id: string;
@@ -25,10 +26,18 @@ export default function IssueTable() {
   const [error, setError] = useState<string | null>(null);
 
   // TODO: Create useState hook for ALL necessary values
+  const [driverFilt, setDriverFilt] = useState<string | null>(null);
+  const [subsystemFilt, setSubsystemFilt] = useState<string | null>(null);
+  const [priorityFilt, setPriorityFilt] = useState<string | null>(null);
+  const [statusFilt, setStatusFilt] = useState<string | null>(null);
 
   useEffect(() => {
     fetchIssues();
   }, []);
+
+  useEffect(() => {
+    console.log("CURRENT PRIORITY: ", priorityFilt)
+  }, [subsystemFilt, priorityFilt, statusFilt])
 
   // TODO: Implement GET request to pull all authorized users from database (drivers)
   const fetchAllDrivers = async () => {
@@ -101,25 +110,25 @@ export default function IssueTable() {
         <DropdownFilter 
           filterCategory="Person"
           allFilterOptions={["Op1", "Op2"]}
-          setFilterOption={(newOp) => {}}
+          setFilterOption={setDriverFilt}
           />
         
         <DropdownFilter 
           filterCategory="Subsystem"
-          allFilterOptions={["All", "SUS", "FUEL"]}
-          setFilterOption={(newOp) => {}}
+          allFilterOptions={availableSubsystems}
+          setFilterOption={setSubsystemFilt}
           />
 
         <DropdownFilter 
           filterCategory="Priority"
-          allFilterOptions={["All", "Low", "Medium", "High"]}
-          setFilterOption={(newOp) => {}}
+          allFilterOptions={priorityLevels}
+          setFilterOption={setPriorityFilt}
           />
 
         <DropdownFilter 
           filterCategory="Status"
-          allFilterOptions={["All", "In Prog."]}
-          setFilterOption={(newOp) => {}}
+          allFilterOptions={statusOptions}
+          setFilterOption={setStatusFilt}
           />          
       </FiltersBase>
 
