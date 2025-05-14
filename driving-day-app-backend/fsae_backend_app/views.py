@@ -130,36 +130,47 @@ async def upload_files_call(request):
 
     return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
 
-async def upload_s3_image_call(request):
-    """
-    Upload a single image to S3 using FormData.
-    Uses the 'image' field as the file and 'id' field for naming.
-    """
-    if request.method != 'POST':
-        return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .utils import upload_to_s3
 
+@require_POST
+def upload_s3_image_call(request):
+    """
+    Upload a single image to S3 using multipart/form-data.
+    Expects:
+      - 'image' file field
+      - 'id' form field
+    """
+    image_file = request.FILES.get("file")
+    image_id   = request.POST .get("issue_id")
+    
+    if not image_file or not image_id:
+        return JsonResponse(
+            {"error": "Missing 'image' file or 'id' field."},
+            status=400
+        )
+
+    s3_key = f"issues/{image_id}/{image_file.name}"
     try:
-        image_file = request.FILES.get('image')
-        image_id = request.POST.get('id')
+        # synchronous upload
+        upload_to_s3(image_file, s3_key, settings.AWS_STORAGE_BUCKET_NAME)
+    except Exception as e:
+        return JsonResponse(
+            {"error": f"Failed to upload image to S3: {e}"},
+            status=500
+        )
 
-        if not image_file or not image_id:
-            return JsonResponse({"error": "Missing 'image' file or 'id' field."}, status=400)
-
-        # Define S3 path: you can customize this as needed
-        s3_key = f"issues/{image_id}/{image_file.name}"
-
-        # Upload to S3 (wrapped in sync_to_async since boto3 is not async)
-        await sync_to_async(upload_to_s3)(image_file, s3_key, "brown-fsae-issue-images")
-
-        file_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
-        return JsonResponse({
-            "message": "File uploaded successfully!",
+    file_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
+    return JsonResponse(
+        {
+            "message":  "File uploaded successfully!",
             "file_url": file_url,
             "issue_id": image_id
-        }, status=201)
-
-    except Exception as e:
-        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
+        },
+        status=201
+    )
 
 async def get_general_run_data_call(request):
     """
