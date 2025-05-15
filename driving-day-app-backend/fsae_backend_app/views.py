@@ -1,12 +1,14 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from .ld_parser.main import process_and_upload_inputted_ld_file
 import json
 from .firebase.firestore import *
 from asgiref.sync import sync_to_async
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 from django.middleware.csrf import get_token
-from .utils import upload_to_s3
+from django.conf import settings
+from .aws import upload_to_s3, get_s3_client
+from botocore.exceptions import ClientError
 
 @ensure_csrf_cookie
 @require_GET
@@ -14,7 +16,7 @@ def get_csrf_token(request):
     token = get_token(request)
     return JsonResponse({"csrfToken": token})
 
-def homepage(request):
+def homepage():
     return JsonResponse({
         "message": "Welcome to the FSAE Backend!",
         "status": "success"
@@ -130,11 +132,6 @@ async def upload_files_call(request):
 
     return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
 
-from django.conf import settings
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-from .utils import upload_to_s3
-
 @require_POST
 def upload_s3_image_call(request):
     """
@@ -171,6 +168,45 @@ def upload_s3_image_call(request):
         },
         status=201
     )
+
+@require_GET
+def fetch_s3_image_call(request):
+    """
+    URL: /api/fetch-s3-image/?issue_id=<issue_id>
+    - Lists up to one object in `issues/{issue_id}/`
+    - Returns a presigned GET URL for that object
+    """
+    issue_id = request.GET.get("issue_id")
+    if not issue_id:
+        return JsonResponse({"error": "Missing 'issue_id' parameter."}, status=400)
+
+    bucket = settings.AWS_STORAGE_BUCKET_NAME
+    prefix = f"issues/{issue_id}/"
+    s3 = get_s3_client()
+
+    # List up to one object under that prefix
+    try:
+        resp = s3.list_objects_v2(Bucket=bucket, Prefix=prefix, MaxKeys=1)
+    except ClientError as e:
+        return JsonResponse({"error": f"S3 list_objects error: {e}"}, status=500)
+
+    contents = resp.get("Contents")
+    if not contents:
+        raise Http404("No image found for that issue_id")
+
+    key = contents[0]["Key"]
+
+    # Generate a presigned URL valid for 1 hour
+    try:
+        url = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket, "Key": key},
+            ExpiresIn=3600,
+        )
+    except ClientError as e:
+        return JsonResponse({"error": f"Failed to get presigned URL: {e}"}, status=500)
+
+    return JsonResponse({"url": url})
 
 async def get_general_run_data_call(request):
     """

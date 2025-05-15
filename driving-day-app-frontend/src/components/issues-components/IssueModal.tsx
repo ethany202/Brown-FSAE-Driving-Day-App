@@ -33,6 +33,31 @@ export default function IssueModal({
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // Added for delete confirmation
 
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imgError, setImgError] = useState<string | null>(null);
+  useEffect(() => {
+    if (isOpen && !editMode) {
+      setImageUrl(null);
+      setImgError(null);
+
+      fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/fetch-s3-image/?issue_id=${issue.id}`,
+        { credentials: "include" }
+      )
+        .then((res) => {
+          if (!res.ok) throw new Error(`Status ${res.status}`);
+          return res.json();
+        })
+        .then((data) => {
+          setImageUrl(data.url);
+        })
+        .catch((err) => {
+          console.warn("No image or fetch failed:", err);
+          setImgError("No image available");
+        });
+    }
+  }, [isOpen, editMode, issue.id]);
+
   const availableSubsystems = [
     "BRK",
     "CHAS",
@@ -411,6 +436,20 @@ export default function IssueModal({
             <div className="flex justify-between mb-4">
               <h2 className="text-xl font-bold">Issue #{issue.id}</h2>
             </div>
+            {imageUrl ? (
+              <div className="mb-4">
+                <img
+                  src={imageUrl}
+                  alt={`Issue ${issue.id}`}
+                  className="max-h-60 w-auto mx-auto rounded shadow"
+                />
+              </div>
+            ) : imgError ? (
+              <p className="text-sm italic text-gray-500 mb-4">{imgError}</p>
+            ) : (
+              // while loading
+              <p className="text-sm text-gray-400 mb-4">Loading image…</p>
+            )}
             <div className="space-y-4">
               <p className="break-words">
                 <strong>Driver:</strong> {issue.driver}

@@ -4,6 +4,7 @@ from .views import *
 urlpatterns = [
     # POST Requests (indicated by /)
     path("upload-s3-image/", upload_s3_image_call, name="upload-s3-image"),
+    path("fetch-s3-image/", fetch_s3_image_call, name="fetch-s3-image"),
     path('upload-files/', upload_files_call, name='upload-files'),
     path('add-driver/', add_driver_call, name='add-driver'),
     path('add-issue/', add_issue_call, name='add-issue'),
