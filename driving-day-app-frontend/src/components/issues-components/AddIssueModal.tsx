@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Modal from "./Modal";
 import { postFiles, postIssue, postS3Image } from "../../api/api";
+import { set } from "react-datepicker/dist/date_utils";
 
 interface AddIssueModalProps {
   isOpen: boolean;
@@ -63,6 +64,7 @@ export default function AddIssueModal({
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
 
   const handleSubsystemToggle = (subsystem: string) => {
     setIssue((prevIssue) => {
@@ -269,12 +271,33 @@ export default function AddIssueModal({
               disabled={isLoading}
             />
           </div>
+          {preview && (
+          <div className="mb-4">
+            <p className="text-sm font-medium">Image Preview:</p>
+            <img
+              src={preview}
+              alt="Selected preview"
+              className="max-h-40 rounded shadow-sm mt-1"
+            />
+          </div>
+        )}
           <div>
             <label className="block text-sm font-medium mb-1">Upload Image (optional)</label>
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => setImage(e.target.files?.[0] || null)}
+              onChange={(e) => {
+                const file = e.target.files?.[0] || null;
+                setImage(file);
+                if (preview){
+                  URL.revokeObjectURL(preview);
+                  setPreview(null);
+                }
+                if(file) {
+                    const newPreview = URL.createObjectURL(file);
+                    setPreview(newPreview);
+                  }
+              }}
               className="w-full border rounded p-2"
               disabled={isLoading}
             />
