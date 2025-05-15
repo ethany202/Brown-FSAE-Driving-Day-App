@@ -49,8 +49,12 @@ export default function IssueTable() {
     }
   };
 
-  const handleSave = () => {
-    fetchIssues();
+  const handleSave = (newIssue?: Issue) => {
+    if (newIssue) {
+      setIssues(prev => [newIssue, ...prev]);
+    }else{
+      fetchIssues();
+    }
   };
 
   const getPriorityColor = (priority: string | undefined) => {
@@ -134,7 +138,7 @@ export default function IssueTable() {
                 }`}
                 tabIndex={0}
               >
-                <td className="px-6 py-4 text-lg font-medium">{index + 1}</td>
+                <td className="px-6 py-4 text-lg font-medium">{issues.length - index}</td>
                 <td className="px-6 py-4 text-gray-600">
                   <div className="break-words">{issue.driver}</div>
                 </td>

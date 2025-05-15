@@ -6,7 +6,7 @@ import { set } from "react-datepicker/dist/date_utils";
 interface AddIssueModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (newIssue: Issue) => void;
   nextIssueNumber: number;
 }
 
@@ -107,10 +107,10 @@ export default function AddIssueModal({
       if (response.status !== 201) {
         throw new Error("Failed to create issue");
       }
-
+      let issueId = "";
       if (image && response && "data" in response) {
         const formData = new FormData();
-        const issueId = response.data.issue_id;
+        issueId = response.data.issue_id;
         formData.append("file", image);
         formData.append("issue_id", issueId);
         const imageResponse = await postS3Image(formData, issueId);
@@ -118,7 +118,7 @@ export default function AddIssueModal({
           throw new Error("Failed to upload image");
         }
       }
-
+      onSave({ ...issue, id: issueId });
       setIssue({
         driver: "",
         date: "",
@@ -128,7 +128,6 @@ export default function AddIssueModal({
         priority: "LOW",
         status: "OPEN",
       });
-      onSave();
       onClose();
     } catch (err) {
       setError("Error adding issue, make sure all fields are filled.");

@@ -98,3 +98,35 @@ def generate_presigned_url(s3_key, bucket_name=None, expires_in=3600):
         return url
     except ClientError as e:
         raise RuntimeError(f"Failed to generate presigned URL for {s3_key}: {e}")
+
+
+def delete_s3_folder(prefix, bucket_name=None):
+    """
+    Delete all objects under the given prefix ("folder") in the S3 bucket.
+
+    Args:
+        prefix: The key prefix (e.g. "issues/<issue_id>/").
+        bucket_name: Optional override for the bucket name. Defaults to settings.AWS_STORAGE_BUCKET_NAME.
+
+    Raises:
+        RuntimeError: If deletion fails.
+    """
+    bucket = bucket_name or settings.AWS_STORAGE_BUCKET_NAME
+    client = get_s3_client()
+
+    paginator = client.get_paginator('list_objects_v2')
+    delete_batch = {'Objects': []}
+
+    try:
+        for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+            for obj in page.get('Contents', []):
+                delete_batch['Objects'].append({'Key': obj['Key']})
+                # delete in batches of 10
+                if len(delete_batch['Objects']) >= 10:
+                    client.delete_objects(Bucket=bucket, Delete=delete_batch)
+                    delete_batch = {'Objects': []}
+        # delete any remaining
+        if delete_batch['Objects']:
+            client.delete_objects(Bucket=bucket, Delete=delete_batch)
+    except ClientError as e:
+        raise RuntimeError(f"Failed to delete S3 folder {prefix}: {e}")

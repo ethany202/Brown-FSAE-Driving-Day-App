@@ -17,7 +17,7 @@ interface IssueModalProps {
   issue: Issue;
   isOpen: boolean;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (newIssue?: Issue) => void;
 }
 
 export default function IssueModal({

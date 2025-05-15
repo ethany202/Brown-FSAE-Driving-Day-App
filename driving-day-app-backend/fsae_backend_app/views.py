@@ -7,7 +7,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_POST
 from django.middleware.csrf import get_token
 from django.conf import settings
-from .aws import upload_to_s3, get_s3_client
+from .aws import upload_to_s3, get_s3_client, delete_s3_folder
 from botocore.exceptions import ClientError
 
 @ensure_csrf_cookie
@@ -383,7 +383,9 @@ async def delete_issue_call(request, issue_id):
             
             if result is None:
                 return JsonResponse({"error": "Failed to delete issue or issue not found"}, status=404)
-                
+
+            await sync_to_async(delete_s3_folder)(f"issues/{issue_id}/")
+        
             return JsonResponse({
                 "message": "Issue deleted successfully!",
                 "issue_id": issue_id
