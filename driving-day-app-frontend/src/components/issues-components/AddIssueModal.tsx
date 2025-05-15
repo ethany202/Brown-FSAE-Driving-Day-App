@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
 import { postFiles, postIssue, postS3Image } from "../../api/api";
 import { set } from "react-datepicker/dist/date_utils";
@@ -65,6 +65,21 @@ export default function AddIssueModal({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      setIssue({
+        driver: "",
+        date: today,
+        synopsis: "",
+        subsystems: [],
+        description: "",
+        priority: "LOW",
+        status: "OPEN",
+      })
+      setPreview(null);
+    };
+  }, []);
 
   const handleSubsystemToggle = (subsystem: string) => {
     setIssue((prevIssue) => {
