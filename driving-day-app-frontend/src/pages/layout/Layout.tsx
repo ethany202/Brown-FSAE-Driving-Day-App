@@ -3,7 +3,7 @@ import Navbar from "../../components/navbar-components/Navbar";
 import './Layout.css';
 import { useState, useEffect } from "react";
 import { Driver } from "../../utils/DriverType";
-import { api, getAllDrivers, getCSRFToken } from "../../api/api";
+import { api, getAllDrivers } from "../../api/api";
 import AppDataContext from "../../components/contexts/AppDataContext";
 import ChartContext from "../../components/contexts/ChartContext";
 import LineChartTemplate from '../../components/graph-components/LineChartTemplate';

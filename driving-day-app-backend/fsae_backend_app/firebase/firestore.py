@@ -312,7 +312,7 @@ def add_issue(data):
     try:
         if not isinstance(data, dict):
             raise ValueError("Input must be a dictionary.")
-
+        
         required_fields = ['driver', 'date', 'synopsis', 'subsystems', 'description']
         for field in required_fields:
             if field not in data or not data[field]:

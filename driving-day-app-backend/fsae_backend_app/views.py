@@ -1,23 +1,26 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from .ld_parser.main import process_and_upload_inputted_ld_file
 import json
 from .firebase.firestore import *
 from asgiref.sync import sync_to_async
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 from django.middleware.csrf import get_token
+from django.conf import settings
+from .aws import upload_to_s3, get_s3_client, delete_s3_folder
+from botocore.exceptions import ClientError
 
+@ensure_csrf_cookie
 @require_GET
 def get_csrf_token(request):
     token = get_token(request)
     return JsonResponse({"csrfToken": token})
 
-def homepage(request):
+def homepage():
     return JsonResponse({
         "message": "Welcome to the FSAE Backend!",
         "status": "success"
     })
-
 
 async def add_driver_call(request):
     """
@@ -129,6 +132,81 @@ async def upload_files_call(request):
 
     return JsonResponse({"error": "Invalid request method. Use POST."}, status=400)
 
+@require_POST
+def upload_s3_image_call(request):
+    """
+    Upload a single image to S3 using multipart/form-data.
+    Expects:
+      - 'image' file field
+      - 'id' form field
+    """
+    image_file = request.FILES.get("file")
+    image_id   = request.POST .get("issue_id")
+    
+    if not image_file or not image_id:
+        return JsonResponse(
+            {"error": "Missing 'image' file or 'id' field."},
+            status=400
+        )
+
+    s3_key = f"issues/{image_id}/{image_file.name}"
+    try:
+        # synchronous upload
+        upload_to_s3(image_file, s3_key, settings.AWS_STORAGE_BUCKET_NAME)
+    except Exception as e:
+        return JsonResponse(
+            {"error": f"Failed to upload image to S3: {e}"},
+            status=500
+        )
+
+    file_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
+    return JsonResponse(
+        {
+            "message":  "File uploaded successfully!",
+            "file_url": file_url,
+            "issue_id": image_id
+        },
+        status=201
+    )
+
+@require_GET
+def fetch_s3_image_call(request):
+    """
+    URL: /api/fetch-s3-image/?issue_id=<issue_id>
+    - Lists up to one object in `issues/{issue_id}/`
+    - Returns a presigned GET URL for that object
+    """
+    issue_id = request.GET.get("issue_id")
+    if not issue_id:
+        return JsonResponse({"error": "Missing 'issue_id' parameter."}, status=400)
+
+    bucket = settings.AWS_STORAGE_BUCKET_NAME
+    prefix = f"issues/{issue_id}/"
+    s3 = get_s3_client()
+
+    # List up to one object under that prefix
+    try:
+        resp = s3.list_objects_v2(Bucket=bucket, Prefix=prefix, MaxKeys=1)
+    except ClientError as e:
+        return JsonResponse({"error": f"S3 list_objects error: {e}"}, status=500)
+
+    contents = resp.get("Contents")
+    if not contents:
+        raise Http404("No image found for that issue_id")
+
+    key = contents[0]["Key"]
+
+    # Generate a presigned URL valid for 1 hour
+    try:
+        url = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket, "Key": key},
+            ExpiresIn=3600,
+        )
+    except ClientError as e:
+        return JsonResponse({"error": f"Failed to get presigned URL: {e}"}, status=500)
+
+    return JsonResponse({"url": url})
 
 async def get_general_run_data_call(request):
     """
@@ -308,7 +386,9 @@ async def delete_issue_call(request, issue_id):
             
             if result is None:
                 return JsonResponse({"error": "Failed to delete issue or issue not found"}, status=404)
-                
+
+            await sync_to_async(delete_s3_folder)(f"issues/{issue_id}/")
+        
             return JsonResponse({
                 "message": "Issue deleted successfully!",
                 "issue_id": issue_id
