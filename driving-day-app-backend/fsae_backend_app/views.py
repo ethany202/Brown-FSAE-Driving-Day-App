@@ -80,6 +80,34 @@ async def get_all_drivers_call(request):
         }, status=400)
 
 
+@require_GET
+async def get_specific_driver_call(request):
+    """
+    Returns specific driver data based on an inputted driver ID.
+
+    Methods:
+    - GET: Return driver data based on the inputted driver ID
+
+    Returns:
+    - JSON response of a driver based on the inputted driver ID
+    """
+    try:
+        driverId = request.GET.get('driverId')
+
+        curr_driver = await sync_to_async(get_specific_driver)(driverId)
+
+        return JsonResponse({
+            "driver": curr_driver,
+            "message": "Drivers retrieved successfully"
+        }, status=200)
+        
+    except Exception as e:
+        return JsonResponse({
+            "error": str(e),
+            "message": "Error retrieving drivers"
+        }, status=400)
+
+
 @require_POST
 @csrf_exempt
 async def upload_files_call(request):

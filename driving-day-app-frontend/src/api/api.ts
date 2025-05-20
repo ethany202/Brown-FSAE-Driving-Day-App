@@ -135,6 +135,21 @@ export const getDriversFiltered = async (filters: {
   return await getRequest(path, searchParams);
 };
 
+
+export const getSpecificDriver = async (filters: {
+  driverId: string;
+}) => {
+  const path = "specific-driver";
+
+  const driverIdFilter = filters.driverId;
+  const searchParams = new URLSearchParams({
+    driverId: driverIdFilter
+  });
+
+  return await getRequest(path, searchParams)
+}
+
+
 /**
  *
  * @param runFilter: JSON object containing filters for:

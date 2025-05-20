@@ -3,21 +3,22 @@ import PageBase from '../../components/base-components/PageBase';
 import { SpecificDriverProfile } from '../../components/driver-components/SpecificDriverProfile';
 import { Driver } from '../../utils/DriverType';
 import './MyAccountPage.css';
+import { getSpecificDriver } from '../../api/api';
 import AppDataContext from "../../components/contexts/AppDataContext";
 import { handleGoogleLogin } from '../../controllers/AuthController';
 
 const MyAccountPage : React.FC = () => {
 
-  const {currUserId, setCurrUserId} = useContext(AppDataContext)
+  const {currUserId, setCurrUserId, currUser, setCurrUser} = useContext(AppDataContext)
 
-  const tempDriver : Driver = {
-    driverId:"undefined",
-    firstName:"undefined",
-    lastName: 'undefined',
-    height: 5,
-    weight: 10,
-    pedalBoxPos: 3
-  }
+  // const [currUser, setCurrUser] = useState<Driver>({
+  //   driverId:"undefined",
+  //   firstName:"undefined",
+  //   lastName: 'undefined',
+  //   height: 5,
+  //   weight: 10,
+  //   pedalBoxPos: 3
+  // })
 
   const performLogin = async () => {
     try{
@@ -29,6 +30,21 @@ const MyAccountPage : React.FC = () => {
     }
   }
 
+  const fetchSpecificDriver = async () => {
+    if(currUserId){
+      const response = await getSpecificDriver({
+        driverId: currUserId
+      })
+      if (response.status === 200 && response.data.driver) {
+        setCurrUser(response.data.driver)
+      }
+    }
+  }
+
+  useEffect(() => {
+    fetchSpecificDriver()
+  }, [currUserId])
+
   return (
     <PageBase style={{
       height: '100vh',
@@ -36,18 +52,7 @@ const MyAccountPage : React.FC = () => {
     }}>
       <h1>My Account</h1>
       {currUserId 
-        ? (
-          <>     
-            {/** If signed in, should be able to edit profile data */}     
-            <SpecificDriverProfile driver={tempDriver}/>
-            {/* <button
-              onClick={handleLogout}
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-            >
-              Logout
-            </button> */}
-          </>
-        )
+        ? <SpecificDriverProfile driver={currUser}/>
         : (
             <div className="flex flex-col items-center justify-center h-full">
               <button
