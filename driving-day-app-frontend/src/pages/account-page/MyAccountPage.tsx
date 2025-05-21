@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import PageBase from '../../components/base-components/PageBase';
 import { SpecificDriverProfile } from '../../components/driver-components/SpecificDriverProfile';
-import { Driver } from '../../utils/DriverType';
 import './MyAccountPage.css';
 import { getSpecificDriver } from '../../api/api';
 import AppDataContext from "../../components/contexts/AppDataContext";
@@ -10,15 +9,6 @@ import { handleGoogleLogin } from '../../controllers/AuthController';
 const MyAccountPage : React.FC = () => {
 
   const {currUserId, setCurrUserId, currUser, setCurrUser} = useContext(AppDataContext)
-
-  // const [currUser, setCurrUser] = useState<Driver>({
-  //   driverId:"undefined",
-  //   firstName:"undefined",
-  //   lastName: 'undefined',
-  //   height: 5,
-  //   weight: 10,
-  //   pedalBoxPos: 3
-  // })
 
   const performLogin = async () => {
     try{
@@ -80,18 +70,12 @@ const MyAccountPage : React.FC = () => {
                 <colgroup>
                   {/** Issue # */}
                   <col style={{ width: "10%" }} />
-                  {/** Driver */}
-                  {/* <col style={{ width: "10%" }} />  */}
                   {/** Date */}
                   <col style={{ width: "10%" }} /> 
                   {/** Synopsis */}
                   <col style={{ width: "15%" }} /> 
                   {/** Subsystem */}
                   <col style={{ width: "10%" }} /> 
-                  {/** Priority */}
-                  {/* <col style={{ width: "8%" }} />  */}
-                  {/** Status */}
-                  {/* <col style={{ width: "15%" }} />  */}
                 </colgroup>
               </table>
               <thead>
