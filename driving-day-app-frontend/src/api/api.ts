@@ -57,6 +57,26 @@ export const postFiles = async (formData: FormData) => {
   }
 };
 
+export const postS3Image = async (formData: FormData, id: string) => {
+  const path = `upload-s3-image/`;
+  try {
+    const response = await api.post(
+      path,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    const axiosError = error as AxiosError;
+    return { status: axiosError.status, data: undefined };
+  }
+};
+
 export const postIssue = async (issueData: {
   driver: string;
   date: string;
@@ -88,12 +108,6 @@ export const getRequest = async (
   }
 };
 
-export const getCSRFToken = async () => {
-  const path = "get-csrf-token";
-  const searchParams = new URLSearchParams();
-  return await getRequest(path, searchParams);
-};
-
 export const getAllDrivers = async () => {
   const path = "all-drivers";
   return await getRequest(
@@ -120,6 +134,21 @@ export const getDriversFiltered = async (filters: {
 
   return await getRequest(path, searchParams);
 };
+
+
+export const getSpecificDriver = async (filters: {
+  driverId: string;
+}) => {
+  const path = "specific-driver";
+
+  const driverIdFilter = filters.driverId;
+  const searchParams = new URLSearchParams({
+    driverId: driverIdFilter
+  });
+
+  return await getRequest(path, searchParams)
+}
+
 
 /**
  *

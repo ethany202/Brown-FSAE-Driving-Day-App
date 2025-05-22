@@ -18,7 +18,7 @@ interface IssueModalProps {
   issue: Issue;
   isOpen: boolean;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (newIssue?: Issue) => void;
 }
 
 export default function IssueModal({
@@ -412,6 +412,20 @@ export default function IssueModal({
             <div className="flex justify-between mb-4">
               <h2 className="text-xl font-bold">Issue #{issue.id}</h2>
             </div>
+            {imageUrl ? (
+              <div className="mb-4">
+                <img
+                  src={imageUrl}
+                  alt={`Issue ${issue.id}`}
+                  className="max-h-60 w-auto mx-auto rounded shadow"
+                />
+              </div>
+            ) : imgError ? (
+              <p className="text-sm italic text-gray-500 mb-4">{imgError}</p>
+            ) : (
+              // while loading
+              <p className="text-sm text-gray-400 mb-4">Loading image…</p>
+            )}
             <div className="space-y-4">
               <p className="break-words">
                 <strong>Driver:</strong> {issue.driver}

@@ -3,7 +3,7 @@ import Navbar from "../../components/navbar-components/Navbar";
 import './Layout.css';
 import { useState, useEffect } from "react";
 import { Driver } from "../../utils/DriverType";
-import { api, getAllDrivers, getCSRFToken } from "../../api/api";
+import { api, getAllDrivers } from "../../api/api";
 import AppDataContext from "../../components/contexts/AppDataContext";
 import ChartContext from "../../components/contexts/ChartContext";
 import LineChartTemplate from '../../components/graph-components/LineChartTemplate';
@@ -29,6 +29,7 @@ const globalPageSize: number = 20
 export default function Layout() {
 
     const [currUserId, setCurrUserId] = useState<string | null>(null)
+    const [currUser, setCurrUser] = useState<Driver | null>(null)
     const [drivers, setDrivers] = useState<Driver[]>([])
     const [isLoading, setLoading] = useState<boolean>(true)
 
@@ -90,6 +91,8 @@ export default function Layout() {
                 <AppDataContext.Provider value={{
                     currUserId: currUserId,
                     setCurrUserId: setCurrUserId,
+                    currUser: currUser,
+                    setCurrUser: setCurrUser,
                     drivers: drivers,
                     isLoading: isLoading
                 }}>

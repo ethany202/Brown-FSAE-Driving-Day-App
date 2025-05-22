@@ -91,6 +91,33 @@ def get_all_drivers(filters=None):
         print(f"An error occurred while retrieving users: {e}")
         return []
 
+
+def get_specific_driver(driverId):
+    """
+    Retrieves a specific driver from the 'driver-profiles' collection, based on the inputted driver ID.
+    
+    Args:
+        driverId (string): String of driver ID.
+    
+    Returns:
+        dict: JSON of the driver data (as a dictionary)
+    """
+    try:
+        doc_ref = db.collection('driver-profiles').document(driverId)
+        doc = doc_ref.get()    
+                
+        if doc.exists:
+            updated_dict = doc.to_dict()
+            updated_dict["driverId"] = doc.id
+            return updated_dict
+        else:
+            return dict()
+    
+    except Exception as e:
+        print(f"An error occurred while retrieving users: {e}")
+        return dict()
+
+
 def upload_csv_to_firestore(csv_file_path, driver_id):
     """
     Uploads data from a CSV file to a Firestore subcollection within a document named after the CSV file.
@@ -312,7 +339,7 @@ def add_issue(data):
     try:
         if not isinstance(data, dict):
             raise ValueError("Input must be a dictionary.")
-
+        
         required_fields = ['driver', 'date', 'synopsis', 'subsystems', 'description']
         for field in required_fields:
             if field not in data or not data[field]:
@@ -387,6 +414,7 @@ def get_all_issues(filters=None):
         print(f"An error occurred while retrieving issues: {e}")
         return None
     
+
 def update_issue(issue_id: str, data: dict):
     try:
         if not isinstance(data, dict):
@@ -424,6 +452,7 @@ def update_issue(issue_id: str, data: dict):
         print(f"An unexpected error occurred while updating issue: {e}")
         return None
 
+
 def delete_issue(issue_id: str):
     try:
         if not issue_id:
@@ -446,40 +475,3 @@ def delete_issue(issue_id: str):
     except Exception as e:
         print(f"An unexpected error occurred while deleting issue: {e}")
         return None
-    
-
-def get_user_by_email(email):
-    """
-    Retrieves a user document from Firestore by email.
-
-    Args:
-        email (str): The user's email address
-
-    Returns:
-        dict: User data if found
-        None: If user not found or error occurs
-    """
-    try:
-        user_doc = db.collection('users').document(email).get()
-        if user_doc.exists:
-            return user_doc.to_dict()
-        return None
-    except Exception as e:
-        print(f"Error retrieving user: {e}")
-        return None
-
-
-def update_user_last_login(email):
-    """
-    Updates the user's last login timestamp.
-
-    Args:
-        email (str): The user's email address
-    """
-    try:
-        db.collection('users').document(email).update({
-            'lastLogin': firestore.SERVER_TIMESTAMP
-        })
-    except Exception as e:
-        print(f"Error updating last login: {e}")
-

@@ -67,8 +67,12 @@ export default function IssueTable() {
     }
   };
 
-  const handleSave = () => {
-    fetchIssues();
+  const handleSave = (newIssue?: Issue) => {
+    if (newIssue) {
+      setIssues(prev => [newIssue, ...prev]);
+    } else {
+      fetchIssues();
+    }
   };
 
   const getPriorityColor = (priority: string | undefined) => {
@@ -148,10 +152,10 @@ export default function IssueTable() {
               <th className="px-6 py-4 text-left font-medium text-lg">
                 Issue #
               </th>
-              <th className="px-6 py-4 text-left font-medium">Driver</th>
+              <th className="px-6 py-4 text-left font-medium hidden sm:table-cell">Driver</th>
               <th className="px-6 py-4 text-left font-medium">Date</th>
               <th className="px-6 py-4 text-left font-medium">Synopsis</th>
-              <th className="px-6 py-4 text-left font-medium">Subsystems</th>
+              <th className="px-6 py-4 text-left font-medium hidden sm:table-cell">Subsystems</th>
               <th className="px-6 py-4 text-left font-medium">Priority</th>
               <th className="px-6 py-4 text-left font-medium">
                 <div className="flex items-center justify-between">
@@ -174,24 +178,39 @@ export default function IssueTable() {
                   setSelectedIssue(issue);
                   setIsModalOpen(true);
                 }}
-                className={`cursor-pointer transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${
-                  index !== issues.length - 1 ? "border-b border-gray-100" : ""
-                }`}
+                className={`
+        odd:bg-white even:bg-blue-50
+        hover:bg-gray-200
+        cursor-pointer
+        focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2
+        ${index !== issues.length - 1 ? "border-b border-gray-100" : ""}
+      `}
                 tabIndex={0}
               >
-                <td className="px-6 py-4 text-lg font-medium">{index + 1}</td>
-                <td className="px-6 py-4 text-gray-600">
+                {/* Issue # */}
+                <td className="px-6 py-4 sm:py-3 text-lg font-medium">
+                  {issues.length - index}
+                </td>
+
+                {/* Driver (hidden on xs) */}
+                <td className="hidden sm:table-cell px-6 py-4 sm:py-3 text-gray-600">
                   <div className="break-words">{issue.driver}</div>
                 </td>
-                <td className="px-6 py-4 text-gray-600 whitespace-nowrap">
+
+                {/* Date */}
+                <td className="px-6 py-4 sm:py-3 text-gray-600 whitespace-nowrap">
                   {issue.date}
                 </td>
-                <td className="px-6 py-4">
+
+                {/* Synopsis */}
+                <td className="px-6 py-4 sm:py-3">
                   <div className="font-medium break-words">
                     {issue.synopsis}
                   </div>
                 </td>
-                <td className="px-6 py-4">
+
+                {/* Subsystems (hidden on xs) */}
+                <td className="hidden sm:table-cell px-6 py-4 sm:py-3">
                   <div className="flex flex-wrap gap-1">
                     {issue.subsystems.length > 0 ? (
                       issue.subsystems.map((subsystem) => (
@@ -207,7 +226,9 @@ export default function IssueTable() {
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-4">
+
+                {/* Priority */}
+                <td className="hidden md:table-cell px-6 py-4 sm:py-3">
                   <span
                     className={`text-xs font-medium px-2.5 py-0.5 rounded ${getPriorityColor(
                       issue.priority
@@ -216,7 +237,9 @@ export default function IssueTable() {
                     {issue.priority || "Unknown"}
                   </span>
                 </td>
-                <td className="px-6 py-4">
+
+                {/* Status (wider) */}
+                <td className="px-6 py-4 sm:py-3 w-32 sm:w-40">
                   <span
                     className={`text-xs font-medium px-2.5 py-0.5 rounded ${getStatusColor(
                       issue.status

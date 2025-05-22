@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
-import { postIssue } from "../../api/api";
+import { postFiles, postIssue, postS3Image } from "../../api/api";
+import { set } from "react-datepicker/dist/date_utils";
 
 interface AddIssueModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (newIssue: Issue) => void;
   nextIssueNumber: number;
 }
 
@@ -26,9 +27,10 @@ export default function AddIssueModal({
   onSave,
   nextIssueNumber,
 }: AddIssueModalProps) {
+  const today = new Date().toISOString().split("T")[0];
   const [issue, setIssue] = useState<Omit<Issue, "id">>({
     driver: "",
-    date: "",
+    date: today,
     synopsis: "",
     subsystems: [],
     description: "",
@@ -61,6 +63,23 @@ export default function AddIssueModal({
   const statusOptions = ["OPEN", "IN PROGRESS", "CLOSED"];
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      setIssue({
+        driver: "",
+        date: today,
+        synopsis: "",
+        subsystems: [],
+        description: "",
+        priority: "LOW",
+        status: "OPEN",
+      })
+      setPreview(null);
+    };
+  }, []);
 
   const handleSubsystemToggle = (subsystem: string) => {
     setIssue((prevIssue) => {
@@ -88,6 +107,18 @@ export default function AddIssueModal({
       if (response.status !== 201) {
         throw new Error("Failed to create issue");
       }
+      let issueId = "";
+      if (image && response && "data" in response) {
+        const formData = new FormData();
+        issueId = response.data.issue_id;
+        formData.append("file", image);
+        formData.append("issue_id", issueId);
+        const imageResponse = await postS3Image(formData, issueId);
+        if (imageResponse.status !== 201) {
+          throw new Error("Failed to upload image");
+        }
+      }
+      onSave({ ...issue, id: issueId });
       setIssue({
         driver: "",
         date: "",
@@ -97,7 +128,6 @@ export default function AddIssueModal({
         priority: "LOW",
         status: "OPEN",
       });
-      onSave();
       onClose();
     } catch (err) {
       setError("Error adding issue, make sure all fields are filled.");
@@ -211,7 +241,7 @@ export default function AddIssueModal({
                       <input
                         type="checkbox"
                         checked={issue.subsystems.includes(subsystem)}
-                        onChange={() => {}}
+                        onChange={() => { }}
                         className="mr-2"
                         disabled={isLoading}
                       />
@@ -255,7 +285,37 @@ export default function AddIssueModal({
               disabled={isLoading}
             />
           </div>
-
+          {preview && (
+          <div className="mb-4">
+            <p className="text-sm font-medium">Image Preview:</p>
+            <img
+              src={preview}
+              alt="Selected preview"
+              className="max-h-40 rounded shadow-sm mt-1"
+            />
+          </div>
+        )}
+          <div>
+            <label className="block text-sm font-medium mb-1">Upload Image (optional)</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0] || null;
+                setImage(file);
+                if (preview){
+                  URL.revokeObjectURL(preview);
+                  setPreview(null);
+                }
+                if(file) {
+                    const newPreview = URL.createObjectURL(file);
+                    setPreview(newPreview);
+                  }
+              }}
+              className="w-full border rounded p-2"
+              disabled={isLoading}
+            />
+          </div>
           <div className="flex justify-end gap-2">
             <button
               type="button"
