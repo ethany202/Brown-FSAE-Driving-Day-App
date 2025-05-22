@@ -27,6 +27,7 @@ export default function IssueModal({
   onClose,
   onSave,
 }: IssueModalProps) {
+  
   const [editMode, setEditMode] = useState(false);
   const [editedIssue, setEditedIssue] = useState<Issue>(issue);
   const [isSubsystemDropdownOpen, setIsSubsystemDropdownOpen] = useState(false);
@@ -34,27 +35,31 @@ export default function IssueModal({
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // Added for delete confirmation
 
-  // const availableSubsystems = [
-  //   "BRK",
-  //   "CHAS",
-  //   "COOL",
-  //   "DASH",
-  //   "DRV",
-  //   "DRIVER GEAR",
-  //   "ELE",
-  //   "ENGN",
-  //   "ERGO",
-  //   "EXH",
-  //   "FEUL",
-  //   "INT",
-  //   "PDL",
-  //   "STR",
-  //   "SUS",
-  //   "SHFT",
-  // ];
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imgError, setImgError] = useState<string | null>(null);
 
-  // const priorityLevels = ["Low", "Medium", "High", "Critical"];
-  // const statusOptions = ["Open", "In Progress", "Closed"];
+  useEffect(() => {
+    if (isOpen && !editMode) {
+      setImageUrl(null);
+      setImgError(null);
+
+      fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/fetch-s3-image/?issue_id=${issue.id}`,
+        { credentials: "include" }
+      )
+        .then((res) => {
+          if (!res.ok) throw new Error(`Status ${res.status}`);
+          return res.json();
+        })
+        .then((data) => {
+          setImageUrl(data.url);
+        })
+        .catch((err) => {
+          console.warn("No image or fetch failed:", err);
+          setImgError("No image available");
+        });
+    }
+  }, [isOpen, editMode, issue.id]);
 
   useEffect(() => {
     setEditedIssue(issue);
