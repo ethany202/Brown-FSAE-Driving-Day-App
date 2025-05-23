@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import IssueModal from "./IssueModal";
 import AddIssueModal from "./AddIssueModal";
 import DropdownFilter from "../filter-components/DropdownFilter";
+import DriverFilter from "../filter-components/DriverFilter";
 import FiltersBase from "../base-components/FiltersBase";
 import { getAllIssues } from "../../api/api";
 import { availableSubsystems, priorityLevels, statusOptions } from "../../constants/IssuesConstants";
+import AppDataContext from '../contexts/AppDataContext';
+import { Driver } from "../../utils/DriverType";
 
 interface Issue {
   id: string;
@@ -18,6 +21,9 @@ interface Issue {
 }
 
 export default function IssueTable() {
+
+  const { drivers } = useContext(AppDataContext)
+
   const [issues, setIssues] = useState<Issue[]>([]);
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,11 +31,22 @@ export default function IssueTable() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // TODO: Create useState hook for ALL necessary values
-  const [driverFilt, setDriverFilt] = useState<string | null>(null);
+  /**
+   * useState hooks that store filter options
+   */
+  const [driverIdFilt, setDriverIdFilt] = useState<string | null>(null);
   const [subsystemFilt, setSubsystemFilt] = useState<string | null>(null);
   const [priorityFilt, setPriorityFilt] = useState<string | null>(null);
   const [statusFilt, setStatusFilt] = useState<string | null>(null);
+
+  /**
+   * useState hook that stores current page number (for pagination)
+   */
+  const [pageNumber, setPageNumber] = useState<number>(1)
+
+  const updatePageNumber = (newPageNumber: number) => {
+    // Updates page number AND pulls relevant set of issues
+  }
 
   useEffect(() => {
     fetchIssues();
@@ -37,12 +54,7 @@ export default function IssueTable() {
 
   useEffect(() => {
     console.log("CURRENT PRIORITY: ", priorityFilt)
-  }, [subsystemFilt, priorityFilt, statusFilt])
-
-  // TODO: Implement GET request to pull all authorized users from database (drivers)
-  const fetchAllDrivers = async () => {
-
-  }
+  }, [driverIdFilt, subsystemFilt, priorityFilt, statusFilt])
 
   const fetchIssues = async () => {
     setIsLoading(true);
@@ -111,10 +123,9 @@ export default function IssueTable() {
       {isLoading && <p>Loading issues...</p>} */}
 
       <FiltersBase>
-        <DropdownFilter 
-          filterCategory="Person"
-          allFilterOptions={["Op1", "Op2"]}
-          setFilterOption={setDriverFilt}
+        <DriverFilter 
+          allDrivers={drivers}
+          setDriverOption={setDriverIdFilt}
           />
         
         <DropdownFilter 

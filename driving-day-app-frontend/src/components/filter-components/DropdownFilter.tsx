@@ -19,12 +19,8 @@ export default function DropdownFilter({
     setFilterOption
 } : DropdownFilterProps){
 
-    const propagateFilterOption = (newFilterOption : string) => {
-        setFilterOption(newFilterOption)
-    }
-
     return (
-        <select onChange={(event) => propagateFilterOption(event.target.value)} className="px-4 py-2 border border-gray-200 rounded-md bg-white min-w-[200px] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+        <select onChange={(event) => setFilterOption(event.target.value)} className="px-4 py-2 border border-gray-200 rounded-md bg-white min-w-[200px] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
             <option>Filter: {filterCategory}</option>
             {allFilterOptions.map(filterName => {
                 return (
